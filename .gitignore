@@ -1,0 +1,15 @@
+.gradle
+build
+/bin
+.idea/
+.classpath
+.externalToolBuilders/
+.project
+.settings/
+gradle.properties
+etc/
+*.iml
+lightside/build.xml
+lightside/
+out/
+classes/

@@ -1,0 +1,119 @@
+{
+  "writingPrompt" : {
+    "content": "After you took the self-regulated learning survey, you received feedback about your strengths and weaknesses as a learner, as well as suggestions for becoming a more effective and efficient learner. Now, in order to receive feedback on your writing, please use the feedback from your self-regulated learning survey to do your best writing in a brief essay (about 500 words) that addresses the following questions:<ul><li>What do your self-regulated learning survey results and the feedback tell you about your strengths and weaknesses as a college student? Use results from the survey and the feedback to provide an overview, and to support your analysis.</li><li>Which suggestions from the feedback are you committed to using this term? Why those?</li></ul>",
+    "minWords" : 500
+  },
+  "scoringType": "MANUAL",
+  "assessmentType" : "WRITING_PROMPT",
+  "assessmentCategory" : "WRITING",
+  "label" : "Writing",
+  "content": {
+    "landing": "<img src=\"https://static.pexels.com/photos/7096/people-woman-coffee-meeting.jpg\"  class=\"pull-right\" style=\"padding:20px 0 20px 20px; max-width:400px;\"><p>This is additional info about the Writing assessment.</p><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras condimentum interdum convallis. Donec pulvinar dolor sed congue tincidunt. Duis ultrices dictum imperdiet. Duis egestas ligula non tortor sagittis tristique. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec lacinia nibh sapien, in dictum eros ultricies ut. Nunc condimentum arcu lacus, ac tincidunt tortor malesuada et. Proin nulla sem, placerat eget dapibus sit amet, pellentesque eu enim. Quisque id neque elit. Nulla vitae finibus odio. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Fusce ultrices orci neque, mattis finibus velit maximus sit amet. Donec semper felis vitae diam ultrices porta. Nam viverra fermentum est at placerat. Aliquam tempor quam nec pellentesque mattis. Nunc at ante pretium, vestibulum dolor quis, condimentum justo.</p><h3>Nam ac blandit ante</h3><p>Nam ac blandit ante. Proin feugiat purus id nunc pretium consectetur. Vestibulum sodales sed massa sit amet mattis. Morbi aliquam, tellus id hendrerit sodales, nibh sapien fringilla nisl, vitae gravida nunc metus sit amet justo. Integer dictum viverra justo, sed consequat odio vestibulum sed. Donec ac diam eget est condimentum tempus a sit amet neque. Nullam nunc magna, ultricies id enim vel, ultrices ornare odio. Donec eleifend, nibh vehicula euismod interdum, turpis odio fringilla diam, et fermentum arcu justo et tellus. Morbi in pellentesque odio. Quisque vel elit at velit luctus gravida. Aliquam blandit convallis magna, at cursus est ultrices id. Interdum et malesuada fames ac ante ipsum primis in faucibus. Vivamus malesuada vehicula sagittis. Cras at faucibus augue, dapibus ornare ipsum. Vivamus quis feugiat libero, non tempor ipsum.</p>",
+    "start": "<p>This is the intro page for starting a new Writing assessment. It could contain some generic info about taking the assessment, or content specific to the assessment type. The user would also see the \"tutorial\" UI at this point.</p><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum eu porta mauris. Etiam convallis, mauris quis lobortis molestie, eros sapien elementum nisl, fringilla interdum risus orci vitae nibh. Proin ut erat odio. Vestibulum varius quis nisi et aliquam. Nulla auctor ullamcorper ornare. Nulla dignissim auctor risus sed sodales. Proin elementum elit quis quam tincidunt, ac congue felis commodo. Aliquam erat volutpat. Fusce eget justo sit amet magna porta feugiat quis blandit enim. Phasellus in purus ut felis dapibus mattis. Morbi posuere hendrerit mauris nec molestie. In nibh magna, fermentum ac dictum quis, rhoncus a nunc.</p>",
+    "startTips": "Your writing will be assessed according to the following criteria:<ul><li>Evidence of Logical Reasoning</li><li>Organization</li><li>Paragraphs Focus on a Main Idea</li><li>Connecting Ideas</li><li>Conventions</li></ul>",
+    "helpLabel": "Writing Guidelines",
+    "help": "<p>Writing cheat sheet content goes here.</p>Your writing will be assessed according to the following criteria:<ul><li>Evidence of Logical Reasoning</li><li>Organization</li><li>Paragraphs Focus on a Main Idea</li><li>Connecting Ideas</li><li>Conventions</li></ul>"
+  },
+  "enabled" : true,
+  "prerequisites" : [{
+    "prereqType": "ASSESSMENT",
+    "reason": "You must complete the Self-Regulated Learning assessment first!",
+    "assessmentCategory": "COLLEGE_SKILLS",
+    "statuses": [
+      "COMPLETED",
+      "GRADED"
+    ]
+  }],
+  "overallRubric" : {
+    "completionScoreMap": {},
+    "supplementTable" : [
+      {
+        "completionScore" : "LOW",
+        "content" : "This is the overall assessment feedback content for LOW. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer iaculis nunc in tempor aliquam. Nunc lacinia quam diam, at efficitur arcu ullamcorper cursus. Donec mauris purus, eleifend nec aliquet eget, tempus efficitur velit."
+      },
+      {
+        "completionScore" : "MEDIUM",
+        "content" : "This is the overall assessment feedback content for MEDIUM. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer iaculis nunc in tempor aliquam. Nunc lacinia quam diam, at efficitur arcu ullamcorper cursus. Donec mauris purus, eleifend nec aliquet eget, tempus efficitur velit."
+      },
+      {
+        "completionScore" : "HIGH",
+        "content" : "This is the overall assessment feedback content for HIGH. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer iaculis nunc in tempor aliquam. Nunc lacinia quam diam, at efficitur arcu ullamcorper cursus. Donec mauris purus, eleifend nec aliquet eget, tempus efficitur velit."
+      }
+    ]
+  },
+  "domains": [
+    {
+      "id": "1",
+      "domainType": "SCORING",
+      "label": "Evidence of Logical Reasoning",
+      "content": "This is the static domain content for Evidence of Logical Reasoning. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec eget lobortis eros. Donec urna purus, imperdiet et efficitur ut, placerat congue turpis. Integer sit amet urna tellus. Quisque vulputate nunc eget arcu fringilla, eu iaculis metus vestibulum. Fusce in odio tincidunt, efficitur leo in, sodales lacus. Phasellus felis purus, vulputate et arcu sed, fermentum dictum dui. Donec mollis risus in vulputate tempus. Nunc finibus nec mi non sodales. Sed vulputate viverra magna ut luctus.",
+      "rubric": {
+        "completionScoreMap": {},
+        "supplementTable": [
+          {
+            "completionScore": "LOW",
+            "content": "The discussion of the survey and feedback is superficial and/or simplistic. Choices of suggestions to which to commit are vague, if present at all. The rationale for the choices is opaque; little evidence of logical reasoning."
+          },
+          {
+            "completionScore": "MEDIUM",
+            "content": "The essay uses evidence from survey results and feedback to summarize student's strengths and weaknesses in terms of selfregulated learning. The overview is a bit thin; lacks detail. Choices of suggestions to which to commit are clearly described, but may not be reasonably connected to the strengths and weaknesses discussed in the overview."
+          },
+          {
+            "completionScore": "HIGH",
+            "content": "The essay uses relevant survey results, feedback, and perhaps life experiences to provide a detailed overview of the student’s strengths and weaknesses in terms of selfregulated learning. The overview of the feedback logically leads to choices of suggestions to which to commit. The rationale for choices of suggestions is clear and reasonable."
+          }
+        ]
+      }
+    },
+    {
+      "id": "2",
+      "domainType": "SCORING",
+      "label": "Organization",
+      "content": "This is the static domain content for Organization. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec eget lobortis eros. Donec urna purus, imperdiet et efficitur ut, placerat congue turpis. Integer sit amet urna tellus. Quisque vulputate nunc eget arcu fringilla, eu iaculis metus vestibulum. Fusce in odio tincidunt, efficitur leo in, sodales lacus. Phasellus felis purus, vulputate et arcu sed, fermentum dictum dui. Donec mollis risus in vulputate tempus. Nunc finibus nec mi non sodales. Sed vulputate viverra magna ut luctus.",
+      "rubric": {
+        "completionScoreMap": {},
+        "supplementTable": [
+            {
+              "completionScore": "LOW",
+              "content": "There structure and order of the essay is unclear, making the analysis difficult to follow. The introduction and/or conclusion is/are unclear, insufficient, or irrelevant. Paragraphs abruptly transition from one to the next."
+            },
+            {
+              "completionScore": "MEDIUM",
+              "content": "The essay has a general structure and order, but the arguments are not always easy to follow. The essay begins with an introduction that provides a vague but relevant gist of the essay The essay ends with a general summation of main points. Might include new or irrelevant ideas, or exclude one or more main points. Inconsistent use of transitions."
+            },
+            {
+              "completionScore": "HIGH",
+              "content": "The essay is well-organized, with an order and structure that present the analysis in a clear, logical manner. The introduction provides a clear road map for the essay. The conclusion provides a clear and succinct summary of the main points of the essay. The writer uses rhetorically appropriate transitions to link one paragraph to the next and help readers follow the discussion."
+            }
+        ]
+      }
+    },
+    {
+      "id": "3",
+      "domainType": "SCORING",
+      "label": "Paragraphs Focus on a Main Idea",
+      "content": "This is the static domain content for Paragraphs Focus on a Main Idea. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec eget lobortis eros. Donec urna purus, imperdiet et efficitur ut, placerat congue turpis. Integer sit amet urna tellus. Quisque vulputate nunc eget arcu fringilla, eu iaculis metus vestibulum. Fusce in odio tincidunt, efficitur leo in, sodales lacus. Phasellus felis purus, vulputate et arcu sed, fermentum dictum dui. Donec mollis risus in vulputate tempus. Nunc finibus nec mi non sodales. Sed vulputate viverra magna ut luctus.",
+      "rubric": {
+        "completionScoreMap": {},
+        "supplementTable": [
+          {
+            "completionScore": "LOW",
+            "content": "Too few linking words and phrases mean that the connections between ideas in sentences within a paragraph are unclear."
+          },
+          {
+            "completionScore": "MEDIUM",
+            "content": "The ideas or information in each sentence within a paragraph are generally linked together, if only loosely. Additional or better choices of linking words and phrases would clarify the connections b/w ideas within the paragraph."
+          },
+          {
+            "completionScore": "HIGH",
+            "content": "Within paragraphs, the individual sentences are linked together seamlessly in a way that allows the reader to see the relationship between the ideas or information in one sentence and those in another sentence. The writing contains adverbs (e.g., similarly, also, therefore, etc.), relative pronouns (e.g., who, that, which), and conjunctions (e.g., and, or, while, whereas) that explicitly link sentences and ideas together."
+          }
+        ]
+      }
+    }
+  ],
+  "lightSideConfig": {
+    "overallModel": "overall.model.xml",
+    "domainModels": {}
+  }
+}

@@ -1,0 +1,112 @@
+Java SE Development Kit 8 
+jdk-8u91-linux-x64
+http://www.oracle.com/technetwork/java/javase/terms/license/index.html
+
+OpenJDK 
+openjdk-8u91-jdk
+GNU General Public License, version 2, with the Classpath Exception 
+http://openjdk.java.net/legal/gplv2+ce.html
+
+MongoDB Database Server and Tools 
+v3.2.7
+Free Software Foundation's GNU AGPL v3.0 
+http://www.gnu.org/licenses/agpl-3.0.html
+
+MongoDB Drivers
+Apache License v2.0 
+http://www.apache.org/licenses/LICENSE-2.0
+
+LightSide
+2.3.1
+GPLv3
+https://www.gnu.org/licenses/gpl-3.0.html
+
+Spring Boot 
+1.3.5.RELEASE
+Apache License v2.0 
+https://github.com/spring-projects/spring-boot/blob/master/LICENSE.txt
+
+Spring Security SAML Extension 
+1.0.2.RELEASE
+Apache License v2.0 
+http://www.apache.org/licenses/LICENSE-2.0
+
+spring-boot-security-saml-sample
+Apache License 2.0 
+https://github.com/vdenotaris/spring-boot-security-saml-sample/blob/master/LICENSE
+
+Jetty 
+jetty-9.2.16.v20160414
+Apache License v2.0 
+http://www.apache.org/licenses/LICENSE-2.0
+
+Jackson 
+2.6.6
+Apache License v2.0 
+http://www.apache.org/licenses/LICENSE-2.0
+
+Apache Commons Lang3 
+3.4
+Apache License v2.0 
+http://www.apache.org/licenses/LICENSE-2.0
+
+Apache Commons IO
+2.5
+Apache License v2.0 
+http://www.apache.org/licenses/LICENSE-2.0
+
+Apache Commons File Upload
+1.3.2
+Apache License v2.0 
+http://www.apache.org/licenses/LICENSE-2.0
+
+Groovy 
+2.4.7
+Apache License v2.0 
+http://www.apache.org/licenses/LICENSE-2.0
+
+Hystrix
+1.3.19
+Apache License v2.0 
+https://github.com/Netflix/Hystrix/blob/master/LICENSE-2.0.txt
+
+Try
+0.3.1
+Apache License v2.0 
+https://github.com/lambdista/try/blob/master/LICENSE
+
+Guava
+19.0
+Apache License v2.0 
+https://github.com/google/guava/blob/master/COPYING
+
+Orika Mapper
+1.4.6
+Apache License v2.0 
+http://www.apache.org/licenses/LICENSE-2.0
+
+Springfox Swagger 
+2.5.0
+Apache License v2.0 
+https://github.com/springfox/springfox/blob/master/LICENSE
+
+OpenCSV 
+3.8
+Apache License v2.0 
+http://opencsv.sourceforge.net/license.html
+
+Spock Framework
+1.0-groovy-2.4
+Apache License v2.0 
+https://github.com/spockframework/spock/blob/master/LICENSE
+
+cglib
+3.2.2
+Apache License v2.0 
+https://github.com/cglib/cglib/blob/master/LICENSE
+
+objensis
+2.4
+Apache License v2.0 
+http://objenesis.org/license.html
+

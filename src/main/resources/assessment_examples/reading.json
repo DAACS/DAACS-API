@@ -1,0 +1,605 @@
+{
+  "minTakenGroups": 2,
+  "maxTakenGroups": 3,
+  "numQuestionsPerGroup": 2,
+  "scoringType": "AVERAGE",
+  "itemGroups": [
+    {
+      "difficulty": "MEDIUM",
+      "items": [
+        {
+          "itemContent": {
+            "question": {
+              "itemContentType": "PASSAGE",
+              "content": "The man in black fled across the desert, and the gunslinger followed.\n\n The desert was the apotheosis of all deserts, huge, standing to the sky for what looked like \n eternity in all directions.It was white and blinding and waterless and without feature save for the \n faint, cloudy haze of the mountains which sketched themselves on the horizon and the devil-grass \n which brought sweet dreams,nightmares, death. An occasional tombstone sign pointed the way, for \n once the drifted track that cut its way through the thick crust of alkali had been a highway. \n Coaches and buckas had followed it. The world had moved on since then. The world had emptied. \n\n The gunslinger had been struck by a momentary dizziness, a kind of yawing sensation that made the \n entire world seem ephemeral, almost a thing that could  be looked through. It passed and, like the \n world upon whose hide he walked, he moved on. He passed the miles stolidly, not hurrying, not \n loafing. A hide waterbag was slung around his middle like a bloated sausage. It was almost full. He \n had progressed through the khef over many years, and had reached perhaps the fifth level. Had he \n been a Manni holy man, he might not have even been thirsty; he could have watched his own body \n dehydrate with clinical, detached attention, watering its crevices and dark inner hollows only \n when his logic told him it must be done. He was not a Manni, however, nor a follower of the Man \n Jesus, and considered himself in no way holy. He was just an ordinary pilgrim, in other words, and \n all he could say with real certainty was that he was thirsty. And even so, he had no particular \n urge to drink. In a vague way, all this pleased him. It was what the country required, it was a \n thirsty country, and he had in his long life been nothing if not adaptable."
+            },
+            "feedback": {
+              "itemContentType": "WORD",
+              "content": "Read line 1 to get the answer."
+            }
+          },
+          "question": "What happened on line #1?",
+          "domainId": "reading_comprehension",
+          "possibleItemAnswers": [
+            {
+              "content": "The man in black followed the gunslinger.",
+              "score": 0
+            },
+            {
+              "content": "The gunslinger followed the man in black.",
+              "score": 1
+            },
+            {
+              "content": "Nothing happened.",
+              "score": 0
+            },
+            {
+              "content": "I don't know what's happening right now.",
+              "score": 0
+            }
+          ]
+        },
+        {
+          "itemContent": {
+            "question": {
+              "itemContentType": "PASSAGE",
+              "content": "The man in black fled across the desert, and the gunslinger followed.\n\n The desert was the apotheosis of all deserts, huge, standing to the sky for what looked like \n eternity in all directions.It was white and blinding and waterless and without feature save for the \n faint, cloudy haze of the mountains which sketched themselves on the horizon and the devil-grass \n which brought sweet dreams,nightmares, death. An occasional tombstone sign pointed the way, for \n once the drifted track that cut its way through the thick crust of alkali had been a highway. \n Coaches and buckas had followed it. The world had moved on since then. The world had emptied. \n\n The gunslinger had been struck by a momentary dizziness, a kind of yawing sensation that made the \n entire world seem ephemeral, almost a thing that could  be looked through. It passed and, like the \n world upon whose hide he walked, he moved on. He passed the miles stolidly, not hurrying, not \n loafing. A hide waterbag was slung around his middle like a bloated sausage. It was almost full. He \n had progressed through the khef over many years, and had reached perhaps the fifth level. Had he \n been a Manni holy man, he might not have even been thirsty; he could have watched his own body \n dehydrate with clinical, detached attention, watering its crevices and dark inner hollows only \n when his logic told him it must be done. He was not a Manni, however, nor a follower of the Man \n Jesus, and considered himself in no way holy. He was just an ordinary pilgrim, in other words, and \n all he could say with real certainty was that he was thirsty. And even so, he had no particular \n urge to drink. In a vague way, all this pleased him. It was what the country required, it was a \n thirsty country, and he had in his long life been nothing if not adaptable."
+            },
+            "feedback": {
+              "itemContentType": "WORD",
+              "content": "Read the first 8 words."
+            }
+          },
+          "question": "What is the setting of the story?",
+          "domainId": "critical_thinking",
+          "possibleItemAnswers": [
+            {
+              "content": "A tropical jungle",
+              "score": 0
+            },
+            {
+              "content": "A desert",
+              "score": 1
+            },
+            {
+              "content": "A van down by the river",
+              "score": 0
+            },
+            {
+              "content": "1970's New York City",
+              "score": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "difficulty": "MEDIUM",
+      "items": [
+        {
+          "itemContent": {
+            "question": {
+              "itemContentType": "PASSAGE",
+              "content": "The man in black fled across the desert, and the gunslinger followed.\n\n The desert was the apotheosis of all deserts, huge, standing to the sky for what looked like \n eternity in all directions.It was white and blinding and waterless and without feature save for the \n faint, cloudy haze of the mountains which sketched themselves on the horizon and the devil-grass \n which brought sweet dreams,nightmares, death. An occasional tombstone sign pointed the way, for \n once the drifted track that cut its way through the thick crust of alkali had been a highway. \n Coaches and buckas had followed it. The world had moved on since then. The world had emptied. \n\n The gunslinger had been struck by a momentary dizziness, a kind of yawing sensation that made the \n entire world seem ephemeral, almost a thing that could  be looked through. It passed and, like the \n world upon whose hide he walked, he moved on. He passed the miles stolidly, not hurrying, not \n loafing. A hide waterbag was slung around his middle like a bloated sausage. It was almost full. He \n had progressed through the khef over many years, and had reached perhaps the fifth level. Had he \n been a Manni holy man, he might not have even been thirsty; he could have watched his own body \n dehydrate with clinical, detached attention, watering its crevices and dark inner hollows only \n when his logic told him it must be done. He was not a Manni, however, nor a follower of the Man \n Jesus, and considered himself in no way holy. He was just an ordinary pilgrim, in other words, and \n all he could say with real certainty was that he was thirsty. And even so, he had no particular \n urge to drink. In a vague way, all this pleased him. It was what the country required, it was a \n thirsty country, and he had in his long life been nothing if not adaptable."
+            },
+            "feedback": {
+              "itemContentType": "WORD",
+              "content": "Read line 1 to get the answer."
+            }
+          },
+          "question": "What happened on line #1?",
+          "domainId": "reading_comprehension",
+          "possibleItemAnswers": [
+            {
+              "content": "The man in black followed the gunslinger.",
+              "score": 0
+            },
+            {
+              "content": "The gunslinger followed the man in black.",
+              "score": 1
+            },
+            {
+              "content": "Nothing happened.",
+              "score": 0
+            },
+            {
+              "content": "I don't know what's happening right now.",
+              "score": 0
+            }
+          ]
+        },
+        {
+          "itemContent": {
+            "question": {
+              "itemContentType": "PASSAGE",
+              "content": "The man in black fled across the desert, and the gunslinger followed.\n\n The desert was the apotheosis of all deserts, huge, standing to the sky for what looked like \n eternity in all directions.It was white and blinding and waterless and without feature save for the \n faint, cloudy haze of the mountains which sketched themselves on the horizon and the devil-grass \n which brought sweet dreams,nightmares, death. An occasional tombstone sign pointed the way, for \n once the drifted track that cut its way through the thick crust of alkali had been a highway. \n Coaches and buckas had followed it. The world had moved on since then. The world had emptied. \n\n The gunslinger had been struck by a momentary dizziness, a kind of yawing sensation that made the \n entire world seem ephemeral, almost a thing that could  be looked through. It passed and, like the \n world upon whose hide he walked, he moved on. He passed the miles stolidly, not hurrying, not \n loafing. A hide waterbag was slung around his middle like a bloated sausage. It was almost full. He \n had progressed through the khef over many years, and had reached perhaps the fifth level. Had he \n been a Manni holy man, he might not have even been thirsty; he could have watched his own body \n dehydrate with clinical, detached attention, watering its crevices and dark inner hollows only \n when his logic told him it must be done. He was not a Manni, however, nor a follower of the Man \n Jesus, and considered himself in no way holy. He was just an ordinary pilgrim, in other words, and \n all he could say with real certainty was that he was thirsty. And even so, he had no particular \n urge to drink. In a vague way, all this pleased him. It was what the country required, it was a \n thirsty country, and he had in his long life been nothing if not adaptable."
+            },
+            "feedback": {
+              "itemContentType": "WORD",
+              "content": "Read the first 8 words."
+            }
+          },
+          "question": "What is the setting of the story?",
+          "domainId": "critical_thinking",
+          "possibleItemAnswers": [
+            {
+              "content": "A tropical jungle",
+              "score": 0
+            },
+            {
+              "content": "A desert",
+              "score": 1
+            },
+            {
+              "content": "A van down by the river",
+              "score": 0
+            },
+            {
+              "content": "1970's New York City",
+              "score": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "difficulty": "MEDIUM",
+      "items": [
+        {
+          "itemContent": {
+            "question": {
+              "itemContentType": "PASSAGE",
+              "content": "The man in black fled across the desert, and the gunslinger followed.\n\n The desert was the apotheosis of all deserts, huge, standing to the sky for what looked like \n eternity in all directions.It was white and blinding and waterless and without feature save for the \n faint, cloudy haze of the mountains which sketched themselves on the horizon and the devil-grass \n which brought sweet dreams,nightmares, death. An occasional tombstone sign pointed the way, for \n once the drifted track that cut its way through the thick crust of alkali had been a highway. \n Coaches and buckas had followed it. The world had moved on since then. The world had emptied. \n\n The gunslinger had been struck by a momentary dizziness, a kind of yawing sensation that made the \n entire world seem ephemeral, almost a thing that could  be looked through. It passed and, like the \n world upon whose hide he walked, he moved on. He passed the miles stolidly, not hurrying, not \n loafing. A hide waterbag was slung around his middle like a bloated sausage. It was almost full. He \n had progressed through the khef over many years, and had reached perhaps the fifth level. Had he \n been a Manni holy man, he might not have even been thirsty; he could have watched his own body \n dehydrate with clinical, detached attention, watering its crevices and dark inner hollows only \n when his logic told him it must be done. He was not a Manni, however, nor a follower of the Man \n Jesus, and considered himself in no way holy. He was just an ordinary pilgrim, in other words, and \n all he could say with real certainty was that he was thirsty. And even so, he had no particular \n urge to drink. In a vague way, all this pleased him. It was what the country required, it was a \n thirsty country, and he had in his long life been nothing if not adaptable."
+            },
+            "feedback": {
+              "itemContentType": "WORD",
+              "content": "Read line 1 to get the answer."
+            }
+          },
+          "question": "What happened on line #1?",
+          "domainId": "reading_comprehension",
+          "possibleItemAnswers": [
+            {
+              "content": "The man in black followed the gunslinger.",
+              "score": 0
+            },
+            {
+              "content": "The gunslinger followed the man in black.",
+              "score": 1
+            },
+            {
+              "content": "Nothing happened.",
+              "score": 0
+            },
+            {
+              "content": "I don't know what's happening right now.",
+              "score": 0
+            }
+          ]
+        },
+        {
+          "itemContent": {
+            "question": {
+              "itemContentType": "PASSAGE",
+              "content": "The man in black fled across the desert, and the gunslinger followed.\n\n The desert was the apotheosis of all deserts, huge, standing to the sky for what looked like \n eternity in all directions.It was white and blinding and waterless and without feature save for the \n faint, cloudy haze of the mountains which sketched themselves on the horizon and the devil-grass \n which brought sweet dreams,nightmares, death. An occasional tombstone sign pointed the way, for \n once the drifted track that cut its way through the thick crust of alkali had been a highway. \n Coaches and buckas had followed it. The world had moved on since then. The world had emptied. \n\n The gunslinger had been struck by a momentary dizziness, a kind of yawing sensation that made the \n entire world seem ephemeral, almost a thing that could  be looked through. It passed and, like the \n world upon whose hide he walked, he moved on. He passed the miles stolidly, not hurrying, not \n loafing. A hide waterbag was slung around his middle like a bloated sausage. It was almost full. He \n had progressed through the khef over many years, and had reached perhaps the fifth level. Had he \n been a Manni holy man, he might not have even been thirsty; he could have watched his own body \n dehydrate with clinical, detached attention, watering its crevices and dark inner hollows only \n when his logic told him it must be done. He was not a Manni, however, nor a follower of the Man \n Jesus, and considered himself in no way holy. He was just an ordinary pilgrim, in other words, and \n all he could say with real certainty was that he was thirsty. And even so, he had no particular \n urge to drink. In a vague way, all this pleased him. It was what the country required, it was a \n thirsty country, and he had in his long life been nothing if not adaptable."
+            },
+            "feedback": {
+              "itemContentType": "WORD",
+              "content": "Read the first 8 words."
+            }
+          },
+          "question": "What is the setting of the story?",
+          "domainId": "critical_thinking",
+          "possibleItemAnswers": [
+            {
+              "content": "A tropical jungle",
+              "score": 0
+            },
+            {
+              "content": "A desert",
+              "score": 1
+            },
+            {
+              "content": "A van down by the river",
+              "score": 0
+            },
+            {
+              "content": "1970's New York City",
+              "score": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "difficulty": "HARD",
+      "items": [
+        {
+          "itemContent": {
+            "question": {
+              "itemContentType": "PASSAGE",
+              "content": "The man in black fled across the desert, and the gunslinger followed.\n\n The desert was the apotheosis of all deserts, huge, standing to the sky for what looked like \n eternity in all directions.It was white and blinding and waterless and without feature save for the \n faint, cloudy haze of the mountains which sketched themselves on the horizon and the devil-grass \n which brought sweet dreams,nightmares, death. An occasional tombstone sign pointed the way, for \n once the drifted track that cut its way through the thick crust of alkali had been a highway. \n Coaches and buckas had followed it. The world had moved on since then. The world had emptied. \n\n The gunslinger had been struck by a momentary dizziness, a kind of yawing sensation that made the \n entire world seem ephemeral, almost a thing that could  be looked through. It passed and, like the \n world upon whose hide he walked, he moved on. He passed the miles stolidly, not hurrying, not \n loafing. A hide waterbag was slung around his middle like a bloated sausage. It was almost full. He \n had progressed through the khef over many years, and had reached perhaps the fifth level. Had he \n been a Manni holy man, he might not have even been thirsty; he could have watched his own body \n dehydrate with clinical, detached attention, watering its crevices and dark inner hollows only \n when his logic told him it must be done. He was not a Manni, however, nor a follower of the Man \n Jesus, and considered himself in no way holy. He was just an ordinary pilgrim, in other words, and \n all he could say with real certainty was that he was thirsty. And even so, he had no particular \n urge to drink. In a vague way, all this pleased him. It was what the country required, it was a \n thirsty country, and he had in his long life been nothing if not adaptable."
+            },
+            "feedback": {
+              "itemContentType": "WORD",
+              "content": "Read line 1 to get the answer."
+            }
+          },
+          "question": "What happened on line #1?",
+          "domainId": "reading_comprehension",
+          "possibleItemAnswers": [
+            {
+              "content": "The man in black followed the gunslinger.",
+              "score": 0
+            },
+            {
+              "content": "The gunslinger followed the man in black.",
+              "score": 1
+            },
+            {
+              "content": "Nothing happened.",
+              "score": 0
+            },
+            {
+              "content": "I don't know what's happening right now.",
+              "score": 0
+            }
+          ]
+        },
+        {
+          "itemContent": {
+            "question": {
+              "itemContentType": "PASSAGE",
+              "content": "The man in black fled across the desert, and the gunslinger followed.\n\n The desert was the apotheosis of all deserts, huge, standing to the sky for what looked like \n eternity in all directions.It was white and blinding and waterless and without feature save for the \n faint, cloudy haze of the mountains which sketched themselves on the horizon and the devil-grass \n which brought sweet dreams,nightmares, death. An occasional tombstone sign pointed the way, for \n once the drifted track that cut its way through the thick crust of alkali had been a highway. \n Coaches and buckas had followed it. The world had moved on since then. The world had emptied. \n\n The gunslinger had been struck by a momentary dizziness, a kind of yawing sensation that made the \n entire world seem ephemeral, almost a thing that could  be looked through. It passed and, like the \n world upon whose hide he walked, he moved on. He passed the miles stolidly, not hurrying, not \n loafing. A hide waterbag was slung around his middle like a bloated sausage. It was almost full. He \n had progressed through the khef over many years, and had reached perhaps the fifth level. Had he \n been a Manni holy man, he might not have even been thirsty; he could have watched his own body \n dehydrate with clinical, detached attention, watering its crevices and dark inner hollows only \n when his logic told him it must be done. He was not a Manni, however, nor a follower of the Man \n Jesus, and considered himself in no way holy. He was just an ordinary pilgrim, in other words, and \n all he could say with real certainty was that he was thirsty. And even so, he had no particular \n urge to drink. In a vague way, all this pleased him. It was what the country required, it was a \n thirsty country, and he had in his long life been nothing if not adaptable."
+            },
+            "feedback": {
+              "itemContentType": "WORD",
+              "content": "Read the first 8 words."
+            }
+          },
+          "question": "What is the setting of the story?",
+          "domainId": "critical_thinking",
+          "possibleItemAnswers": [
+            {
+              "content": "A tropical jungle",
+              "score": 0
+            },
+            {
+              "content": "A desert",
+              "score": 1
+            },
+            {
+              "content": "A van down by the river",
+              "score": 0
+            },
+            {
+              "content": "1970's New York City",
+              "score": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "difficulty": "HARD",
+      "items": [
+        {
+          "itemContent": {
+            "question": {
+              "itemContentType": "PASSAGE",
+              "content": "The man in black fled across the desert, and the gunslinger followed.\n\n The desert was the apotheosis of all deserts, huge, standing to the sky for what looked like \n eternity in all directions.It was white and blinding and waterless and without feature save for the \n faint, cloudy haze of the mountains which sketched themselves on the horizon and the devil-grass \n which brought sweet dreams,nightmares, death. An occasional tombstone sign pointed the way, for \n once the drifted track that cut its way through the thick crust of alkali had been a highway. \n Coaches and buckas had followed it. The world had moved on since then. The world had emptied. \n\n The gunslinger had been struck by a momentary dizziness, a kind of yawing sensation that made the \n entire world seem ephemeral, almost a thing that could  be looked through. It passed and, like the \n world upon whose hide he walked, he moved on. He passed the miles stolidly, not hurrying, not \n loafing. A hide waterbag was slung around his middle like a bloated sausage. It was almost full. He \n had progressed through the khef over many years, and had reached perhaps the fifth level. Had he \n been a Manni holy man, he might not have even been thirsty; he could have watched his own body \n dehydrate with clinical, detached attention, watering its crevices and dark inner hollows only \n when his logic told him it must be done. He was not a Manni, however, nor a follower of the Man \n Jesus, and considered himself in no way holy. He was just an ordinary pilgrim, in other words, and \n all he could say with real certainty was that he was thirsty. And even so, he had no particular \n urge to drink. In a vague way, all this pleased him. It was what the country required, it was a \n thirsty country, and he had in his long life been nothing if not adaptable."
+            },
+            "feedback": {
+              "itemContentType": "WORD",
+              "content": "Read line 1 to get the answer."
+            }
+          },
+          "question": "What happened on line #1?",
+          "domainId": "reading_comprehension",
+          "possibleItemAnswers": [
+            {
+              "content": "The man in black followed the gunslinger.",
+              "score": 0
+            },
+            {
+              "content": "The gunslinger followed the man in black.",
+              "score": 1
+            },
+            {
+              "content": "Nothing happened.",
+              "score": 0
+            },
+            {
+              "content": "I don't know what's happening right now.",
+              "score": 0
+            }
+          ]
+        },
+        {
+          "itemContent": {
+            "question": {
+              "itemContentType": "PASSAGE",
+              "content": "The man in black fled across the desert, and the gunslinger followed.\n\n The desert was the apotheosis of all deserts, huge, standing to the sky for what looked like \n eternity in all directions.It was white and blinding and waterless and without feature save for the \n faint, cloudy haze of the mountains which sketched themselves on the horizon and the devil-grass \n which brought sweet dreams,nightmares, death. An occasional tombstone sign pointed the way, for \n once the drifted track that cut its way through the thick crust of alkali had been a highway. \n Coaches and buckas had followed it. The world had moved on since then. The world had emptied. \n\n The gunslinger had been struck by a momentary dizziness, a kind of yawing sensation that made the \n entire world seem ephemeral, almost a thing that could  be looked through. It passed and, like the \n world upon whose hide he walked, he moved on. He passed the miles stolidly, not hurrying, not \n loafing. A hide waterbag was slung around his middle like a bloated sausage. It was almost full. He \n had progressed through the khef over many years, and had reached perhaps the fifth level. Had he \n been a Manni holy man, he might not have even been thirsty; he could have watched his own body \n dehydrate with clinical, detached attention, watering its crevices and dark inner hollows only \n when his logic told him it must be done. He was not a Manni, however, nor a follower of the Man \n Jesus, and considered himself in no way holy. He was just an ordinary pilgrim, in other words, and \n all he could say with real certainty was that he was thirsty. And even so, he had no particular \n urge to drink. In a vague way, all this pleased him. It was what the country required, it was a \n thirsty country, and he had in his long life been nothing if not adaptable."
+            },
+            "feedback": {
+              "itemContentType": "WORD",
+              "content": "Read the first 8 words."
+            }
+          },
+          "question": "What is the setting of the story?",
+          "domainId": "critical_thinking",
+          "possibleItemAnswers": [
+            {
+              "content": "A tropical jungle",
+              "score": 0
+            },
+            {
+              "content": "A desert",
+              "score": 1
+            },
+            {
+              "content": "A van down by the river",
+              "score": 0
+            },
+            {
+              "content": "1970's New York City",
+              "score": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "difficulty": "EASY",
+      "items": [
+        {
+          "itemContent": {
+            "question": {
+              "itemContentType": "PASSAGE",
+              "content": "The man in black fled across the desert, and the gunslinger followed.\n\n The desert was the apotheosis of all deserts, huge, standing to the sky for what looked like \n eternity in all directions.It was white and blinding and waterless and without feature save for the \n faint, cloudy haze of the mountains which sketched themselves on the horizon and the devil-grass \n which brought sweet dreams,nightmares, death. An occasional tombstone sign pointed the way, for \n once the drifted track that cut its way through the thick crust of alkali had been a highway. \n Coaches and buckas had followed it. The world had moved on since then. The world had emptied. \n\n The gunslinger had been struck by a momentary dizziness, a kind of yawing sensation that made the \n entire world seem ephemeral, almost a thing that could  be looked through. It passed and, like the \n world upon whose hide he walked, he moved on. He passed the miles stolidly, not hurrying, not \n loafing. A hide waterbag was slung around his middle like a bloated sausage. It was almost full. He \n had progressed through the khef over many years, and had reached perhaps the fifth level. Had he \n been a Manni holy man, he might not have even been thirsty; he could have watched his own body \n dehydrate with clinical, detached attention, watering its crevices and dark inner hollows only \n when his logic told him it must be done. He was not a Manni, however, nor a follower of the Man \n Jesus, and considered himself in no way holy. He was just an ordinary pilgrim, in other words, and \n all he could say with real certainty was that he was thirsty. And even so, he had no particular \n urge to drink. In a vague way, all this pleased him. It was what the country required, it was a \n thirsty country, and he had in his long life been nothing if not adaptable."
+            },
+            "feedback": {
+              "itemContentType": "WORD",
+              "content": "Read line 1 to get the answer."
+            }
+          },
+          "question": "What happened on line #1?",
+          "domainId": "reading_comprehension",
+          "possibleItemAnswers": [
+            {
+              "content": "The man in black followed the gunslinger.",
+              "score": 0
+            },
+            {
+              "content": "The gunslinger followed the man in black.",
+              "score": 1
+            },
+            {
+              "content": "Nothing happened.",
+              "score": 0
+            },
+            {
+              "content": "I don't know what's happening right now.",
+              "score": 0
+            }
+          ]
+        },
+        {
+          "itemContent": {
+            "question": {
+              "itemContentType": "PASSAGE",
+              "content": "The man in black fled across the desert, and the gunslinger followed.\n\n The desert was the apotheosis of all deserts, huge, standing to the sky for what looked like \n eternity in all directions.It was white and blinding and waterless and without feature save for the \n faint, cloudy haze of the mountains which sketched themselves on the horizon and the devil-grass \n which brought sweet dreams,nightmares, death. An occasional tombstone sign pointed the way, for \n once the drifted track that cut its way through the thick crust of alkali had been a highway. \n Coaches and buckas had followed it. The world had moved on since then. The world had emptied. \n\n The gunslinger had been struck by a momentary dizziness, a kind of yawing sensation that made the \n entire world seem ephemeral, almost a thing that could  be looked through. It passed and, like the \n world upon whose hide he walked, he moved on. He passed the miles stolidly, not hurrying, not \n loafing. A hide waterbag was slung around his middle like a bloated sausage. It was almost full. He \n had progressed through the khef over many years, and had reached perhaps the fifth level. Had he \n been a Manni holy man, he might not have even been thirsty; he could have watched his own body \n dehydrate with clinical, detached attention, watering its crevices and dark inner hollows only \n when his logic told him it must be done. He was not a Manni, however, nor a follower of the Man \n Jesus, and considered himself in no way holy. He was just an ordinary pilgrim, in other words, and \n all he could say with real certainty was that he was thirsty. And even so, he had no particular \n urge to drink. In a vague way, all this pleased him. It was what the country required, it was a \n thirsty country, and he had in his long life been nothing if not adaptable."
+            },
+            "feedback": {
+              "itemContentType": "WORD",
+              "content": "Read the first 8 words."
+            }
+          },
+          "question": "What is the setting of the story?",
+          "domainId": "critical_thinking",
+          "possibleItemAnswers": [
+            {
+              "content": "A tropical jungle",
+              "score": 0
+            },
+            {
+              "content": "A desert",
+              "score": 1
+            },
+            {
+              "content": "A van down by the river",
+              "score": 0
+            },
+            {
+              "content": "1970's New York City",
+              "score": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "difficulty": "EASY",
+      "items": [
+        {
+          "itemContent": {
+            "question": {
+              "itemContentType": "PASSAGE",
+              "content": "The man in black fled across the desert, and the gunslinger followed.\n\n The desert was the apotheosis of all deserts, huge, standing to the sky for what looked like \n eternity in all directions.It was white and blinding and waterless and without feature save for the \n faint, cloudy haze of the mountains which sketched themselves on the horizon and the devil-grass \n which brought sweet dreams,nightmares, death. An occasional tombstone sign pointed the way, for \n once the drifted track that cut its way through the thick crust of alkali had been a highway. \n Coaches and buckas had followed it. The world had moved on since then. The world had emptied. \n\n The gunslinger had been struck by a momentary dizziness, a kind of yawing sensation that made the \n entire world seem ephemeral, almost a thing that could  be looked through. It passed and, like the \n world upon whose hide he walked, he moved on. He passed the miles stolidly, not hurrying, not \n loafing. A hide waterbag was slung around his middle like a bloated sausage. It was almost full. He \n had progressed through the khef over many years, and had reached perhaps the fifth level. Had he \n been a Manni holy man, he might not have even been thirsty; he could have watched his own body \n dehydrate with clinical, detached attention, watering its crevices and dark inner hollows only \n when his logic told him it must be done. He was not a Manni, however, nor a follower of the Man \n Jesus, and considered himself in no way holy. He was just an ordinary pilgrim, in other words, and \n all he could say with real certainty was that he was thirsty. And even so, he had no particular \n urge to drink. In a vague way, all this pleased him. It was what the country required, it was a \n thirsty country, and he had in his long life been nothing if not adaptable."
+            },
+            "feedback": {
+              "itemContentType": "WORD",
+              "content": "Read line 1 to get the answer."
+            }
+          },
+          "question": "What happened on line #1?",
+          "domainId": "reading_comprehension",
+          "possibleItemAnswers": [
+            {
+              "content": "The man in black followed the gunslinger.",
+              "score": 0
+            },
+            {
+              "content": "The gunslinger followed the man in black.",
+              "score": 1
+            },
+            {
+              "content": "Nothing happened.",
+              "score": 0
+            },
+            {
+              "content": "I don't know what's happening right now.",
+              "score": 0
+            }
+          ]
+        },
+        {
+          "itemContent": {
+            "question": {
+              "itemContentType": "PASSAGE",
+              "content": "The man in black fled across the desert, and the gunslinger followed.\n\n The desert was the apotheosis of all deserts, huge, standing to the sky for what looked like \n eternity in all directions.It was white and blinding and waterless and without feature save for the \n faint, cloudy haze of the mountains which sketched themselves on the horizon and the devil-grass \n which brought sweet dreams,nightmares, death. An occasional tombstone sign pointed the way, for \n once the drifted track that cut its way through the thick crust of alkali had been a highway. \n Coaches and buckas had followed it. The world had moved on since then. The world had emptied. \n\n The gunslinger had been struck by a momentary dizziness, a kind of yawing sensation that made the \n entire world seem ephemeral, almost a thing that could  be looked through. It passed and, like the \n world upon whose hide he walked, he moved on. He passed the miles stolidly, not hurrying, not \n loafing. A hide waterbag was slung around his middle like a bloated sausage. It was almost full. He \n had progressed through the khef over many years, and had reached perhaps the fifth level. Had he \n been a Manni holy man, he might not have even been thirsty; he could have watched his own body \n dehydrate with clinical, detached attention, watering its crevices and dark inner hollows only \n when his logic told him it must be done. He was not a Manni, however, nor a follower of the Man \n Jesus, and considered himself in no way holy. He was just an ordinary pilgrim, in other words, and \n all he could say with real certainty was that he was thirsty. And even so, he had no particular \n urge to drink. In a vague way, all this pleased him. It was what the country required, it was a \n thirsty country, and he had in his long life been nothing if not adaptable."
+            },
+            "feedback": {
+              "itemContentType": "WORD",
+              "content": "Read the first 8 words."
+            }
+          },
+          "question": "What is the setting of the story?",
+          "domainId": "critical_thinking",
+          "possibleItemAnswers": [
+            {
+              "content": "A tropical jungle",
+              "score": 0
+            },
+            {
+              "content": "A desert",
+              "score": 1
+            },
+            {
+              "content": "A van down by the river",
+              "score": 0
+            },
+            {
+              "content": "1970's New York City",
+              "score": 0
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "startingDifficulty": "MEDIUM",
+  "itemGroupTransitions": [
+    {
+      "groupDifficulty": "EASY",
+      "transitionMap": {
+        "EASY": "(-INF,1]",
+        "MEDIUM": "[2,INF)"
+      }
+    },
+    {
+      "groupDifficulty": "MEDIUM",
+      "transitionMap": {
+        "EASY": "(-INF,0]",
+        "MEDIUM": "[1,2]",
+        "HARD": "[3,INF)"
+      }
+    },
+    {
+      "groupDifficulty": "HARD",
+      "transitionMap": {
+        "MEDIUM": "(-INF,1]",
+        "HARD": "[2,INF)"
+      }
+    }
+  ],
+  "assessmentType": "CAT",
+  "assessmentCategory": "READING",
+  "label": "Reading",
+  "content": {
+    "landing": "<img src=\"https://static.pexels.com/photos/7096/people-woman-coffee-meeting.jpg\"  class=\"pull-right\" style=\"padding:20px 0 20px 20px; max-width:400px;\"><p>This is additional info about the Reading assessment.</p><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras condimentum interdum convallis. Donec pulvinar dolor sed congue tincidunt. Duis ultrices dictum imperdiet. Duis egestas ligula non tortor sagittis tristique. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec lacinia nibh sapien, in dictum eros ultricies ut. Nunc condimentum arcu lacus, ac tincidunt tortor malesuada et. Proin nulla sem, placerat eget dapibus sit amet, pellentesque eu enim. Quisque id neque elit. Nulla vitae finibus odio. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Fusce ultrices orci neque, mattis finibus velit maximus sit amet. Donec semper felis vitae diam ultrices porta. Nam viverra fermentum est at placerat. Aliquam tempor quam nec pellentesque mattis. Nunc at ante pretium, vestibulum dolor quis, condimentum justo.</p><h3>Nam ac blandit ante</h3><p>Nam ac blandit ante. Proin feugiat purus id nunc pretium consectetur. Vestibulum sodales sed massa sit amet mattis. Morbi aliquam, tellus id hendrerit sodales, nibh sapien fringilla nisl, vitae gravida nunc metus sit amet justo. Integer dictum viverra justo, sed consequat odio vestibulum sed. Donec ac diam eget est condimentum tempus a sit amet neque. Nullam nunc magna, ultricies id enim vel, ultrices ornare odio. Donec eleifend, nibh vehicula euismod interdum, turpis odio fringilla diam, et fermentum arcu justo et tellus. Morbi in pellentesque odio. Quisque vel elit at velit luctus gravida. Aliquam blandit convallis magna, at cursus est ultrices id. Interdum et malesuada fames ac ante ipsum primis in faucibus. Vivamus malesuada vehicula sagittis. Cras at faucibus augue, dapibus ornare ipsum. Vivamus quis feugiat libero, non tempor ipsum.</p>",
+    "start": "<p>This is the intro page for starting a new Reading assessment. It could contain some generic info about taking the assessment, or content specific to the assessment type. The user would also see the \"tutorial\" UI at this point.</p><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum eu porta mauris. Etiam convallis, mauris quis lobortis molestie, eros sapien elementum nisl, fringilla interdum risus orci vitae nibh. Proin ut erat odio. Vestibulum varius quis nisi et aliquam. Nulla auctor ullamcorper ornare. Nulla dignissim auctor risus sed sodales. Proin elementum elit quis quam tincidunt, ac congue felis commodo. Aliquam erat volutpat. Fusce eget justo sit amet magna porta feugiat quis blandit enim. Phasellus in purus ut felis dapibus mattis. Morbi posuere hendrerit mauris nec molestie. In nibh magna, fermentum ac dictum quis, rhoncus a nunc.</p>",
+    "startTips": "<ul><li>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam fringilla velit ut egestas placerat. Fusce efficitur lorem efficitur ante rutrum, vel vehicula ex ultricies.</li><li>Donec lorem nibh, maximus sed lobortis in, fringilla nec tortor.</li><li>Sed faucibus tellus metus, vel facilisis nibh faucibus vitae. Suspendisse mauris tortor, aliquam a facilisis at, vehicula a diam.</li><li>Fusce vel massa sed lectus viverra dapibus quis eu odio. Sed pharetra rhoncus massa, ut commodo nunc egestas non.</li></ul>",
+    "helpLabel": "Reading Tips",
+    "help": "<p>Reading cheat sheet content goes here.</p><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque pharetra sem at justo faucibus rhoncus. Suspendisse posuere scelerisque dignissim. Mauris vehicula velit nec elit viverra, quis interdum nunc elementum. Curabitur nisi nisl, cursus sit amet augue nec, cursus ultrices orci. Suspendisse sed blandit tellus. Vestibulum nec viverra enim. Fusce vitae urna eget odio sodales consequat. Vivamus fermentum justo a massa laoreet, at volutpat urna bibendum. Suspendisse tincidunt dignissim fringilla. Donec porta tempus feugiat. Integer eget velit luctus, egestas libero vulputate, vehicula sem.</p><p>Nullam pretium rutrum pellentesque. Fusce quis lorem dui. Sed interdum sit amet quam ut vestibulum. Sed a faucibus velit. Vivamus facilisis libero sit amet erat scelerisque, id posuere ex hendrerit. Ut placerat egestas sapien eu sollicitudin. Integer porta, dui a fermentum dignissim, nisl augue consectetur ex, ac blandit dui nisi nec eros. Vivamus suscipit imperdiet ultrices. Vivamus in lorem congue, congue eros venenatis, posuere leo. Pellentesque neque nunc, pulvinar sit amet sapien in, iaculis vehicula elit. Sed est eros, egestas consectetur convallis tincidunt, vulputate id est. Phasellus tempus libero sed sem accumsan porta. Quisque semper sed quam nec auctor. Pellentesque sed condimentum turpis, sit amet convallis nibh.</p><p>Maecenas malesuada, dolor quis sollicitudin faucibus, nibh est aliquam nunc, non rhoncus nisl urna non lorem. Mauris egestas vulputate accumsan. In risus diam, interdum vel laoreet at, luctus vitae orci. Vivamus ullamcorper pellentesque ante, quis auctor sapien sollicitudin sit amet. Sed sed vehicula nunc. Etiam consectetur porta enim fermentum vehicula. Donec vitae iaculis est. Etiam varius, nunc id aliquet aliquet, sapien elit pulvinar turpis, id dictum neque sem nec risus. Nunc facilisis urna ut mauris malesuada mattis. Vestibulum auctor eget mi vitae suscipit. Sed tempus volutpat iaculis. In lobortis justo id est congue, id semper arcu feugiat. Curabitur aliquet velit a interdum pellentesque.</p>"
+  },
+  "enabled": true,
+  "prerequisites": [],
+  "overallRubric": {
+    "completionScoreMap": {
+      "LOW": "[0.0,0.334)",
+      "MEDIUM": "[0.334,0.667)",
+      "HIGH": "[0.667,1.0]"
+    },
+    "supplementTable": [
+        {
+          "completionScore" : "LOW",
+          "content" : "This is the overall assessment feedback content for LOW. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer iaculis nunc in tempor aliquam. Nunc lacinia quam diam, at efficitur arcu ullamcorper cursus. Donec mauris purus, eleifend nec aliquet eget, tempus efficitur velit."
+        },
+        {
+          "completionScore" : "MEDIUM",
+          "content" : "This is the overall assessment feedback content for MEDIUM. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer iaculis nunc in tempor aliquam. Nunc lacinia quam diam, at efficitur arcu ullamcorper cursus. Donec mauris purus, eleifend nec aliquet eget, tempus efficitur velit."
+        },
+        {
+          "completionScore" : "HIGH",
+          "content" : "This is the overall assessment feedback content for HIGH. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer iaculis nunc in tempor aliquam. Nunc lacinia quam diam, at efficitur arcu ullamcorper cursus. Donec mauris purus, eleifend nec aliquet eget, tempus efficitur velit."
+        }
+    ]
+  },
+  "domains": [
+    {
+      "id": "reading_comprehension",
+      "domainType": "SCORING",
+      "label": "Reading Comprehension",
+      "content": "This is the static domain content for Reading Comprehension. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec eget lobortis eros. Donec urna purus, imperdiet et efficitur ut, placerat congue turpis. Integer sit amet urna tellus. Quisque vulputate nunc eget arcu fringilla, eu iaculis metus vestibulum. Fusce in odio tincidunt, efficitur leo in, sodales lacus. Phasellus felis purus, vulputate et arcu sed, fermentum dictum dui. Donec mollis risus in vulputate tempus. Nunc finibus nec mi non sodales. Sed vulputate viverra magna ut luctus.",
+      "rubric": {
+        "completionScoreMap": {
+          "LOW": "[0.0,0.334)",
+          "MEDIUM": "[0.334,0.667)",
+          "HIGH": "[0.667,1.0]"
+        },
+        "supplementTable": [
+          {
+            "completionScore": "LOW",
+            "content": "This is the Reading Comprehension domain feedback for LOW. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec eget lobortis eros. Donec urna purus, imperdiet et efficitur ut, placerat congue turpis. Integer sit amet urna tellus. Quisque vulputate nunc eget arcu fringilla, eu iaculis metus vestibulum. Fusce in odio tincidunt, efficitur leo in, sodales lacus. Phasellus felis purus, vulputate et arcu sed, fermentum dictum dui. Donec mollis risus in vulputate tempus. Nunc finibus nec mi non sodales. Sed vulputate viverra magna ut luctus."
+          },
+          {
+            "completionScore": "MEDIUM",
+            "content": "This is the Reading Comprehension domain feedback for MEDIUM. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec eget lobortis eros. Donec urna purus, imperdiet et efficitur ut, placerat congue turpis. Integer sit amet urna tellus. Quisque vulputate nunc eget arcu fringilla, eu iaculis metus vestibulum. Fusce in odio tincidunt, efficitur leo in, sodales lacus. Phasellus felis purus, vulputate et arcu sed, fermentum dictum dui. Donec mollis risus in vulputate tempus. Nunc finibus nec mi non sodales. Sed vulputate viverra magna ut luctus."
+          },
+          {
+            "completionScore": "HIGH",
+            "content": "This is the Reading Comprehension domain feedback for HIGH. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec eget lobortis eros. Donec urna purus, imperdiet et efficitur ut, placerat congue turpis. Integer sit amet urna tellus. Quisque vulputate nunc eget arcu fringilla, eu iaculis metus vestibulum. Fusce in odio tincidunt, efficitur leo in, sodales lacus. Phasellus felis purus, vulputate et arcu sed, fermentum dictum dui. Donec mollis risus in vulputate tempus. Nunc finibus nec mi non sodales. Sed vulputate viverra magna ut luctus."
+          }
+        ]
+      }
+    },
+    {
+      "id": "critical_thinking",
+      "domainType": "SCORING",
+      "label": "Critical Thinking",
+      "content": "This is the static domain content for Critical Thinking. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec eget lobortis eros. Donec urna purus, imperdiet et efficitur ut, placerat congue turpis. Integer sit amet urna tellus. Quisque vulputate nunc eget arcu fringilla, eu iaculis metus vestibulum. Fusce in odio tincidunt, efficitur leo in, sodales lacus. Phasellus felis purus, vulputate et arcu sed, fermentum dictum dui. Donec mollis risus in vulputate tempus. Nunc finibus nec mi non sodales. Sed vulputate viverra magna ut luctus.",
+      "rubric": {
+        "completionScoreMap": {
+          "LOW": "[0.0,0.334)",
+          "MEDIUM": "[0.334,0.667)",
+          "HIGH": "[0.667,1.0]"
+        },
+        "supplementTable": [
+            {
+              "completionScore": "LOW",
+              "content": "This is the Critical Thinking domain feedback for LOW. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec eget lobortis eros. Donec urna purus, imperdiet et efficitur ut, placerat congue turpis. Integer sit amet urna tellus. Quisque vulputate nunc eget arcu fringilla, eu iaculis metus vestibulum. Fusce in odio tincidunt, efficitur leo in, sodales lacus. Phasellus felis purus, vulputate et arcu sed, fermentum dictum dui. Donec mollis risus in vulputate tempus. Nunc finibus nec mi non sodales. Sed vulputate viverra magna ut luctus."
+            },
+            {
+              "completionScore": "MEDIUM",
+              "content": "This is the Critical Thinking domain feedback for MEDIUM. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec eget lobortis eros. Donec urna purus, imperdiet et efficitur ut, placerat congue turpis. Integer sit amet urna tellus. Quisque vulputate nunc eget arcu fringilla, eu iaculis metus vestibulum. Fusce in odio tincidunt, efficitur leo in, sodales lacus. Phasellus felis purus, vulputate et arcu sed, fermentum dictum dui. Donec mollis risus in vulputate tempus. Nunc finibus nec mi non sodales. Sed vulputate viverra magna ut luctus."
+            },
+            {
+              "completionScore": "HIGH",
+              "content": "This is the Critical Thinking domain feedback for HIGH. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec eget lobortis eros. Donec urna purus, imperdiet et efficitur ut, placerat congue turpis. Integer sit amet urna tellus. Quisque vulputate nunc eget arcu fringilla, eu iaculis metus vestibulum. Fusce in odio tincidunt, efficitur leo in, sodales lacus. Phasellus felis purus, vulputate et arcu sed, fermentum dictum dui. Donec mollis risus in vulputate tempus. Nunc finibus nec mi non sodales. Sed vulputate viverra magna ut luctus."
+            }
+        ]
+      }
+    }
+  ]
+}

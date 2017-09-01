@@ -1,0 +1,443 @@
+{
+  "itemGroups": [
+    {
+      "items": [
+        {
+          "question": "I prefer tasks that are more challenging",
+          "domainId": "intrinsic_motivation",
+          "possibleItemAnswers": [
+            {
+              "content": "Strongly disagree",
+              "score": 0
+            },
+            {
+              "content": "Disagree",
+              "score": 1
+            },
+            {
+              "content": "Neither agree nor disagree",
+              "score": 2
+            },
+            {
+              "content": "Agree",
+              "score": 3
+            },
+            {
+              "content": "Strongly agree",
+              "score": 4
+            }
+          ]
+        },
+        {
+          "question": "I hold myself to the highest learning standards",
+          "domainId": "self_regulation",
+          "possibleItemAnswers": [
+            {
+              "content": "Strongly disagree",
+              "score": 0
+            },
+            {
+              "content": "Disagree",
+              "score": 1
+            },
+            {
+              "content": "Neither agree nor disagree",
+              "score": 2
+            },
+            {
+              "content": "Agree",
+              "score": 3
+            },
+            {
+              "content": "Strongly agree",
+              "score": 4
+            }
+          ]
+        },
+        {
+          "question": "It is very important for others to see me as capable",
+          "domainId": "extrinsic_motivation",
+          "possibleItemAnswers": [
+            {
+              "content": "Strongly disagree",
+              "score": 4
+            },
+            {
+              "content": "Disagree",
+              "score": 3
+            },
+            {
+              "content": "Neither agree nor disagree",
+              "score": 2
+            },
+            {
+              "content": "Agree",
+              "score": 1
+            },
+            {
+              "content": "Strongly agree",
+              "score": 0
+            }
+          ]
+        },
+        {
+          "question": "I know I can learn even the most difficult material",
+          "domainId": "self_efficacy",
+          "possibleItemAnswers": [
+            {
+              "content": "Strongly disagree",
+              "score": 0
+            },
+            {
+              "content": "Disagree",
+              "score": 1
+            },
+            {
+              "content": "Neither agree nor disagree",
+              "score": 2
+            },
+            {
+              "content": "Agree",
+              "score": 3
+            },
+            {
+              "content": "Strongly agree",
+              "score": 4
+            }
+          ]
+        },
+        {
+          "question": "When I cannot solve a problem, I change my approach to it",
+          "domainId": "metacognition",
+          "possibleItemAnswers": [
+            {
+              "content": "Strongly disagree",
+              "score": 0
+            },
+            {
+              "content": "Disagree",
+              "score": 1
+            },
+            {
+              "content": "Neither agree nor disagree",
+              "score": 2
+            },
+            {
+              "content": "Agree",
+              "score": 3
+            },
+            {
+              "content": "Strongly agree",
+              "score": 4
+            }
+          ]
+        }
+      ]
+    },
+    {
+        "items": [
+            {
+              "question": "I use most available study aids (e.g., outlines, glossary, etc.)",
+              "domainId": "metacognition",
+              "possibleItemAnswers": [
+                {
+                  "content": "Strongly disagree",
+                  "score": 0
+                },
+                {
+                  "content": "Disagree",
+                  "score": 1
+                },
+                {
+                  "content": "Neither agree nor disagree",
+                  "score": 2
+                },
+                {
+                  "content": "Agree",
+                  "score": 3
+                },
+                {
+                  "content": "Strongly agree",
+                  "score": 4
+                }
+              ]
+            },
+          {
+            "question": "I place the highest value on my education",
+            "domainId": "intrinsic_motivation",
+            "possibleItemAnswers": [
+              {
+                "content": "Strongly disagree",
+                "score": 0
+              },
+              {
+                "content": "Disagree",
+                "score": 1
+              },
+              {
+                "content": "Neither agree nor disagree",
+                "score": 2
+              },
+              {
+                "content": "Agree",
+                "score": 3
+              },
+              {
+                "content": "Strongly agree",
+                "score": 4
+              }
+            ]
+          },
+          {
+            "question": "Once I start a task, I usually find it hard to finish.",
+            "domainId": "self_regulation",
+            "possibleItemAnswers": [
+              {
+                "content": "Strongly disagree",
+                "score": 4
+              },
+              {
+                "content": "Disagree",
+                "score": 3
+              },
+              {
+                "content": "Neither agree nor disagree",
+                "score": 2
+              },
+              {
+                "content": "Agree",
+                "score": 1
+              },
+              {
+                "content": "Strongly agree",
+                "score": 0
+              }
+            ]
+          },
+          {
+            "question": "I know that I will do well on most of my quizzes or tests",
+            "domainId": "self_efficacy",
+            "possibleItemAnswers": [
+              {
+                "content": "Strongly disagree",
+                "score": 0
+              },
+              {
+                "content": "Disagree",
+                "score": 1
+              },
+              {
+                "content": "Neither agree nor disagree",
+                "score": 2
+              },
+              {
+                "content": "Agree",
+                "score": 3
+              },
+              {
+                "content": "Strongly agree",
+                "score": 4
+              }
+            ]
+          },
+          {
+            "question": "I often like to let others see just how smart I am",
+            "domainId": "extrinsic_motivation",
+            "possibleItemAnswers": [
+              {
+                "content": "Strongly disagree",
+                "score": 4
+              },
+              {
+                "content": "Disagree",
+                "score": 3
+              },
+              {
+                "content": "Neither agree nor disagree",
+                "score": 2
+              },
+              {
+                "content": "Agree",
+                "score": 1
+              },
+              {
+                "content": "Strongly agree",
+                "score": 0
+              }
+            ]
+          }
+        ]
+    }
+  ],
+  "assessmentType": "LIKERT",
+  "assessmentCategory": "COLLEGE_SKILLS",
+  "label": "Self-Regulated Learning",
+  "content": {
+    "landing": "<img src=\"https://static.pexels.com/photos/7096/people-woman-coffee-meeting.jpg\"  class=\"pull-right\" style=\"padding:20px 0 20px 20px; max-width:400px;\"><p>This is additional info about the Self-Regulated Learning assessment.</p><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras condimentum interdum convallis. Donec pulvinar dolor sed congue tincidunt. Duis ultrices dictum imperdiet. Duis egestas ligula non tortor sagittis tristique. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec lacinia nibh sapien, in dictum eros ultricies ut. Nunc condimentum arcu lacus, ac tincidunt tortor malesuada et. Proin nulla sem, placerat eget dapibus sit amet, pellentesque eu enim. Quisque id neque elit. Nulla vitae finibus odio. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Fusce ultrices orci neque, mattis finibus velit maximus sit amet. Donec semper felis vitae diam ultrices porta. Nam viverra fermentum est at placerat. Aliquam tempor quam nec pellentesque mattis. Nunc at ante pretium, vestibulum dolor quis, condimentum justo.</p><h3>Nam ac blandit ante</h3><p>Nam ac blandit ante. Proin feugiat purus id nunc pretium consectetur. Vestibulum sodales sed massa sit amet mattis. Morbi aliquam, tellus id hendrerit sodales, nibh sapien fringilla nisl, vitae gravida nunc metus sit amet justo. Integer dictum viverra justo, sed consequat odio vestibulum sed. Donec ac diam eget est condimentum tempus a sit amet neque. Nullam nunc magna, ultricies id enim vel, ultrices ornare odio. Donec eleifend, nibh vehicula euismod interdum, turpis odio fringilla diam, et fermentum arcu justo et tellus. Morbi in pellentesque odio. Quisque vel elit at velit luctus gravida. Aliquam blandit convallis magna, at cursus est ultrices id. Interdum et malesuada fames ac ante ipsum primis in faucibus. Vivamus malesuada vehicula sagittis. Cras at faucibus augue, dapibus ornare ipsum. Vivamus quis feugiat libero, non tempor ipsum.</p>",
+    "start": "<p>This is the intro page for starting a new Self-Regulated Learning assessment. It could contain some generic info about taking the assessment, or content specific to the assessment type. The user would also see the \"tutorial\" UI at this point.</p><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum eu porta mauris. Etiam convallis, mauris quis lobortis molestie, eros sapien elementum nisl, fringilla interdum risus orci vitae nibh. Proin ut erat odio. Vestibulum varius quis nisi et aliquam. Nulla auctor ullamcorper ornare. Nulla dignissim auctor risus sed sodales. Proin elementum elit quis quam tincidunt, ac congue felis commodo. Aliquam erat volutpat. Fusce eget justo sit amet magna porta feugiat quis blandit enim. Phasellus in purus ut felis dapibus mattis. Morbi posuere hendrerit mauris nec molestie. In nibh magna, fermentum ac dictum quis, rhoncus a nunc.</p>",
+    "startTips": "<ul><li>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam fringilla velit ut egestas placerat. Fusce efficitur lorem efficitur ante rutrum, vel vehicula ex ultricies.</li><li>Donec lorem nibh, maximus sed lobortis in, fringilla nec tortor.</li><li>Sed faucibus tellus metus, vel facilisis nibh faucibus vitae. Suspendisse mauris tortor, aliquam a facilisis at, vehicula a diam.</li><li>Fusce vel massa sed lectus viverra dapibus quis eu odio. Sed pharetra rhoncus massa, ut commodo nunc egestas non.</li></ul>",
+    "helpLabel": "Helpful Tips",
+    "help": "<p>Self-Regulated Learning cheat sheet content goes here.</p><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque pharetra sem at justo faucibus rhoncus. Suspendisse posuere scelerisque dignissim. Mauris vehicula velit nec elit viverra, quis interdum nunc elementum. Curabitur nisi nisl, cursus sit amet augue nec, cursus ultrices orci. Suspendisse sed blandit tellus. Vestibulum nec viverra enim. Fusce vitae urna eget odio sodales consequat. Vivamus fermentum justo a massa laoreet, at volutpat urna bibendum. Suspendisse tincidunt dignissim fringilla. Donec porta tempus feugiat. Integer eget velit luctus, egestas libero vulputate, vehicula sem.</p><p>Nullam pretium rutrum pellentesque. Fusce quis lorem dui. Sed interdum sit amet quam ut vestibulum. Sed a faucibus velit. Vivamus facilisis libero sit amet erat scelerisque, id posuere ex hendrerit. Ut placerat egestas sapien eu sollicitudin. Integer porta, dui a fermentum dignissim, nisl augue consectetur ex, ac blandit dui nisi nec eros. Vivamus suscipit imperdiet ultrices. Vivamus in lorem congue, congue eros venenatis, posuere leo. Pellentesque neque nunc, pulvinar sit amet sapien in, iaculis vehicula elit. Sed est eros, egestas consectetur convallis tincidunt, vulputate id est. Phasellus tempus libero sed sem accumsan porta. Quisque semper sed quam nec auctor. Pellentesque sed condimentum turpis, sit amet convallis nibh.</p><p>Maecenas malesuada, dolor quis sollicitudin faucibus, nibh est aliquam nunc, non rhoncus nisl urna non lorem. Mauris egestas vulputate accumsan. In risus diam, interdum vel laoreet at, luctus vitae orci. Vivamus ullamcorper pellentesque ante, quis auctor sapien sollicitudin sit amet. Sed sed vehicula nunc. Etiam consectetur porta enim fermentum vehicula. Donec vitae iaculis est. Etiam varius, nunc id aliquet aliquet, sapien elit pulvinar turpis, id dictum neque sem nec risus. Nunc facilisis urna ut mauris malesuada mattis. Vestibulum auctor eget mi vitae suscipit. Sed tempus volutpat iaculis. In lobortis justo id est congue, id semper arcu feugiat. Curabitur aliquet velit a interdum pellentesque.</p>"
+  },
+  "enabled": true,
+  "scoringType": "SUM",
+  "prerequisites": [],
+  "overallRubric": {
+    "completionScoreMap": {
+      "LOW": "[0.0,15.0)",
+      "MEDIUM": "[15.0,30.0)",
+      "HIGH": "[30.0,40.0]"
+    },
+    "supplementTable": [
+        {
+          "completionScore" : "LOW",
+          "content" : "This is the overall assessment feedback content for LOW. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer iaculis nunc in tempor aliquam. Nunc lacinia quam diam, at efficitur arcu ullamcorper cursus. Donec mauris purus, eleifend nec aliquet eget, tempus efficitur velit."
+        },
+        {
+          "completionScore" : "MEDIUM",
+          "content" : "This is the overall assessment feedback content for MEDIUM. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer iaculis nunc in tempor aliquam. Nunc lacinia quam diam, at efficitur arcu ullamcorper cursus. Donec mauris purus, eleifend nec aliquet eget, tempus efficitur velit."
+        },
+        {
+          "completionScore" : "HIGH",
+          "content" : "This is the overall assessment feedback content for HIGH. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer iaculis nunc in tempor aliquam. Nunc lacinia quam diam, at efficitur arcu ullamcorper cursus. Donec mauris purus, eleifend nec aliquet eget, tempus efficitur velit."
+        }
+    ]
+  },
+  "domains": [
+    {
+      "id": "extrinsic_motivation",
+      "domainType": "SCORING",
+      "label": "Extrinsic Motivation",
+      "content": "The academic opposite of intrinsic motivation, extrinsic motivation indicates the degree to which you focus on the outcomes of a task (e.g., grades or recognition). Extrinsic motivation has earned a bad reputation in the theoretical literature, but empirical research has shown it can be effective in the absence of intrinsic motivation, especially on mundane tasks (e.g., rote memorization), or when first engaging in complex tasks (e.g., writing a research paper).",
+      "rubric": {
+        "completionScoreMap": {
+          "LOW": "[0.0,3.0)",
+          "MEDIUM": "[3.0,6.0)",
+          "HIGH": "[6.0,8.0]"
+        },
+        "supplementTable": [
+            {
+              "completionScore": "LOW",
+              "content": "Your score on the extrinsic motivation scale suggests that you have low levels of extrinsic motivation for college-level work. This could be because your intrinsic motivation is high, and you do not need external rewards (or the threat of punishment) to motivate you. That’s a good thing, of course! If your score on the intrinsic motivation scale is high, the only reason to review the following list of suggestions for increasing extrinsic motivation is to arm you with strategies to use if/when your motivation flags. If, on the other hand, your intrinsic motivation score is low, you might consider using external rewards to kick-start your motivation for school. We recommend trying the strategies listed below and seeing which one(s) work for you.<ul> <li> <b>Identify the source:</b> There are many possible reasons a person is so unmotivated that even rewards will do little to increase the drive to complete a task. The first step is to identify the source of that feeling, i.e., What is making it hard to care? The reasons might include, but are not limited to, lack of interest, low personal value, high difficulty, and distractions. Once the cause of the lack of motivation is identified, select another strategy or two that are most appropriate.</li><br><li> <b>Set short-term goals with small rewards:</b> Break a task up into sub-goals. Make the goals short-term and manageable; for example, “memorize the bones of the body,” or “complete this section of the paper” so you can sense progress along the way. With the achievement of every short-term goal, treat yourself to a small reward, whether a cookie, an episode of a favorite television show, time with family or friends, or something else that is genuinely meaningful to you. Be sure not to collect your reward until the goals are met!</li><br><li> <b>Establish a social contract:</b> Sharing your goals and intentions with a supportive friend or family member can increase the likelihood of staying on task, in large part because you will know that someone is holding you accountable. Perhaps surprisingly, serving as the friendly monitor of another individual’s progress can also motivate you to monitor progress toward your own goals. For these reasons, share your goals and plans with a peer or significant other, and follow-up with a progress report each week. Critical feedback is not necessary; this is about having a cheerleader who can provide encouragement and pep talks.</li><br> </ul>"
+            },
+            {
+              "completionScore": "MEDIUM",
+              "content": "Your score on the extrinsic motivation scale suggests you have a moderate level of extrinsic motivation for college-level work. That’s good, since too much or too little extrinsic motivation is not beneficial to your learning. It is a good idea to monitor extrinsic motivation and take action if you start to feel an imbalance with your level of internal satisfaction, or intrinsic motivation. Here are a few ideas for managing your extrinsic motivation.<ul> <li> <b>Use rewards sparingly:</b> Rewards can serve as an effective extrinsic motivator, but it is important to avoid using them to the point that they no longer work when you really need them. Because research has shown that external rewards can undermine intrinsic motivation and have detrimental effects on learning, it is important to limit the use of rewards to times when no other method of promoting motivation seems to work (see the list of suggestions for increasing intrinsic motivation).</li><br><li> <b>Review learning objectives and/or your academic goals:</b> Most people are in college because they have long-term goals that require the completion of a degree. Keep this goal in mind, as well as any other goals you have, including what you expect to learn, and why it is important to achieving your long-term goals. Whenever a task seems uninteresting, determine how it is useful in terms of your goals. If you cannot come up with anything, treat the task as a requirement you must complete in order to successfully attain your long-term goals.</li><br> </ul>"
+            },
+            {
+              "completionScore": "HIGH",
+              "content": "Your score on the extrinsic motivation scale suggests that you have high levels of extrinsic motivation for college-level work. This could be good, since you might be motivated to complete a task even if you are not interested in it. At the same time, too much dependence on external motivators can be detrimental to your learning because you are not completing the task with learning in mind; rather, your drive comes from rewards or punishments. Extrinsic motivation is generally not sustainable because the rewards are either withdrawn or no longer inspire you. Therefore, we recommend a couple of tactics that will ensure that your high level of extrinsic motivation is serving you well.<ul> <li> <b>Monitor your level of extrinsic motivation:</b> Before you begin an academic task, informally assess your level of extrinsic motivation, and identify potentially influential components of the task. Note pattern in terms of which task components tend to elicit more or less extrinsic motivation. </li><br><li> <b>Channel your motivation.</b> External incentives or threats of punishment (real or imagined) risk making you feel out of control because the incentive or threat is in charge of what you do and why you do it. As someone with high extrinsic motivation, it is important to regain or maintain a sense of personal control and choice, instead of a feeling of compliance and external control. Reflect on your reasons for completing a task. If you feel controlled or manipulated, brainstorm a list of reasons for doing the task that genuinely matter to you. Also see the list of strategies for increasing intrinsic motivation. </li><br><li> <b>Use rewards sparingly:</b> Rewards can serve as an effective extrinsic motivator, but it is important to avoid using them to the point that they no longer work when you really need them. Because research has shown that external rewards can undermine intrinsic motivation and have detrimental effects on learning, it is important to limit the use of rewards to times when no other method of promoting motivation seems to work. See the list of suggestions for increasing intrinsic motivation.</li><br><li> <b>Review learning objectives and/or your academic goals:</b> Most people are in college because they have long-term goals that require the completion of a degree. Keep these goals in mind, as well as any other goals you have, including what you expect to learn and be able to do as a result of attending school, and why it is important to achieving your long-term goals. Whenever a task seems uninteresting, determine how it is useful in terms of your goals. If you cannot come up with anything, treat the task as a requirement you must complete in order to successfully attain your long-term goals.</li><br> </ul>"
+            }
+        ]
+      }
+    },
+    {
+      "id": "self_regulation",
+      "domainType": "SCORING",
+      "label": "Self Regulation",
+      "content": "Self-regulation deals with the actual learning and studying of behaviors you engage in. For example, they indicate whether you study before socializing, or whether you spend too much time with friends when you should be studying. This skill tends to be one of the strongest predictors of achievement (GPA), so while you should set high-level cognitive goals (e.g., see metacognition), emphasizing behaviors conducive to learning (using self-rewards, studying in quiet places, perseverance) are good strategies. Strategies <div class=\"row\"><div class=\"col-md-2\"></div><div class=\"col-md-8\"><div class=\"embed-responsive embed-responsive-16by9\"><iframe width=\"853\" height=\"480\" src=\"https://www.youtube.com/embed/4lWWM2wlXz8?autoplay=0\"></iframe></div></div></div> Managing Behaviors <div class=\"row\"><div class=\"col-md-2\"></div><div class=\"col-md-8\"><div class=\"embed-responsive embed-responsive-16by9\"><iframe width=\"853\" height=\"480\" src=\"https://www.youtube.com/embed/GImZ2erNt7A?autoplay=0\"></iframe></div></div></div>",
+      "rubric": {
+        "completionScoreMap": {
+          "LOW": "[0.0,3.0)",
+          "MEDIUM": "[3.0,6.0)",
+          "HIGH": "[6.0,8.0]"
+        },
+        "supplementTable": [
+            {
+              "completionScore": "LOW",
+              "content": "Your score on the self-regulation scale suggests you have low self-regulation for college-level work. Whether this score reflects prior struggles with schooling, life demands that make it difficult to complete your studies, or simply a lack of knowledge of useful tricks of the trade, taking charge of your learning is one of the most important things you can do. Fortunately, there are a number of ways to do this. We recommend starting with the first one regarding diagnosing your SRL needs, and going from there.<b>Diagnose your SRL needs:</b> The first step is to decide what to work on first. Are you worried about not learning or getting good grades, in spite of the effort you put in? Then you need some new learning strategies. Are you struggling to manage your time well enough to complete school work? There are easy steps you can take to improve your time-management. Does anxiety get in the way of your productivity? We can help! You can’t tackle it all at once though, so take a few moments to prioritize your work on self-regulated learning by ranking this list in terms of most-in-need-of-improvement (7) to least-in-need-of-improvement (1). Then select strategies from the list below that are related to the one or two items you ranked mostly highly._ Metacognition: Paying attention to, and learning from, lectures, readings, and discussions, rather than spacing out, getting distracted, not noticing that you’re not understanding, etc._ Time management: Making and sticking to a workable schedule that allows you to complete school work in spite of competing demands on your time._ Goal setting: Setting academic goals that give direction to your work and help you focus on what’s important._ Learning strategies: Learning and using strategies that help you remember information, understand deeply, think critically and creatively, write better, etc._ Motivation: Getting and staying motivated, perhaps especially about a course you do not like._ Anxiety: Managing stress and anxiety so they do not overwhelm you or impair your performance on tests.<ul> <li> <b>Goal-setting and planning:</b> Create a table with goals in the left column and strategies for reaching them on the right. Include long-term and short-term academic goals, and process goals (e.g., “to create a balance between family, work, and school,” “to regularly check my reading comprehension” or “to improve my focus on my work”), as well as product goals (e.g., “to maintain a GPA of at least 3.0,” “to get an A in this class,” “to write clear, concise summaries of the readings”). </li><br><li> <b>List several strategies you will use to meet each of your goals.</b> Include strategies that aid cognition (e.g., “I will stop and check my comprehension every 1–2 pages by summarizing what I’ve read,” or “I will look up words I do not know in the dictionary”), control feelings (e.g., “I will remember to breathe deeply and remind myself of past successes when I begin to feel overwhelmed by my coursework”), and direct action (e.g., “I will ask someone to set up a buddy system for this class,” “I will show my written assignment to another student for feedback” or “I will try these SRL strategies even when I feel like I don’t have time”).</li><br> </ul><i>As the semester progresses, check your progress</i> toward your goals and decide whether or not the strategies you originally identified are actually useful. Update the table as needed. It is also quite satisfying to add a third column in which you check off goals as they are met.<ul> <li> <b>Motivation:</b> Reward yourself. Arrange small rewards for successes in achieving your goals. See the suggestions regarding extrinsic motivation. </li><br><li> <b>Motivation:</b> Persist. Sometimes we overgeneralize about our motivation by, for example, believing that we don’t care about school anymore when we’re really just tired of, or worried about, a particular course or assignment. When you are ready to throw in the towel, ask yourself what is really going on, and what aspects of your situation can be adjusted in order to permit you to persist. Then persist. </li><br><li> <b>Motivation:</b> See also the suggestions listed for intrinsic motivation and extrinsic motivation.</li><br><li> <b>Anxiety:</b> Use self-talk. If you are plagued by worry, allow yourself to be your own advocate by engaging in some positive self-talk. It might feel ridiculous at first but repeating phrases like “I can do this” and “I am calm” can quiet your mind enough to allow you be productive. See also self-talk under Self-Efficacy. </li><br><li> <b>Time management:</b> Manage your time well: There will be days when it seems like you cannot complete everything that needs to be done but with the appropriate time-management skills, you can complete a lot more than you think! Consider creating a weekly schedule with daily to-do lists. If it helps, categorize the items on your to-do list as “top-priority” and “priority” so you have a sense of what needs to be tackled first. These are lists that you will follow and commit yourself to completing, so be sure they are realistic.</li><br><li> <b>Time management/Metacognition/Anxiety. Reduce distractions:</b> Many students find themselves talking with others, checking their phones and email, and/or half-listening to TV or music as they do schoolwork. They tell themselves that they can multi-task, but that is a myth; they are actually just switching rapidly between tasks. The results are uniformly negative: their learning and the quality of their work suffers, it takes a lot longer to do each task (even though it’s not done as well as if they had focused on it), and anxiety increases. The alternative is clear: Find a quiet study space, and turn off the phone, internet, and television. If turning off the phone makes you anxious, consider using an app that allows only calls from certain people for a period of time. </li><br><li> <b>Time management/Metacognition:</b> Use distractions as rewards: If you are often distracted by a family member, friend, your phone, the internet, or even the condition of your kitchen floor, consider using that distraction as a reward for focused studying. For example, tell yourself that you can check your phone after 20 minutes of reading or writing. You are likely to find yourself more focused on your thinking and learning. </li><br><li> <b>Metacognition/Learning Strategies:</b> Work smarter: As you work on academic tasks, identify and analyze the techniques and methods you use to acquire information and complete the task. Which study methods are you using for which types of assignments and tests? Which methods seem to be working well and not so well? When you find a method that is not working well (e.g., trying to memorize information when what is really needed is critical analysis), consider learning a new method.</li><br><li> <b>Take advantage of resources:</b> Help-seeking is the hallmark of self-regulated learners. They use websites to bone up on information when they lack background knowledge, contact their instructors during office hours, form study groups, use the writing center, etc. Un-self-regulated learners, in contrast, tend to make excuses for not taking advantages of the resources at their disposal, with sometimes devastating consequences. Reach out: Someone or something is here to help you.</li><br> </ul>"
+            },
+            {
+              "completionScore": "MEDIUM",
+              "content": "Your self-regulation score is in the medium range, suggesting that you have some of the self-regulation skills needed to complete college-level work and enhance learning. Here are a few ideas for monitoring and maintaining your self-regulation.<ul> <li> <b>Monitor the effectiveness of learning strategies:</b> At the start of every task, be aware of the learning strategies that you plan to use, and rationalize why they are appropriate. After the completion of the task, evaluate the usefulness of your methods. Are there any better strategies that you can try next time you do a similar task?</li><br> </ul>"
+            },
+            {
+              "completionScore": "HIGH",
+              "content": "Your self-regulation score is high, suggesting that you have a strong set of self-regulated skills for succeeding in college-level work. That’s good, since self-regulation is necessary for learning to happen smoothly and efficiently. However, academic self-regulation without attention to one’s personal life can lead to burn-out. We recommend two easy tactics to ensure that self-regulation is serving you well.<ul> <li> <b>Maintain balance between your academic and personal lives:</b> Some people are so academically focused and self-regulated that their personal life gets pushed to the wayside. While academic success is the ultimate goal in college, it is important to take breaks and maintain a personal life to prevent exhaustion and/or damage to your relationships. Therefore, when planning your weekly or daily schedule, don’t forget to include time for family, friends, sleeping, eating, exercise, and leisure. </li><br><li> <b>Reflect on performance and adjust as necessary:</b> As you work on each task, reflect on the processes undertaken to complete them. What factors are contributing to success on each task? What factors are inhibiting progress? How can you readjust your thoughts, feeling, and behaviors so that risk factors become protective factors? Write down your reflections and refer to them at the beginning of the next task.</li><br> </ul>"
+            }
+        ]
+      }
+    },
+    {
+      "id": "metacognition",
+      "domainType": "SCORING",
+      "label": "Metacognition",
+      "content": "As the name implies, metacognition depicts your ability to “think about your thinking.” It requires you to plan (set realistic learning goals), monitor (track your progress towards those goals), adapt (changes your learning strategy when goal achievement is impeded), and evaluate (upon completion of a task, compare your performance to the initial goals). Both very low and very high levels of metacognition can interfere with actual progress toward a goal. Thus, moderate levels of metacognition are optimal. Try to set realistic goals, track your progress along the way, change strategies when needed, and self-assess your goal attainment.<div class=\"row\"><div class=\"col-md-2\"></div><div class=\"col-md-8\"><div class=\"embed-responsive embed-responsive-16by9\"><iframe width=\"853\" height=\"480\" src=\"https://www.youtube.com/embed/iKiBOFGyCwo?autoplay=0\"></iframe></div></div></div>",
+      "rubric": {
+        "completionScoreMap": {
+          "LOW": "[0.0,3.0)",
+          "MEDIUM": "[3.0,6.0)",
+          "HIGH": "[6.0,8.0]"
+        },
+        "supplementTable": [
+          {
+            "completionScore": "LOW",
+            "content": "Your score on the metacognition scale suggests you tend not to be as metacognitive as you could be. There are a number of ways to take control of your thinking. We recommend trying each, and seeing which one(s) work for you.<ul> <li> <b>Reflect on the appropriateness of learning strategies and adjust as necessary:</b> At the start of every task, be aware of the learning strategies that you plan to use, and rationalize why they are appropriate. At the completion of the task, evaluate your methods. Are there any other strategies you can try next time for a similar task? The following are some learning and study strategies that you can try:</li><br><li> <b>Identify and distinguish between main ideas, examples, and supporting details:</b> Understanding a text on a new and unfamiliar topic can be daunting, but it does not have to be. It is likely that everything we read is important to an extent, otherwise, the writers would not include it; but it is important for different reasons, and parsing out information that is most beneficial will help manage the text. Academic texts usually contain main ideas or arguments, with examples and/or details to support the claims. Until you are able to tell the difference automatically, try these training wheels: After reading each section of a text, use colored pencils or highlighters to underline main ideas in one color, examples in another, and supporting details in a third color. With practice, identifying and distinguishing between main ideas, examples, and supporting details will become second nature, and you will no longer need the colored pencils/highlighters.</li><br><li> <b>Distinguish between important and non-important:</b> Depending on the purpose(s) for which you are reading a text, some information may not be as important as others. Before you begin to read, keep your purpose(s) in mind, whether they are questions that you want answered (e.g., What are the sources of infection and what assessments are used to identify them?), or a topic/concept you would like to better understand (e.g., I am reading this article to better understand the role community plays in one’s susceptibility to certain infections.). As you read, regularly bring your focus back to your purpose(s). </li><br><li> <b>Ask and answer questions:</b> Be actively involved with what you are learning – whether through reading, listening, or discussing – by asking questions along the way. Jot your questions down and go back to them by the end of the reading or lesson to see if you can answer them. If not, identify what information is missing, and utilize additional resources that will provide the information you need. </li><br><li> <b>Familiarize yourself with the reading by skimming titles, headings, and chapter objectives/goals:</b> It has been shown that when readers gain information about a reading and relate the information to something they already know, they are better able to understand the new information. With this in mind, one way to promote comprehension is to first go through the text’s titles, headers, and objectives to get a sense of what to expect from the reading and to cue prior knowledge about it. </li><br><li> <b>Take advantage of available resources:</b> There may be times when you will find it difficult to understand a text or lesson regardless of how many times you have gone through it. This may happen if there are terms, concepts, and knowledge that this text or lesson assumes the audience has but you have not yet attained. To fill in this gap, take advantage of other resources to which you have access that focus on the same topic but with a different, perhaps more simplified perspective (e.g., other readings, YouTube videos, prior modules). </li><br><li> <b>Monitor comprehension:</b> If you realize you do not understand what you are reading, ask yourself why this may be. There may be terms with which you are unfamiliar, distracting thoughts or sounds that make it hard to concentrate, or background knowledge the reading assumes readers have that you do not. Depending on the reason, try the following strategies:</li><br><ul> <li> <b>Unfamiliar terms:</b> There are several ways you can try to tackle unfamiliar terms. The first is to use context clues within the reading, including words in the paragraph, pictures, or figures. Another method is to check the glossary or a dictionary. If you have access to the internet, Wikipedia is a good place to start learning about a concept.</li><br><li> <b>Loss of concentration:</b> Identify the cause of your loss of focus: Is it because you have been focused on the task for several hours? If it is, take a short break and then return to it. Is it because other distracting thoughts, irrelevant to the task, are constantly interrupting your concentration? If it is, and it is something urgent that must be dealt with right away, take some time to deal with it. If it is something that can wait, close your eyes, and take a couple minutes to think only about this distracting thought. Then, imagine a jar with a tight lid. Unscrew the lid, and put the distracting thought into the jar. Cover the jar and tighten the lid as much as you can. Now push this jar aside; it is something that you will return to once you have completed the task.</li><br><li> <b>Lack of prior knowledge:</b> Comprehension may be difficult to achieve if there are terms, concepts, and knowledge that a text or lesson assumes the audience has that you have not yet attained. To fill in a gap, take advantage of other resources to which you have access that focus on the same topic but with a different, perhaps more simplified perspective (e.g., other readings, YouTube videos, prior modules).</li><br> </ul> </ul>"
+          },
+          {
+            "completionScore": "MEDIUM",
+            "content": "Your metacognition score is in the medium range, suggesting that you have some of the metacognitive skills important to completing college-level work and enhancing learning. Metacognition tends to wax and wane as a semester progresses, however, so it is important to monitor and manage, and take a different approach when you feel like the strategies you are using no longer seem to be working. Here are a few ideas for monitoring, managing, and bringing your metacognitive strategies to the next level:<b>Monitor your thinking:</b> As you work, pause every now and again (setting a timer will help you remember to pause) to ask yourself three important questions: 1) What am I doing? 2) Why am I doing it? and 3) How does it help me? Directed toward your mental processes, these questions can make you more aware of your thinking and what you need to do to make it as efficient as possible.<b>Reflect on the appropriateness of learning strategies and adjust as necessary:</b> At the start of every task, be aware of the learning strategies that you plan to use, and rationalize why they are appropriate. At the completion of the task, evaluate your methods. Are there any other strategies you can try next time for a similar task? The following are some learning and study strategies that you can try:<ul> <li> <b>Identify and distinguish between main ideas, examples, and supporting details:</b> Understanding a text on a new and unfamiliar topic can be daunting, but it does not have to be. It is likely that everything we read is important to an extent, otherwise, the writers would not include it; but it is important for different reasons, and parsing out information that is most beneficial will help manage the text. Academic texts usually contain main ideas or arguments, with examples and/or details to support the claims. Until you are able to tell the difference automatically, try these training wheels: After reading each section of a text, use colored pencils or highlighters to underline main ideas in one color, examples in another, and supporting details in a third color. With practice, identifying and distinguishing between main ideas, examples, and supporting details will become second nature, and you will no longer need the colored pencils/highlighters.</li><br><li> <b>Distinguish between important and non-important:</b> Depending on the purpose(s) for which you are reading a text, some information may not be as important as others. Before you begin to read, keep your purpose(s) in mind, whether they are questions that you want answered (e.g., What are the sources of infection and what assessments are used to identify them?), or a topic/concept you would like to better understand (e.g., I am reading this article to better understand the role community plays in one’s susceptibility to certain infections.). As you read, regularly bring your focus back to your purpose(s). </li><br><li> <b>Ask and answer questions:</b> Be actively involved with what you are learning — whether through reading, listening, or discussing— by asking questions along the way. Jot your questions down and go back to them by the end of the reading or lesson to see if you can answer them. If not, identify what information is missing, and utilize additional resources that will provide the information you need. </li><br><li> <b>Familiarize yourself with the reading by skimming titles, headings, and chapter objectives/goals:</b> It has been shown that when readers gain information about a reading and relate the information to something they already know, they are better able to understand the new information. With this in mind, one way to promote comprehension is to first go through the text’s titles, headers, and objectives to get a sense of what to expect from the reading and to cue prior knowledge about it. </li><br><li> <b>Take advantage of available resources:</b> There may be times when you will find it difficult to understand a text or lesson regardless of how many times you have gone through it. This may happen if there are terms, concepts, and knowledge that this text or lesson assumes the audience has but you have not yet attained. To fill in this gap, take advantage of other resources to which you have access that focus on the same topic but with a different, perhaps more simplified perspective (e.g., other readings, YouTube videos, prior modules). </li><br><li> <b>Solidify and retain information:</b> Once you have reached an acceptable level of understanding of a text or material, challenge yourself to bring this understanding to the next level, to increase retention of the information, and solidify and enhance your understanding. Here are two approaches you can take to actively work with the information that you have learned: </li><br><ul> <li> <b>Make connections, draw inferences, and elaborate:</b> Challenge yourself to make connections, draw inferences and elaborate on the material. This will help to solidify the information so it is not only understood, but retained for future use. For example, after reading a chapter or going to a lecture on infections, apply what you have learned to a time when you or someone you know had an infection. Doing so adds relevance to abstract ideas and creates networks in your brain that make the information more accessible.</li><br><li> <b>Summarize and/or diagram:</b> Challenge yourself to recreate information in your own words or diagrams. This will help to solidify the information so it is not only understood, but understood at a deeper level, and retained for future use because you have deeply processed the information. Depending on your preference, there are a couple of ways this can be done. First, consider representing or mapping the material in hierarchies, sequences, matrices, diagrams, or whatever is appropriate to the information you are representing. Another idea is to not only copy important text but summarize information in a condensed way (e.g., seven words).</li><br> </ul> </ul>"
+          },
+          {
+            "completionScore": "HIGH",
+            "content": "Your metacognition score is high, suggesting that you have a strong set of the metacognitive strategies necessary to succeed in college-level work. You might be ready to up your game by using some relatively sophisticated metacognitive strategies such as the following:<ul> <li> <b>Make connections, draw inferences, and elaborate:</b> Challenge yourself to make connections, draw inferences and elaborate on the material. This will help to solidify the information so it is not only understood, but retained for future use. For example, after reading a chapter or going to a lecture on infections, apply what you have learned to a time when you or someone you know had an infection. Doing so adds relevance to abstract ideas and creates networks in your brain that make the information more accessible.</li><br><li> <b>Summarize and/or diagram:</b> Challenge yourself to recreate information in your own words or diagrams. This will help to solidify the information so it is not only understood, but understood at a deeper level, and retained for future use because you have deeply processed the information. Depending on your preference, there are a couple of ways this can be done: consider representing or mapping the material in hierarchies, sequences, matrices, diagrams, or whatever is appropriate to the information you are representing. Another idea is to not only copy important text but summarize information in a condensed way (e.g., seven words).</li><br> </ul>"
+          }
+        ]
+      }
+    },
+    {
+      "id": "self_efficacy",
+      "domainType": "SCORING",
+      "label": "Self Efficacy",
+      "content": "Self-efficacy is the belief in your ability to succeed at a particular task. It helps determine whether or not you will engage in a task, persist in the face of difficulty, use effective learning strategies, and experience fear or anxiety. Studies have shown that people with high self-efficacy – those who believe they can – tend to do better than people with low self-efficacy, even when the two groups of people are equally competent. As corny as it sounds, believing in yourself really does make a big difference. More specifically, believing that you have some control over your success is crucial. Although ability and luck might play a small role in determining how well you perform a task, decades of research show that the amount and kind of effort you put in is paramount. Believing in the power of effort makes people work harder and smarter.<div class=\"row\"><div class=\"col-md-2\"></div><div class=\"col-md-8\"><div class=\"embed-responsive embed-responsive-16by9\"><iframe width=\"853\" height=\"480\" src=\"https://www.youtube.com/embed/zWuyOJd90Ug?autoplay=0\"></iframe></div></div></div>",
+      "rubric": {
+        "completionScoreMap": {
+          "LOW": "[0.0,3.0)",
+          "MEDIUM": "[3.0,6.0)",
+          "HIGH": "[6.0,8.0]"
+        },
+        "supplementTable": [
+          {
+            "completionScore": "LOW",
+            "content": "Your score on the self-efficacy scale suggests you have low self-efficacy for college-level work. Whether this score reflects prior struggles with schooling, life demands that make you worry about your ability to complete your studies, or something else, your beliefs about the likelihood of success can and should become more optimistic. There are a number of ways to do this. We recommend trying each, and seeing which one(s) work for you.<ul> <li> <b>Pinpointing the source of low self-efficacy:</b> Self-efficacy is task-specific so, for example, you might have high self-efficacy for writing a term paper in a psychology class but low self-efficacy for a multiple-choice test in an anatomy and physiology class. Getting clear about what worries you – and what does not – will help. Create a document with two columns: 1) what you believe you can do without assistance, and 2) tasks with which you need help. Focus on column two as you try the next tactics on this list.</li><br><li> <b>Notice the messages you are receiving from yourself:</b> Your emotional state can affect your self-efficacy for a task. For example, a person who feels excessively anxious or agitated during an academic task might interpret that feeling as a sign of low ability, even if the feeling comes from an unrelated source. If you discover that your low self-efficacy is based on negative emotions rather than actual competence, consider using the self-talk strategy described below. </li><br><li> <b>Set goals:</b> As you work on academic tasks, analyze your progress toward your goals. Make the goals short-term and manageable, for example, “memorize the bones of the body,” so you can monitor progress along the way. “Get an A in anatomy and physiology” is a good goal, but too long-term to help you monitor progress and boost self-efficacy.</li><br><li> <b>Check your beliefs about the nature of intelligence:</b> Some people believe that intelligence is fixed – you’re either smart or you’re not. This is simply incorrect. Although humans are born with different levels of intellectual potential in various fields, all intelligence is malleable. We become smarter through our own efforts. If you believe that (and you should, since research has clearly demonstrated the plasticity of intelligence), you are more likely to work hard, use feedback to improve, seek help when you need it, and succeed. </li><br><li> <b>Assume constructive causes of success and failure:</b> People interpret events in different ways. For example, take two college students of equal ability in the same class who both received a C on a paper. The first student is very upset because he wanted an A. He decides there is nothing he can do and essentially gives up. The second student decides that the grade reflects the limited amount of time he spent on it, and determines to start the next paper earlier so he can do a better job. The second student’s belief about what caused his low grade is more constructive because it will lead him to work harder in the future. You should attribute the causes of your success or failure to controllable forces such as effort and the use of effective learning strategies such as using available resources, getting feedback on drafts, self-testing, etc. </li><br><li> <b>Monitor the accuracy of your self-efficacy:</b> Before taking your next quiz or exam, read all of the questions and estimate your ability to answer them on a 10-point scale. The lower the score, the less competent you feel, and vice versa. Then take the quiz or test, and compare your actual scores to your self-efficacy score. Did you do better than expected? If so, should you use the same study strategies when you prepare for the next quiz or test in that course, and feel more confident and less stressed? </li><br><li> <b>Self-talk:</b> Self-talk is the inner speech we use to make evaluative statements about our behavior, e.g., “I stink at this” or “I know I can do this.” World-class athletes have been trained to use positive self-talk for years because what they say to themselves in their heads is an important factor in determining their attitudes, feelings, emotions, and behaviors. The same is true of you. It might seem strange, but try positive self-talk. When you find yourself thinking something like, “I can’t do this,” or “I hate this task,” say (out loud if necessary and over and over as needed!), positive things such as, “If I concentrate I can solve this problem,” and “I just need to relax and study mindfully.” It feels goofy at first, but you will get used to it once you see how much it helps.</li><br> </ul>"
+          },
+          {
+            "completionScore": "MEDIUM",
+            "content": "Your self-efficacy score is in the medium range, suggesting that you feel relatively competent at college-level work. That’s good, since self-efficacy influences how you approach particular tasks. Self-efficacy tends to go up and down as a semester progresses, however, so it’s a good idea to monitor it and take action if it dips to a low level and you start to feel stressed. Here are a few ideas for monitoring and managing your self-efficacy:<ul> <li> <b>Monitor the accuracy of your self-efficacy:</b> Before taking your next quiz or exam, read all of the questions and estimate your ability to answer them on a 10-point scale. The lower the score, the less competent you feel, and vice versa. Then take the quiz or test, and compare your actual scores to your self-efficacy score. Did you do better or worse than expected? </li><br><li> <b>Consider all the possible reasons for your performance, especially when you do not do as well as you expected:</b> It is dangerous to assume that not doing as well as expected is simply due to uncontrollable causes such as lack of ability or a poor instructor. Those assumptions tend to lead people to give up. Attributing poor performance at least in part to effort or the use of ineffective learning strategies can motivate you to get help, learn new strategies, persist, and eventually succeed. </li><br><li> <b>Have resilient self-efficacy:</b> Having a resilient sense of self-efficacy means seeing the occasional failure as a temporary set-back at worst, and at best an opportunity to get useful information about how to improve.</li><br> </ul>"
+          },
+          {
+            "completionScore": "HIGH",
+            "content": "Your self-efficacy score is high, suggesting that you feel competent at college-level work. That’s good, since self-efficacy influences how you approach particular tasks. However, self-efficacy can be too high and lead to overconfidence. We recommend two easy tactics to ensure that your high self-efficacy is serving you well.<ul> <li> <b>Monitor the accuracy of your self-efficacy:</b> Before taking your next quiz or exam, read all of the questions and estimate your ability to answer them on a 10-point scale. The lower the score, the less competent you feel, and vice versa. Then take the quiz or test, and compare your actual scores to your self-efficacy score. Did you do better or worse than expected?</li><br><li> <b>Be open to the possibility of change:</b> Some people have such high self-efficacy that they are overconfident. As a result, they do not do the things that lead to success in college courses, such as set goals, monitor their progress toward those goals, and seek help when they need it. They try to skate through their courses and, when the inevitable happens and they don’t do as well as they expected, they draw inappropriate conclusions about the causes of their poor performance. If you experience a failure, large or small, consider the possible reasons for your performance. It is dangerous to assume that not doing as well as expected is simply due to uncontrollable causes such as lack of ability or a poor instructor, since such assumptions tend to lead people to give up. Attributing poor performance at least in part to effort or the use of ineffective learning strategies can motive you to get help, learn new strategies, persist, and eventually improve and succeed.</li><br> </ul>"
+          }
+        ]
+      }
+    },
+    {
+      "id": "intrinsic_motivation",
+      "domainType": "SCORING",
+      "label": "Intrinsic Motivation",
+      "content": "Intrinsic motivation is the degree to which you are involved in learning for the sake of learning, or mastery of the content. This is contrary to extrinsic motivation (learning for the sake of rewards), described below. Intrinsic motivation is a trait that is slowly developed over time, and is enhanced by students who focus more on the process of learning.",
+      "rubric": {
+        "completionScoreMap": {
+          "LOW": "[0.0,3.0)",
+          "MEDIUM": "[3.0,6.0)",
+          "HIGH": "[6.0,8.0]"
+        },
+        "supplementTable": [
+          {
+            "completionScore": "LOW",
+            "content": "Your score on the intrinsic motivation scale suggests you have low intrinsic motivation for college-level work. Whether this score reflects a lack of connections between your studies and your interests or life goals, a fear of failure, a lack of academic role models, demands on your personal life, or something else, your level of intrinsic motivation could be higher. There are a number of ways to do this. We recommend trying each, and seeing which one(s) work for you.<ul> <li> <b>Make personal connections:</b> A sense of relatedness is important. For example, a student with a personal interest in infancy and child development might find a paper on nursing in geriatrics uninteresting because it does not align with his interest. If your lack of intrinsic motivation seems to be due to a lack of a personal connection with the content, make an effort to find some relevance to your own life. In our example, the paper on geriatrics might become more interesting if the learner thinks about it in terms of an older relative or acquaintance. </li><br><li> <b>Adjust the difficulty of task:</b> A lack of intrinsic motivation may also be due to your beliefs about the difficulty of the task in relation to your knowledge and skills. If the task seems too easy or too hard, it might make you feel bored or worried, decreasing your motivation to do it. Consider if this is the case for you. If it is, find a time to talk with your advisor about ensuring that there is a good match between your goals, interests, skills, and program requirements, and to identify useful resources. Breaking tasks down into manageable sub-tasks can also make the work seem more manageable, thus removing a barrier to motivation. </li><br><li> <b>Remind yourself why you are doing the task, and that it is a choice:</b> It is easy to get bogged down in tedium or overwhelmed by detail, both of which can seriously undermine motivation. When this happens, take a step back, adopt a longer-term perspective, and remind yourself of the good reasons you are doing what you are doing, and that so doing is your choice. Imagine yourself being successful at it and reaching your goals: What desirable outcomes do you anticipate once you get to work?</li><br><li> <b>Create a feeling of agency:</b> There may be times when you feel unwilling to complete a task because there is no sense of control or opportunities for independent thinking. The classic example of such a task is stuffing envelopes, which is just plain tedious. If you discover that this is how you are feeling about a task, take a moment to identify aspects of the task that make you feel this way, and why. List them. Once these aspects are identified, think of three ways that the task can provide opportunities for you to make choices and think for yourself. For example, an envelope stuffer could have choices about where the work is done (outside, perhaps?), who is around (an envelope-stuffing party for friends?), and rewards for completion (a cake for the fastest stuffer!). School work can be treated in a way that increases your sense of agency too. </li><br><li> <b>Talk with others:</b> Make your motivation a topic of conversation by asking other people why they care about the work, and how you can come to care more as well. </li><br><li> <b>Collaborate with others:</b> Helping others and friendly competition are intrinsically motivating to many people. If that includes you, consider joining or creating a study group or a team. </li><br><li> <b>Get a kick-start from extrinsic motivation:</b> If the above tactics don’t help, it’s time to bribe yourself! Rewards like money, food, shopping, and extra time with friends or family work well for some people. Try one of the strategies listed under Extrinsic Motivation. </li><br> </ul>"
+          },
+          {
+            "completionScore": "MEDIUM",
+            "content": "Your score on the intrinsic motivation scale suggests you have a medium level of intrinsic motivation for college-level work. That’s good, since intrinsic motivation influences how you experience particular tasks, as well as how long you will persist at them. Your motivation might fluctuate as environmental factors contribute to or challenge your level of interest, so it is a good idea to monitor it and take action if you start to feel unmotivated. Here are a few ideas for monitoring and managing your intrinsic motivation:<ul> <li> <b>Monitor your motivation:</b> Before you begin each academic task, assess your level of intrinsic motivation on a scale of 1-10 and identify components of the task that seem to influence it: What parts do you like and dislike? As you collect information about your motivation, look for patterns in terms of what kinds of things tend to elicit more or less intrinsic motivation. Then, when your motivation lags, you can attend to tasks you like in order to keep you going.</li><br><li> <b>Collaborate with others:</b> Helping others and friendly competition are intrinsically motivating to many people. If that includes you, consider joining or creating a study group or a team. </li><br><li> <b>Use rewards, as needed:</b> Sometimes, for whatever reason, it may seem impossible to maintain your intrinsic motivation, no matter how hard you try. Instead, work on using extrinsic motivation so that you can complete the work while your intrinsic motivation resurfaces. Try the strategies found under extrinsic motivation.</li><br> </ul>"
+          },
+          {
+            "completionScore": "HIGH",
+            "content": "Your intrinsic motivation is high, suggesting that you are inherently and personally interested in college-level work. This is great, since high intrinsic motivation is likely to lead to success in school and a pleasant learning experience. However, intrinsic motivation that is too high may lead to an imbalance of attention on process over product and goals — you could be having so much fun that you lose sight of the endgame. The following are strategies that can help you maintain a balance between enjoying the learning experience while also achieving your goals in a timely and realistic fashion.<ul> <li> <b>Set goals and timelines:</b> As you work on academic tasks, set deadlines for task completion, and analyze your progress toward your goals.</li><br><li> <b>Avoid or at least manage extrinsic motivators:</b> Although rewards like money or grades can kick-start motivation when it is lacking, they can also undermine intrinsic motivation. In order to maintain your high intrinsic motivation, focus on the enjoyment you get from your schoolwork and avoid associating success with concrete rewards. </li><br><li> <b>Share your knowledge and enthusiasm:</b> Share what you know with others as a means of owning your passion, enhancing your learning, and inspiring others.</li><br> </ul>"
+          }
+        ]
+      }
+    }
+  ]
+}
