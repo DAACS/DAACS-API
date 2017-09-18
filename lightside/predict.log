@@ -1,0 +1,21 @@
+Jun 15, 2017 4:16:10 PM edu.cmu.side.recipe.Predictor main
+INFO: loading predictor from /Users/adistasio/Projects/gavant/daacs-api/lightside/saved/Conventions.model.xml
+URL file:/Users/adistasio/Projects/gavant/daacs-api/lightside/wekafiles/packages/bayesianLogisticRegression/bayesianLogisticRegression.jar is already in the CLASSPATH
+URL file:/Users/adistasio/Projects/gavant/daacs-api/lightside/wekafiles/packages/chiSquaredAttributeEval/chiSquaredAttributeEval.jar is already in the CLASSPATH
+URL file:/Users/adistasio/Projects/gavant/daacs-api/lightside/wekafiles/packages/LibLINEAR/lib/liblinear-1.8.jar is already in the CLASSPATH
+URL file:/Users/adistasio/Projects/gavant/daacs-api/lightside/wekafiles/packages/LibLINEAR/LibLINEAR.jar is already in the CLASSPATH
+URL file:/Users/adistasio/Projects/gavant/daacs-api/lightside/wekafiles/packages/LibSVM/lib/libsvm.jar is already in the CLASSPATH
+URL file:/Users/adistasio/Projects/gavant/daacs-api/lightside/wekafiles/packages/LibSVM/LibSVM.jar is already in the CLASSPATH
+Refreshing GOE props...
+[KnowledgeFlow] Loading properties and plugins...
+[KnowledgeFlow] Initializing KF...
+Jun 15, 2017 4:16:29 PM edu.cmu.side.recipe.Predictor main
+INFO: loading docs from [/Users/adistasio/Projects/gavant/daacs-api/lightside/output/f9ad9ce7-9882-4b34-ad10-9d962bbf3125_Conventions_model_xml.csv]
+Jun 15, 2017 4:16:29 PM edu.cmu.side.recipe.Predictor main
+INFO: predicting...
+Reading POS tagger model from toolkits/maxent/english-caseless-left3words-distsim.tagger ... done [1.1 sec].
+Jun 15, 2017 4:16:31 PM edu.cmu.side.recipe.Predictor main
+INFO: saving prediction results to /Users/adistasio/Projects/gavant/daacs-api/lightside/output/f9ad9ce7-9882-4b34-ad10-9d962bbf3125_Conventions_model_xml_out.csv
+2
+predicted
+text

@@ -9,7 +9,5 @@ build
 gradle.properties
 etc/
 *.iml
-lightside/build.xml
-lightside/
 out/
 classes/
