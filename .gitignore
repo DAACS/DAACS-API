@@ -13,3 +13,5 @@ lightside/build.xml
 lightside/
 out/
 classes/
+src/main/resources/saml/excelsior-metadata.xml
+src/main/resources/saml/samlKeystore.jks
