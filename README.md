@@ -136,3 +136,14 @@ Documentation for all endpoints can be found with the built-in Swagger documenta
 
 # MongoDB Pub/Sub
 DAACS implements a pub/sub architecture to schedule grading jobs. Information on how this was created with MongoDB can be found [here](http://tugdualgrall.blogspot.fr/2015/01/how-to-create-pubsub-application-with.html).
+
+-----
+
+Diagnostic Assessment and Achievement of College Skills (DAACS)  
+Copyright (C) 2017 Excelsior College; The Research Foundation, SUNY at the University at Albany; and Rutgers, The State University of New Jersey.
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation version 3 of the License.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
