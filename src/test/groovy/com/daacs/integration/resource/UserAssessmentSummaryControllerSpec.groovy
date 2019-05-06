@@ -1,5 +1,6 @@
 package com.daacs.integration.resource
 
+import com.daacs.component.utils.DefaultCatgoryGroup
 import com.daacs.framework.serializer.ObjectMapperConfig
 import com.daacs.model.ErrorResponse
 import com.daacs.model.assessment.AssessmentCategory
@@ -178,7 +179,7 @@ class UserAssessmentSummaryControllerSpec extends RestControllerSpec {
 
         when:
         ResponseEntity<String> response = restTemplate.exchange(
-                serviceURI("?assessmentCategory=MATHEMATICS&limit=1"),
+                serviceURI("?assessmentCategoryGroupId="+ DefaultCatgoryGroup.MATHEMATICS_ID+"&limit=1"),
                 HttpMethod.GET,
                 httpEntity,
                 String.class)

@@ -1,4 +1,4 @@
-package com.daacs.component;
+package com.daacs.component.utils;
 
 import javax.servlet.http.HttpServletRequest;
 

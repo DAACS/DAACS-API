@@ -17,6 +17,8 @@ public class AssessmentSummary {
 
     AssessmentCategory assessmentCategory;
 
+    AssessmentCategoryGroup assessmentCategoryGroup;
+
     String label;
 
     Map<String, String> content;

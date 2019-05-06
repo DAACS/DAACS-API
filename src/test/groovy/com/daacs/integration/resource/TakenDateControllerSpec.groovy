@@ -1,5 +1,6 @@
 package com.daacs.integration.resource
 
+import com.daacs.component.utils.DefaultCatgoryGroup
 import com.daacs.framework.serializer.ObjectMapperConfig
 import com.daacs.model.ErrorResponse
 import com.daacs.model.assessment.user.UserAssessmentTakenDate
@@ -42,7 +43,7 @@ class TakenDateControllerSpec extends RestControllerSpec {
 
         when:
         ResponseEntity<String> response = restTemplate.exchange(
-                serviceURI("?assessmentCategory=MATHEMATICS"),
+                serviceURI("?assessmentCategoryGroupId="+ DefaultCatgoryGroup.MATHEMATICS_ID),
                 HttpMethod.GET,
                 httpEntity,
                 String.class)
@@ -51,7 +52,7 @@ class TakenDateControllerSpec extends RestControllerSpec {
         response.statusCode == HttpStatus.OK
         JsonNode jsonNode = objectMapper.readTree(response.getBody())
         List<UserAssessmentTakenDate> takenDates = objectMapper.readValue(jsonNode.get("data").toString(), new TypeReference<List<UserAssessmentTakenDate>>(){});
-        takenDates.size() == 3
+        takenDates.size() == 4
     }
 
 }

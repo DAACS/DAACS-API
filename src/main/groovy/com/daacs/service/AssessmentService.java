@@ -1,9 +1,10 @@
 package com.daacs.service;
 
 import com.daacs.model.assessment.*;
+import com.daacs.model.dto.AssessmentResponse;
 import com.daacs.model.dto.UpdateAssessmentRequest;
-import com.daacs.model.dto.UpdateLightSideModelsRequest;
 import com.lambdista.util.Try;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Instant;
 import java.util.List;
@@ -13,16 +14,21 @@ import java.util.List;
  */
 public interface AssessmentService {
     Try<Assessment> getAssessment(String id);
-    Try<List<Assessment>> getAssessments(Boolean enabled, List<AssessmentCategory> assessmentCategories);
-    Try<Assessment> createAssessment(Assessment assessment);
-    Try<Assessment> updateAssessment(UpdateAssessmentRequest updateAssessmentRequest);
-    Try<List<AssessmentSummary>> getSummaries(String userId, Boolean enabled, List<AssessmentCategory> assessmentCategories);
+    Try<List<Assessment>> getAssessments(Boolean enabled, List<String> groupIds);
+    Try<AssessmentResponse> createAssessment(Assessment assessment);
+    Try<AssessmentResponse> updateAssessment(UpdateAssessmentRequest updateAssessmentRequest);
+
+    Try<List<AssessmentSummary>> getSummaries(String userId, Boolean enabled, List<String> groupIds);
+
     Try<Assessment> saveAssessment(Assessment assessment);
     Try<Void> reloadDummyAssessments();
     Try<AssessmentContent> getContent(String assessmentId);
-    Try<AssessmentContent> getContent(AssessmentCategory assessmentCategory);
-    Try<AssessmentContent> getContentForUserAssessment(String userId, AssessmentCategory assessmentCategory, Instant takenDate);
-    Try<Assessment> updateWritingAssessment(UpdateLightSideModelsRequest updateLightSideModelsRequest);
+
+    Try<AssessmentContent> getContentByCategoryGroup(String groupId);
+
+    Try<AssessmentContent> getContentForUserAssessment(String userId, String groupId, Instant takenDate);
+
+    Try<String> uploadLightSideModel(MultipartFile file);
     Try<List<AssessmentStatSummary>> getAssessmentStats();
-    Try<List<AssessmentCategorySummary>> getCategorySummaries(String userId, List<AssessmentCategory> assessmentCategories);
+    Try<List<AssessmentCategorySummary>> getCategorySummaries(String userId, List<String> groupIds);
 }

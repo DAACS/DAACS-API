@@ -1,6 +1,7 @@
 package com.daacs.model.dto.assessmentUpdate
 
 import com.daacs.model.dto.ListItemDTOMappable
+import com.daacs.model.item.DefaultItemAnswer
 
 import javax.validation.Valid
 import javax.validation.constraints.NotNull
@@ -12,7 +13,11 @@ import javax.validation.constraints.NotNull
 class ItemGroupRequest implements ListItemDTOMappable {
 
     @NotNull
-    String id;
+    String id = (id == null) ? UUID.randomUUID().toString() : id;
+
+    @NotNull
+    @Valid
+    List<DefaultItemAnswer> possibleItemAnswers;
 
     @Valid
     @NotNull

@@ -16,7 +16,7 @@ class AssessmentCategorySummaryControllerSpec extends RestControllerSpec {
         return "/assessment-category-summaries"
     }
 
-    def setup(){
+    def setup() {
         login();
         headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -43,7 +43,7 @@ class AssessmentCategorySummaryControllerSpec extends RestControllerSpec {
 
         then:
         response.statusCode == HttpStatus.OK
-        List<AssessmentCategorySummary> assessmentCategorySummaries = ((List<AssessmentCategorySummary>)response.getBody().getData());
+        List<AssessmentCategorySummary> assessmentCategorySummaries = ((List<AssessmentCategorySummary>) response.getBody().getData());
         assessmentCategorySummaries.size() > 0
     }
 
@@ -57,7 +57,8 @@ class AssessmentCategorySummaryControllerSpec extends RestControllerSpec {
 
         then:
         response.statusCode == HttpStatus.OK
-        List<AssessmentCategorySummary> assessmentCategorySummaries = ((List<AssessmentCategorySummary>)response.getBody().getData());
+        List<AssessmentCategorySummary> assessmentCategorySummaries = ((List<AssessmentCategorySummary>) response.getBody().getData());
         assessmentCategorySummaries.size() > 0
     }
+
 }

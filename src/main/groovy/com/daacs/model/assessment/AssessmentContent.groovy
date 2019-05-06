@@ -10,6 +10,7 @@ class AssessmentContent {
     String assessmentId;
     AssessmentType assessmentType;
     AssessmentCategory assessmentCategory;
+    AssessmentCategoryGroup assessmentCategoryGroup;
     String label;
     Map<String, String> content;
     Rubric overallRubric;

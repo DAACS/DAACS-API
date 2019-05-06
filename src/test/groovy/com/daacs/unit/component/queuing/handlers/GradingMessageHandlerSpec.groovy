@@ -67,7 +67,7 @@ class GradingMessageHandlerSpec extends Specification{
         Try<Void> maybeHandled = messageHandler.handleMessage(gradingMessage)
 
         then:
-        1 * userAssessmentService.getUserAssesment(gradingMessage.getUserId(), gradingMessage.getUserAssessmentId()) >> new Try.Success<UserAssessment>(userAssessment)
+        1 * userAssessmentService.getUserAssessment(gradingMessage.getUserId(), gradingMessage.getUserAssessmentId()) >> new Try.Success<UserAssessment>(userAssessment)
         1 * scoringService.autoGradeUserAssessment(userAssessment) >> new Try.Success<UserAssessment>(gradedUserAssessment)
         1 * userAssessmentService.saveUserAssessment(gradedUserAssessment) >> new Try.Success<Void>(null)
 
@@ -80,7 +80,7 @@ class GradingMessageHandlerSpec extends Specification{
         Try<Void> maybeHandled = messageHandler.handleMessage(gradingMessage)
 
         then:
-        1 * userAssessmentService.getUserAssesment(gradingMessage.getUserId(), gradingMessage.getUserAssessmentId()) >> new Try.Failure<UserAssessment>(new Exception())
+        1 * userAssessmentService.getUserAssessment(gradingMessage.getUserId(), gradingMessage.getUserAssessmentId()) >> new Try.Failure<UserAssessment>(new Exception())
         0 * scoringService.autoGradeUserAssessment(*_)
         0 * userAssessmentService.saveUserAssessment(*_)
 
@@ -93,7 +93,7 @@ class GradingMessageHandlerSpec extends Specification{
         Try<Void> maybeHandled = messageHandler.handleMessage(gradingMessage)
 
         then:
-        1 * userAssessmentService.getUserAssesment(gradingMessage.getUserId(), gradingMessage.getUserAssessmentId()) >> new Try.Success<UserAssessment>(userAssessment)
+        1 * userAssessmentService.getUserAssessment(gradingMessage.getUserId(), gradingMessage.getUserAssessmentId()) >> new Try.Success<UserAssessment>(userAssessment)
         1 * scoringService.autoGradeUserAssessment(userAssessment) >> new Try.Success<UserAssessment>(gradedUserAssessment)
         1 * userAssessmentService.saveUserAssessment(gradedUserAssessment) >> new Try.Failure<Void>(null)
 
@@ -106,7 +106,7 @@ class GradingMessageHandlerSpec extends Specification{
         Try<Void> maybeHandled = messageHandler.handleMessage(gradingMessage)
 
         then:
-        1 * userAssessmentService.getUserAssesment(gradingMessage.getUserId(), gradingMessage.getUserAssessmentId()) >> new Try.Success<UserAssessment>(userAssessment)
+        1 * userAssessmentService.getUserAssessment(gradingMessage.getUserId(), gradingMessage.getUserAssessmentId()) >> new Try.Success<UserAssessment>(userAssessment)
         1 * scoringService.autoGradeUserAssessment(userAssessment) >> new Try.Failure<UserAssessment>(new Exception())
         1 * userAssessmentService.saveUserAssessment(_) >> { args ->
             UserAssessment savingUserAssessment = args[0]
@@ -123,7 +123,7 @@ class GradingMessageHandlerSpec extends Specification{
         Try<Void> maybeHandled = messageHandler.handleMessage(gradingMessage)
 
         then:
-        1 * userAssessmentService.getUserAssesment(gradingMessage.getUserId(), gradingMessage.getUserAssessmentId()) >> new Try.Success<UserAssessment>(userAssessment)
+        1 * userAssessmentService.getUserAssessment(gradingMessage.getUserId(), gradingMessage.getUserAssessmentId()) >> new Try.Success<UserAssessment>(userAssessment)
         1 * scoringService.autoGradeUserAssessment(userAssessment) >> new Try.Failure<UserAssessment>(new Exception())
         1 * userAssessmentService.saveUserAssessment(_) >> { args ->
             UserAssessment savingUserAssessment = args[0]

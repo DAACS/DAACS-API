@@ -306,8 +306,8 @@ public class ItemGroupServiceImpl implements ItemGroupService {
         }
 
         //determine our score and find which difficulty we need next
-        int lastScore = getScoreForItemGroup(lastItemGroup);
-        Optional<Map.Entry<Difficulty, Range<Integer>>> mapEntry = applicableItemGroupTransition.get().getTransitionMap().entrySet().stream()
+        Double lastScore = getScoreForItemGroup(lastItemGroup);
+        Optional<Map.Entry<Difficulty, Range<Double>>> mapEntry = applicableItemGroupTransition.get().getTransitionMap().entrySet().stream()
                 .filter(difficultyRangeEntry -> difficultyRangeEntry.getValue().contains(lastScore))
                 .findFirst();
 
@@ -371,10 +371,10 @@ public class ItemGroupServiceImpl implements ItemGroupService {
         return (double)numQuestionsAnswered / (double)numTotalQuestions;
     }
 
-    private int getScoreForItemGroup(ItemGroup itemGroup){
+    private double getScoreForItemGroup(ItemGroup itemGroup){
         return itemGroup.getItems().stream()
                 .filter(item -> item.getChosenItemAnswer() != null)
-                .mapToInt(item -> item.getChosenItemAnswer().getScore())
+                .mapToDouble(item -> item.getChosenItemAnswer().getScore())
                 .sum();
     }
 }

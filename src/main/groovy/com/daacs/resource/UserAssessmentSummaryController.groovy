@@ -64,18 +64,18 @@ class UserAssessmentSummaryController extends AuthenticatedController {
             @ApiResponse(code = 500, response = ErrorResponse.class, message = "Unknown error"),
             @ApiResponse(code = 503, response = ErrorResponse.class, message = "Retryable error")
     ])
-    @RequestMapping(value = "", method = RequestMethod.GET, params = ["assessmentCategory"], produces = "application/json")
+    @RequestMapping(value = "", method = RequestMethod.GET, params = ["assessmentCategoryGroupId"], produces = "application/json")
     public List<UserAssessmentSummary> getSummariesByCategory(
             @RequestParam(value = "userId", required = false) String userId,
-            @RequestParam(value = "assessmentCategory") AssessmentCategory assessmentCategory,
-            @RequestParam(value = "takenDate", required = false) String takenDate){
+            @RequestParam(value = "assessmentCategoryGroupId") String groupId,
+            @RequestParam(value = "takenDate", required = true) String takenDate){
 
         Instant takenDateInstant = null;
         if(takenDate != null){
             takenDateInstant = Instant.parse(takenDate)
         }
 
-        return userAssessmentService.getSummaries(determineUserId(userId), assessmentCategory, takenDateInstant).checkedGet();
+        return userAssessmentService.getSummariesByGroup(determineUserId(userId), groupId, takenDateInstant).checkedGet();
     }
 
     @ApiOperation(
@@ -150,12 +150,12 @@ class UserAssessmentSummaryController extends AuthenticatedController {
             @ApiResponse(code = 500, response = ErrorResponse.class, message = "Unknown error"),
             @ApiResponse(code = 503, response = ErrorResponse.class, message = "Retryable error")
     ])
-    @RequestMapping(value = "", method = RequestMethod.GET, params = ["assessmentCategory", "limit=1"], produces = "application/json")
+    @RequestMapping(value = "", method = RequestMethod.GET, params = ["assessmentCategoryGroupId", "limit=1"], produces = "application/json")
     public List<UserAssessmentSummary> getLatestSummaryByCategory(
             @RequestParam(value = "userId", required = false) String userId,
-            @RequestParam(value = "assessmentCategory") AssessmentCategory assessmentCategory){
+            @RequestParam(value = "assessmentCategoryGroupId") String groupId){
 
-        Try<UserAssessmentSummary> userAssessmentSummaryMaybe = userAssessmentService.getLatestSummary(determineUserId(userId), assessmentCategory);
+        Try<UserAssessmentSummary> userAssessmentSummaryMaybe = userAssessmentService.getLatestSummaryByGroup(determineUserId(userId), groupId);
 
         if (userAssessmentSummaryMaybe.isFailure() && userAssessmentSummaryMaybe.failed().get() instanceof RepoNotFoundException){
             throw new NotFoundException(userAssessmentSummaryMaybe.failed().get().getMessage());

@@ -1,4 +1,4 @@
-package com.daacs.service
+package com.daacs.unit.service
 
 import com.daacs.component.PrereqEvaluatorFactory
 import com.daacs.component.prereq.AssessmentPrereqEvaluator
@@ -14,12 +14,18 @@ import com.daacs.model.prereqs.AssessmentPrereq
 import com.daacs.model.prereqs.PrereqType
 import com.daacs.repository.AssessmentRepository
 import com.daacs.repository.UserAssessmentRepository
+import com.daacs.service.CanvasService
+import com.daacs.service.MessageService
+import com.daacs.service.ScoringService
+import com.daacs.service.UserAssessmentService
+import com.daacs.service.UserAssessmentServiceImpl
 import com.lambdista.util.Try
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Unroll
 
 import java.time.Instant
+import java.util.function.Function
 import java.util.stream.Collectors
 
 /**
@@ -51,99 +57,13 @@ class UserAssessmentServiceSpec extends Specification {
     @Shared
     List<UserAssessment> dummyUserAssessments
 
-    def setup(){
-        dummyUserAssessments = [
-                new CATUserAssessment(
-                        assessmentId: "32c91abf-fc9b-4b41-ac4e-3f36b3e323d8",
-                        assessmentType: AssessmentType.CAT,
-                        completionDate: Instant.now(),
-                        overallScore: CompletionScore.MEDIUM,
-                        progressPercentage: 1.0,
-                        status: CompletionStatus.COMPLETED,
-                        takenDate: dummyTakenDate,
-                        domainScores: [ new DomainScore(domainId: "domain", rubricScore: CompletionScore.MEDIUM) ],
-                        itemGroups: [
-                                new CATItemGroup(difficulty: Difficulty.EASY, items: [
-                                        new Item(
-                                                question: "abc?",
-                                                domainId: "domain",
-                                                possibleItemAnswers: [ new ItemAnswer(content: "abc", score: 1.0) ],
-                                                chosenItemAnswerId: null
-                                        )
-                                ]),
-                                new CATItemGroup(difficulty: Difficulty.MEDIUM, items: [
-                                        new Item(
-                                                question: "def?",
-                                                domainId: "domain",
-                                                possibleItemAnswers: [ new ItemAnswer(content: "def", score: 1.0) ],
-                                                chosenItemAnswerId: null
-                                        )
-                                ])]
-                ),
-                new MultipleChoiceUserAssessment(
-                        assessmentId: "32c91abf-fc9b-4b41-ac4e-3f36b3e323d8",
-                        assessmentType: AssessmentType.MULTIPLE_CHOICE,
-                        completionDate: Instant.now(),
-                        overallScore: CompletionScore.MEDIUM,
-                        progressPercentage: 1.0,
-                        status: CompletionStatus.COMPLETED,
-                        takenDate: dummyTakenDate,
-                        domainScores: [ new DomainScore(domainId: "domain", rubricScore: CompletionScore.MEDIUM) ],
-                        itemGroups: [
-                                new ItemGroup(items: [
-                                        new Item(
-                                                question: "abc?",
-                                                domainId: "domain",
-                                                possibleItemAnswers: [ new ItemAnswer(content: "abc", score: 1.0) ],
-                                                chosenItemAnswerId: null
-                                        )
-                                ]),
-                                new ItemGroup(items: [
-                                        new Item(
-                                                question: "def?",
-                                                domainId: "domain",
-                                                possibleItemAnswers: [ new ItemAnswer(content: "def", score: 1.0) ],
-                                                chosenItemAnswerId: null
-                                        )
-                                ])]
-                ),
-                new WritingPromptUserAssessment(
-                        assessmentId: "32c91abf-fc9b-4b41-ac4e-3f36b3e323d0",
-                        assessmentType: AssessmentType.WRITING_PROMPT,
-                        completionDate: Instant.now(),
-                        overallScore: CompletionScore.MEDIUM,
-                        progressPercentage: 1.0,
-                        status: CompletionStatus.IN_PROGRESS,
-                        takenDate: dummyTakenDate,
-                        domainScores: [ new DomainScore(domainId: "domain", rubricScore: CompletionScore.MEDIUM) ],
-                        writingPrompt: new WritingPrompt(sample: "this is my writing sample")
-                ),
-                new WritingPromptUserAssessment(
-                        assessmentId: "32c91abf-fc9b-4b41-ac4e-3f36b3e323d0",
-                        assessmentType: AssessmentType.WRITING_PROMPT,
-                        completionDate: Instant.now(),
-                        overallScore: CompletionScore.MEDIUM,
-                        progressPercentage: 1.0,
-                        status: CompletionStatus.IN_PROGRESS,
-                        takenDate: dummyTakenDate,
-                        domainScores: [ new DomainScore(domainId: "domain", rubricScore: CompletionScore.MEDIUM) ]
-                ),
-                new WritingPromptUserAssessment(
-                        assessmentId: "32c91abf-fc9b-4b41-ac4e-3f36b3e323d0",
-                        assessmentType: AssessmentType.WRITING_PROMPT,
-                        completionDate: Instant.now(),
-                        overallScore: CompletionScore.MEDIUM,
-                        progressPercentage: 1.0,
-                        status: CompletionStatus.COMPLETED,
-                        takenDate: dummyTakenDate,
-                        domainScores: [ new DomainScore(domainId: "domain", rubricScore: CompletionScore.MEDIUM) ]
-                )
-        ]
+    def setup() {
 
         dummyAssessments = [
                 new CATAssessment(
                         id: "32c91abf-fc9b-4b41-ac4e-3f36b3e323d8",
                         assessmentType: AssessmentType.CAT,
+                        assessmentCategoryGroup: new AssessmentCategoryGroup(id: "groupId"),
                         label: "Mathematics",
                         enabled: true,
                         prerequisites: [
@@ -157,12 +77,14 @@ class UserAssessmentServiceSpec extends Specification {
                 new MultipleChoiceAssessment(
                         id: "32c91abf-fc9b-4b41-ac4e-3f36b3e323d9",
                         assessmentType: AssessmentType.LIKERT,
+                        assessmentCategoryGroup: new AssessmentCategoryGroup(id: "groupId"),
                         label: "College Skills",
                         enabled: true
                 ),
                 new MultipleChoiceAssessment(
                         id: "32c91abf-fc9b-4b41-ac4e-3f36b3e323d1",
                         assessmentType: AssessmentType.MULTIPLE_CHOICE,
+                        assessmentCategoryGroup: new AssessmentCategoryGroup(id: "groupId"),
                         label: "Some other category",
                         enabled: true
                 ),
@@ -170,6 +92,7 @@ class UserAssessmentServiceSpec extends Specification {
                         scoringType: ScoringType.MANUAL,
                         id: "32c91abf-fc9b-4b41-ac4e-3f36b3e323d0",
                         assessmentType: AssessmentType.WRITING_PROMPT,
+                        assessmentCategoryGroup: new AssessmentCategoryGroup(id: "groupId"),
                         label: "Writing",
                         enabled: true,
                         writingPrompt: new WritingPrompt(content: "content", minWords: 250)
@@ -196,9 +119,97 @@ class UserAssessmentServiceSpec extends Specification {
                 prereqEvaluatorFactory: prereqEvaluatorFactory,
                 messageService: messageService,
                 canvasService: canvasService)
+
+        dummyUserAssessments = [
+                new CATUserAssessment(
+                        assessmentId: "32c91abf-fc9b-4b41-ac4e-3f36b3e323d8",
+                        assessmentType: AssessmentType.CAT,
+                        completionDate: Instant.now(),
+                        overallScore: CompletionScore.MEDIUM,
+                        progressPercentage: 1.0,
+                        status: CompletionStatus.COMPLETED,
+                        takenDate: dummyTakenDate,
+                        domainScores: [new DomainScore(domainId: "domain", rubricScore: CompletionScore.MEDIUM)],
+                        itemGroups: [
+                                new CATItemGroup(difficulty: Difficulty.EASY, items: [
+                                        new Item(
+                                                question: "abc?",
+                                                domainId: "domain",
+                                                possibleItemAnswers: [new ItemAnswer(content: "abc", score: 1.0)],
+                                                chosenItemAnswerId: null
+                                        )
+                                ]),
+                                new CATItemGroup(difficulty: Difficulty.MEDIUM, items: [
+                                        new Item(
+                                                question: "def?",
+                                                domainId: "domain",
+                                                possibleItemAnswers: [new ItemAnswer(content: "def", score: 1.0)],
+                                                chosenItemAnswerId: null
+                                        )
+                                ])]
+                ),
+                new MultipleChoiceUserAssessment(
+                        assessmentId: "32c91abf-fc9b-4b41-ac4e-3f36b3e323d8",
+                        assessmentType: AssessmentType.MULTIPLE_CHOICE,
+                        completionDate: Instant.now(),
+                        overallScore: CompletionScore.MEDIUM,
+                        progressPercentage: 1.0,
+                        status: CompletionStatus.COMPLETED,
+                        takenDate: dummyTakenDate,
+                        domainScores: [new DomainScore(domainId: "domain", rubricScore: CompletionScore.MEDIUM)],
+                        itemGroups: [
+                                new ItemGroup(items: [
+                                        new Item(
+                                                question: "abc?",
+                                                domainId: "domain",
+                                                possibleItemAnswers: [new ItemAnswer(content: "abc", score: 1.0)],
+                                                chosenItemAnswerId: null
+                                        )
+                                ]),
+                                new ItemGroup(items: [
+                                        new Item(
+                                                question: "def?",
+                                                domainId: "domain",
+                                                possibleItemAnswers: [new ItemAnswer(content: "def", score: 1.0)],
+                                                chosenItemAnswerId: null
+                                        )
+                                ])]
+                ),
+                new WritingPromptUserAssessment(
+                        assessmentId: "32c91abf-fc9b-4b41-ac4e-3f36b3e323d0",
+                        assessmentType: AssessmentType.WRITING_PROMPT,
+                        completionDate: Instant.now(),
+                        overallScore: CompletionScore.MEDIUM,
+                        progressPercentage: 1.0,
+                        status: CompletionStatus.IN_PROGRESS,
+                        takenDate: dummyTakenDate,
+                        domainScores: [new DomainScore(domainId: "domain", rubricScore: CompletionScore.MEDIUM)],
+                        writingPrompt: new WritingPrompt(sample: "this is my writing sample")
+                ),
+                new WritingPromptUserAssessment(
+                        assessmentId: "32c91abf-fc9b-4b41-ac4e-3f36b3e323d0",
+                        assessmentType: AssessmentType.WRITING_PROMPT,
+                        completionDate: Instant.now(),
+                        overallScore: CompletionScore.MEDIUM,
+                        progressPercentage: 1.0,
+                        status: CompletionStatus.IN_PROGRESS,
+                        takenDate: dummyTakenDate,
+                        domainScores: [new DomainScore(domainId: "domain", rubricScore: CompletionScore.MEDIUM)]
+                ),
+                new WritingPromptUserAssessment(
+                        assessmentId: "32c91abf-fc9b-4b41-ac4e-3f36b3e323d0",
+                        assessmentType: AssessmentType.WRITING_PROMPT,
+                        completionDate: Instant.now(),
+                        overallScore: CompletionScore.MEDIUM,
+                        progressPercentage: 1.0,
+                        status: CompletionStatus.COMPLETED,
+                        takenDate: dummyTakenDate,
+                        domainScores: [new DomainScore(domainId: "domain", rubricScore: CompletionScore.MEDIUM)]
+                )
+        ]
     }
 
-    def "getSummaries: returns mapped assessment summaries"(){
+    def "getSummaries: returns mapped assessment summaries"() {
         when:
         Try<List<UserAssessmentSummary>> maybeUserAssessmentSummaries = userAssessmentService.getSummaries(dummyUser.id, dummyAssessmentId, dummyTakenDate)
 
@@ -217,7 +228,7 @@ class UserAssessmentServiceSpec extends Specification {
         maybeUserAssessmentSummaries.get().get(0).takenDate == dummyUserAssessments.get(0).takenDate
     }
 
-    def "getSummaries: repo call fails, i fail"(){
+    def "getSummaries: repo call fails, i fail"() {
         when:
         Try<List<UserAssessmentSummary>> maybeUserAssessmentSummaries = userAssessmentService.getSummaries(dummyUser.id, dummyAssessmentId, dummyTakenDate)
 
@@ -228,12 +239,12 @@ class UserAssessmentServiceSpec extends Specification {
         maybeUserAssessmentSummaries.isFailure()
     }
 
-    def "getSummaries 2: returns mapped assessment summaries"(){
+    def "getSummaries 2: returns mapped assessment summaries"() {
         when:
-        Try<List<UserAssessmentSummary>> maybeUserAssessmentSummaries = userAssessmentService.getSummaries(dummyUser.id, AssessmentCategory.MATHEMATICS, dummyTakenDate)
+        Try<List<UserAssessmentSummary>> maybeUserAssessmentSummaries = userAssessmentService.getSummaries(dummyUser.id, "mathGroupId", dummyTakenDate)
 
         then:
-        1 * userAssessmentRepository.getUserAssessments(dummyUser.id, AssessmentCategory.MATHEMATICS, dummyTakenDate) >> new Try.Success<List<UserAssessment>>(dummyUserAssessments)
+        1 * userAssessmentRepository.getUserAssessments(dummyUser.id, "mathGroupId", dummyTakenDate) >> new Try.Success<List<UserAssessment>>(dummyUserAssessments)
 
         then:
         maybeUserAssessmentSummaries.isSuccess()
@@ -247,9 +258,9 @@ class UserAssessmentServiceSpec extends Specification {
         maybeUserAssessmentSummaries.get().get(0).takenDate == dummyUserAssessments.get(0).takenDate
     }
 
-    def "getSummaries 2: repo call fails, i fail"(){
+    def "getSummaries 2: repo call fails, i fail"() {
         when:
-        Try<List<UserAssessmentSummary>> maybeUserAssessmentSummaries = userAssessmentService.getSummaries(dummyUser.id, AssessmentCategory.MATHEMATICS, dummyTakenDate)
+        Try<List<UserAssessmentSummary>> maybeUserAssessmentSummaries = userAssessmentService.getSummaries(dummyUser.id, "mathGroupId", dummyTakenDate)
 
         then:
         1 * userAssessmentRepository.getUserAssessments(*_) >> new Try.Failure<List<UserAssessment>>(new Exception())
@@ -258,13 +269,15 @@ class UserAssessmentServiceSpec extends Specification {
         maybeUserAssessmentSummaries.isFailure()
     }
 
-    def "createUserAssessment: creates a user assessment of correct type"(Assessment dummyAssessment, Class mappedClass){
+    def "createUserAssessment: creates a user assessment of correct type"(Assessment dummyAssessment, Class mappedClass) {
         when:
         Try<UserAssessment> maybeUserAssessment = userAssessmentService.createUserAssessment(dummyUser, dummyAssessment.getId())
 
         then:
-        1 * assessmentRepository.getAssessments(true, _) >> new Try.Success<List<Assessment>>(dummyAssessments)
-        1 * userAssessmentRepository.getLatestUserAssessments(dummyUser.getId(), dummyAssessments.collect{ it.getId() }) >> new Try.Success<List<UserAssessment>>([])
+        1 * assessmentRepository.getAssessments(true, null) >> new Try.Success<List<Assessment>>(dummyAssessments)
+        1 * userAssessmentRepository.getLatestUserAssessments(dummyUser.getId(), dummyAssessments.collect {
+            it.getId()
+        }) >> new Try.Success<Map<String, UserAssessment>>(new HashMap<String, UserAssessment>())
         1 * userAssessmentRepository.getUserAssessments(dummyUser.getId()) >> new Try.Success<List<UserAssessment>>([])
         1 * userAssessmentRepository.insertUserAssessment(_) >> new Try.Success<Void>(null)
 
@@ -280,13 +293,15 @@ class UserAssessmentServiceSpec extends Specification {
         dummyAssessments.get(3) | WritingPromptUserAssessment
     }
 
-    def "createUserAssessment: if we have a failed prereq, fail"(){
+    def "createUserAssessment: if we have a failed prereq, fail"() {
         when:
         Try<UserAssessment> maybeUserAssessment = userAssessmentService.createUserAssessment(dummyUser, dummyAssessments.get(0).getId())
 
         then:
-        1 * assessmentRepository.getAssessments(true, _) >> new Try.Success<List<Assessment>>(dummyAssessments)
-        1 * userAssessmentRepository.getLatestUserAssessments(dummyUser.getId(), dummyAssessments.collect{ it.getId() }) >> new Try.Success<List<UserAssessment>>([])
+        1 * assessmentRepository.getAssessments(true, null) >> new Try.Success<List<Assessment>>(dummyAssessments)
+        1 * userAssessmentRepository.getLatestUserAssessments(dummyUser.getId(), dummyAssessments.collect {
+            it.getId()
+        }) >> new Try.Success<Map<String, UserAssessment>>(new HashMap<String, UserAssessment>())
         1 * userAssessmentRepository.getUserAssessments(dummyUser.getId()) >> new Try.Success<List<UserAssessment>>([])
         1 * assessmentPrereqEvaluator.getFailedPrereqs(_) >> [new AssessmentPrereq()]
         0 * userAssessmentRepository.insertUserAssessment(_)
@@ -297,19 +312,23 @@ class UserAssessmentServiceSpec extends Specification {
     }
 
     @Unroll
-    def "createUserAssessment: if latest user assessment is in progress or ungraded, return that instead"(boolean returnsExisting, UserAssessment latestUserAssessment){
+    def "createUserAssessment: if latest user assessment is in progress or ungraded, return that instead"(boolean returnsExisting, UserAssessment latestUserAssessment) {
         when:
         Try<UserAssessment> maybeUserAssessment = userAssessmentService.createUserAssessment(dummyUser, dummyAssessments.get(0).getId())
 
         then:
-        1 * assessmentRepository.getAssessments(true, _) >> new Try.Success<List<Assessment>>(dummyAssessments)
-        1 * userAssessmentRepository.getLatestUserAssessments(dummyUser.getId(), dummyAssessments.collect{ it.getId() }) >> new Try.Success<List<UserAssessment>>([latestUserAssessment])
-
-        if(!returnsExisting){
+        1 * assessmentRepository.getAssessments(true, null) >> new Try.Success<List<Assessment>>(dummyAssessments)
+        1 * userAssessmentRepository.getLatestUserAssessments(dummyUser.getId(), dummyAssessments.collect {
+            it.getId()
+        }) >> new Try.Success<Map<String, UserAssessment>>([latestUserAssessment].stream().
+                collect(Collectors.toMap(new Function<UserAssessment, String>() {
+                    String apply(UserAssessment p) { return p.getAssessmentId(); }
+                },
+                        Function.<UserAssessment> identity())))
+        if (!returnsExisting) {
             1 * userAssessmentRepository.getUserAssessments(dummyUser.getId()) >> new Try.Success<List<UserAssessment>>([latestUserAssessment])
             1 * userAssessmentRepository.insertUserAssessment(_) >> new Try.Success<Void>(null)
-        }
-        else{
+        } else {
             0 * userAssessmentRepository.getUserAssessments(_)
             0 * userAssessmentRepository.insertUserAssessment(_)
         }
@@ -317,10 +336,9 @@ class UserAssessmentServiceSpec extends Specification {
         then:
         maybeUserAssessment.isSuccess()
 
-        if(returnsExisting){
+        if (returnsExisting) {
             maybeUserAssessment.get() == latestUserAssessment
-        }
-        else{
+        } else {
             maybeUserAssessment.get() != latestUserAssessment
         }
 
@@ -332,12 +350,12 @@ class UserAssessmentServiceSpec extends Specification {
 
     }
 
-    def "createUserAssessment: getAssessment fails, i fail"(){
+    def "createUserAssessment: getAssessment fails, i fail"() {
         when:
         Try<UserAssessment> maybeUserAssessment = userAssessmentService.createUserAssessment(dummyUser, dummyAssessments.get(0).getId())
 
         then:
-        1 * assessmentRepository.getAssessments(true, _) >> new Try.Failure<List<Assessment>>(new Exception())
+        1 * assessmentRepository.getAssessments(true, null) >> new Try.Failure<List<Assessment>>(new Exception())
         0 * userAssessmentRepository.getUserAssessments(*_)
         0 * userAssessmentRepository.getLatestUserAssessment(*_)
         0 * userAssessmentRepository.insertUserAssessment(_)
@@ -346,12 +364,12 @@ class UserAssessmentServiceSpec extends Specification {
         maybeUserAssessment.isFailure()
     }
 
-    def "createUserAssessment: getAssessments returns none, produces not found error"(){
+    def "createUserAssessment: getAssessments returns none, produces not found error"() {
         when:
         Try<UserAssessment> maybeUserAssessment = userAssessmentService.createUserAssessment(dummyUser, dummyAssessments.get(0).getId())
 
         then:
-        1 * assessmentRepository.getAssessments(true, _) >> new Try.Success<List<Assessment>>([])
+        1 * assessmentRepository.getAssessments(true, null) >> new Try.Success<List<Assessment>>([])
         0 * userAssessmentRepository.getLatestUserAssessment(*_)
         0 * userAssessmentRepository.insertUserAssessment(_)
 
@@ -359,26 +377,30 @@ class UserAssessmentServiceSpec extends Specification {
         maybeUserAssessment.isFailure()
     }
 
-    def "createUserAssessment: getUserAssessments fails on something other than RepoNotFound, i fail"(){
+    def "createUserAssessment: getUserAssessments fails on something other than RepoNotFound, i fail"() {
         when:
         Try<UserAssessment> maybeUserAssessment = userAssessmentService.createUserAssessment(dummyUser, dummyAssessments.get(0).getId())
 
         then:
-        1 * assessmentRepository.getAssessments(true, _) >> new Try.Success<List<Assessment>>(dummyAssessments)
-        1 * userAssessmentRepository.getLatestUserAssessments(dummyUser.getId(), dummyAssessments.collect{ it.getId() }) >> new Try.Failure<List<UserAssessment>>(new Exception())
+        1 * assessmentRepository.getAssessments(true, null) >> new Try.Success<List<Assessment>>(dummyAssessments)
+        1 * userAssessmentRepository.getLatestUserAssessments(dummyUser.getId(), dummyAssessments.collect {
+            it.getId()
+        }) >> new Try.Failure<List<UserAssessment>>(new Exception())
         0 * userAssessmentRepository.insertUserAssessment(_)
 
         then:
         maybeUserAssessment.isFailure()
     }
 
-    def "createUserAssessment: insertUserAssessment fails, i fail"(){
+    def "createUserAssessment: insertUserAssessment fails, i fail"() {
         when:
         Try<UserAssessment> maybeUserAssessment = userAssessmentService.createUserAssessment(dummyUser, dummyAssessments.get(0).getId())
 
         then:
-        1 * assessmentRepository.getAssessments(true, _) >> new Try.Success<List<Assessment>>(dummyAssessments)
-        1 * userAssessmentRepository.getLatestUserAssessments(dummyUser.getId(), dummyAssessments.collect{ it.getId() }) >> new Try.Success<List<UserAssessment>>([])
+        1 * assessmentRepository.getAssessments(true, null) >> new Try.Success<List<Assessment>>(dummyAssessments)
+        1 * userAssessmentRepository.getLatestUserAssessments(dummyUser.getId(), dummyAssessments.collect {
+            it.getId()
+        }) >> new Try.Success<Map<String, UserAssessment>>(new HashMap<String, UserAssessment>())
         1 * userAssessmentRepository.getUserAssessments(dummyUser.getId()) >> new Try.Success<List<UserAssessment>>([])
         1 * userAssessmentRepository.insertUserAssessment(_) >> new Try.Failure<Void>(null)
 
@@ -386,7 +408,7 @@ class UserAssessmentServiceSpec extends Specification {
         maybeUserAssessment.isFailure()
     }
 
-    def "getAnswers: returns answers for CATUserAssessment"(){
+    def "getAnswers: returns answers for CATUserAssessment"() {
         setup:
         CATUserAssessment userAssessment = dummyUserAssessments.get(0);
 
@@ -403,7 +425,7 @@ class UserAssessmentServiceSpec extends Specification {
         returnedItemGroups.get(0).id == userAssessment.itemGroups.get(0).id
     }
 
-    def "getAnswers: fails if IN_PROGRESS"(){
+    def "getAnswers: fails if IN_PROGRESS"() {
         setup:
         CATUserAssessment userAssessment = dummyUserAssessments.get(0);
         userAssessment.status = CompletionStatus.IN_PROGRESS
@@ -419,7 +441,7 @@ class UserAssessmentServiceSpec extends Specification {
         maybeUserAssessmentAnswers.failed().get() instanceof IncompatibleStatusException
     }
 
-    def "getAnswers: returns answers for MultipleChoiceUserAssessment"(){
+    def "getAnswers: returns answers for MultipleChoiceUserAssessment"() {
         setup:
         MultipleChoiceUserAssessment userAssessment = dummyUserAssessments.get(1);
 
@@ -436,7 +458,7 @@ class UserAssessmentServiceSpec extends Specification {
         returnedItemGroups.get(0).id == userAssessment.itemGroups.get(0).id
     }
 
-    def "getAnswers: fails for WritingPromptUserAssessment"(){
+    def "getAnswers: fails for WritingPromptUserAssessment"() {
         setup:
         WritingPromptUserAssessment userAssessment = dummyUserAssessments.get(2);
 
@@ -450,7 +472,7 @@ class UserAssessmentServiceSpec extends Specification {
         maybeUserAssessmentAnswers.isFailure()
     }
 
-    def "getAnswers: getUserAssessment fails, i fail"(){
+    def "getAnswers: getUserAssessment fails, i fail"() {
         setup:
         MultipleChoiceUserAssessment userAssessment = dummyUserAssessments.get(1);
 
@@ -464,7 +486,7 @@ class UserAssessmentServiceSpec extends Specification {
         maybeUserAssessmentAnswers.isFailure()
     }
 
-    def "getUserAssessmentWritingSample: returns writing sample for WritingPromptUserAssessment"(){
+    def "getUserAssessmentWritingSample: returns writing sample for WritingPromptUserAssessment"() {
         setup:
         WritingPromptUserAssessment userAssessment = dummyUserAssessments.get(2);
 
@@ -479,7 +501,7 @@ class UserAssessmentServiceSpec extends Specification {
         maybeWritingSample.get().sample == userAssessment.writingPrompt.sample
     }
 
-    def "getUserAssessmentWritingSample: returns null if writingSample is null"(){
+    def "getUserAssessmentWritingSample: returns null if writingSample is null"() {
         setup:
         WritingPromptUserAssessment userAssessment = dummyUserAssessments.get(2);
         userAssessment.writingPrompt = null
@@ -495,7 +517,10 @@ class UserAssessmentServiceSpec extends Specification {
         maybeWritingSample.get() == null
     }
 
-    def "getUserAssessmentWritingSample: fails for anything but WritingPromptUserAssessment"(UserAssessment userAssessment){
+    def "getUserAssessmentWritingSample: fails for anything but WritingPromptUserAssessment"(UserAssessment userAssessment) {
+        setup:
+
+
         when:
         Try<String> maybeWritingSample = userAssessmentService.getWritingSample(dummyUser.getId(), userAssessment.getId(), dummyTakenDate)
 
@@ -509,26 +534,28 @@ class UserAssessmentServiceSpec extends Specification {
         userAssessment << dummyUserAssessments
     }
 
-    def "getUserAssessmentWritingSample: getUserAssessment fails, i fail"(){
+    def "getUserAssessmentWritingSample: getUserAssessment fails, i fail"() {
         when:
         Try<String> maybeWritingSample = userAssessmentService.getWritingSample(dummyUser.getId(), dummyUserAssessments.get(2).getId(), dummyTakenDate)
 
         then:
         1 * userAssessmentRepository.getUserAssessment(_, _, _) >> new Try.Failure<UserAssessment>(new Exception())
 
+
+
         then:
         maybeWritingSample.isFailure()
     }
 
-    def "getUserAssessmentTakenDates: returns all dates taken for an assessment"(){
+    def "getUserAssessmentTakenDates: returns all dates taken for an assessment"() {
         setup:
-        List<Instant> takenDates = [ Instant.parse("2015-01-02T00:00:00.000Z"), Instant.parse("2015-01-03T00:00:00.000Z"), Instant.parse("2015-01-04T00:00:00.000Z") ]
+        List<Instant> takenDates = [Instant.parse("2015-01-02T00:00:00.000Z"), Instant.parse("2015-01-03T00:00:00.000Z"), Instant.parse("2015-01-04T00:00:00.000Z")]
 
         when:
         Try<List<UserAssessmentTakenDate>> maybeTakenDates = userAssessmentService.getTakenDates(dummyUser.getId(), dummyAssessments.get(0).getAssessmentCategory())
 
         then:
-        1 * userAssessmentRepository.getUserAssessments(dummyUser.getId(), dummyAssessments.get(0).getAssessmentCategory(), null) >> new Try.Success<List<UserAssessment>>([
+        1 * userAssessmentRepository.getUserAssessmentsByGroupId(dummyUser.getId(), dummyAssessments.get(0).getAssessmentCategory(), null) >> new Try.Success<List<UserAssessment>>([
                 new CATUserAssessment(status: CompletionStatus.IN_PROGRESS, takenDate: takenDates.get(0)),
                 new CATUserAssessment(status: CompletionStatus.GRADED, takenDate: takenDates.get(1)),
                 new CATUserAssessment(status: CompletionStatus.GRADED, takenDate: takenDates.get(2))
@@ -536,23 +563,23 @@ class UserAssessmentServiceSpec extends Specification {
 
         then:
         maybeTakenDates.isSuccess()
-        maybeTakenDates.get().find{ it.getTakenDate() == takenDates.get(0) } == null //this one is in progress
-        maybeTakenDates.get().find{ it.getTakenDate() == takenDates.get(1) } != null
-        maybeTakenDates.get().find{ it.getTakenDate() == takenDates.get(2) } != null
+        maybeTakenDates.get().find { it.getTakenDate() == takenDates.get(0) } == null //this one is in progress
+        maybeTakenDates.get().find { it.getTakenDate() == takenDates.get(1) } != null
+        maybeTakenDates.get().find { it.getTakenDate() == takenDates.get(2) } != null
     }
 
-    def "getUserAssessmentTakenDates: getUserAssessments fails, i fail"(){
+    def "getUserAssessmentTakenDates: getUserAssessments fails, i fail"() {
         when:
         Try<List<UserAssessmentTakenDate>> maybeTakenDates = userAssessmentService.getTakenDates(dummyUser.getId(), dummyAssessments.get(0).getAssessmentCategory())
 
         then:
-        1 * userAssessmentRepository.getUserAssessments(dummyUser.getId(), dummyAssessments.get(0).getAssessmentCategory(), null) >> new Try.Failure<List<UserAssessment>>(new Exception())
+        1 * userAssessmentRepository.getUserAssessmentsByGroupId(dummyUser.getId(), dummyAssessments.get(0).getAssessmentCategory(), null) >> new Try.Failure<List<UserAssessment>>(new Exception())
 
         then:
         maybeTakenDates.isFailure()
     }
 
-    def "saveWritingSample: success"(){
+    def "saveWritingSample: success"() {
         setup:
         SaveWritingSampleRequest saveWritingSampleRequest = new SaveWritingSampleRequest(sample: "hey hey hey")
         WritingPromptUserAssessment latestUserAssessment = new WritingPromptUserAssessment(status: CompletionStatus.IN_PROGRESS, assessmentType: AssessmentType.WRITING_PROMPT)
@@ -577,7 +604,7 @@ class UserAssessmentServiceSpec extends Specification {
     }
 
     @Unroll
-    def "saveWritingSample: failure if not in progress"(CompletionStatus completionStatus, boolean isSuccess){
+    def "saveWritingSample: failure if not in progress"(CompletionStatus completionStatus, boolean isSuccess) {
         setup:
         SaveWritingSampleRequest saveWritingSampleRequest = new SaveWritingSampleRequest(sample: "hey hey hey")
         WritingPromptUserAssessment latestUserAssessment = new WritingPromptUserAssessment(status: completionStatus, assessmentType: AssessmentType.WRITING_PROMPT)
@@ -599,7 +626,7 @@ class UserAssessmentServiceSpec extends Specification {
     }
 
     @Unroll
-    def "saveWritingSample: failure if not writing prompt"(AssessmentType assessmentType, boolean isSuccess){
+    def "saveWritingSample: failure if not writing prompt"(AssessmentType assessmentType, boolean isSuccess) {
         setup:
         SaveWritingSampleRequest saveWritingSampleRequest = new SaveWritingSampleRequest(sample: "hey hey hey")
         WritingPromptUserAssessment latestUserAssessment = new WritingPromptUserAssessment(status: CompletionStatus.IN_PROGRESS, assessmentType: assessmentType)
@@ -622,7 +649,7 @@ class UserAssessmentServiceSpec extends Specification {
     }
 
 
-    def "saveWritingSample: getLatestUserAssessment fails, i fail"(){
+    def "saveWritingSample: getLatestUserAssessment fails, i fail"() {
         when:
         Try<WritingPrompt> maybeWritingSample = userAssessmentService.saveWritingSample(dummyUser.getId(), dummyAssessments.get(2).getId(), new SaveWritingSampleRequest())
 
@@ -634,7 +661,7 @@ class UserAssessmentServiceSpec extends Specification {
         maybeWritingSample.isFailure()
     }
 
-    def "saveWritingSample: saveUserAssessment fails, i fail"(){
+    def "saveWritingSample: saveUserAssessment fails, i fail"() {
         setup:
         WritingPromptUserAssessment latestUserAssessment = new WritingPromptUserAssessment(status: CompletionStatus.IN_PROGRESS, assessmentType: AssessmentType.WRITING_PROMPT)
 
@@ -652,7 +679,7 @@ class UserAssessmentServiceSpec extends Specification {
         maybeWritingSample.isFailure()
     }
 
-    def "saveWritingSample: getAssessment fails, i fail"(){
+    def "saveWritingSample: getAssessment fails, i fail"() {
         setup:
         WritingPromptUserAssessment latestUserAssessment = new WritingPromptUserAssessment(status: CompletionStatus.IN_PROGRESS, assessmentType: AssessmentType.WRITING_PROMPT)
 
@@ -668,7 +695,7 @@ class UserAssessmentServiceSpec extends Specification {
         maybeWritingSample.isFailure()
     }
 
-    def "getLatestSummary: returns mapped assessment summary"(){
+    def "getLatestSummary: returns mapped assessment summary"() {
         when:
         Try<UserAssessmentSummary> maybeUserAssessmentSummary = userAssessmentService.getLatestSummary(dummyUser.id, dummyAssessmentId)
 
@@ -680,7 +707,7 @@ class UserAssessmentServiceSpec extends Specification {
         maybeUserAssessmentSummary.get().assessmentId == dummyUserAssessments.get(0).assessmentId
     }
 
-    def "getLatestSummary: repo call fails, i fail"(){
+    def "getLatestSummary: repo call fails, i fail"() {
         when:
         Try<UserAssessmentSummary> maybeUserAssessmentSummary = userAssessmentService.getLatestSummary(dummyUser.id, dummyAssessmentId)
 
@@ -691,30 +718,30 @@ class UserAssessmentServiceSpec extends Specification {
         maybeUserAssessmentSummary.isFailure()
     }
 
-    def "getLatestSummary 2: returns mapped assessment summary"(){
+    def "getLatestSummary 2: returns mapped assessment summary"() {
         when:
-        Try<UserAssessmentSummary> maybeUserAssessmentSummary = userAssessmentService.getLatestSummary(dummyUser.id, AssessmentCategory.MATHEMATICS)
+        Try<UserAssessmentSummary> maybeUserAssessmentSummary = userAssessmentService.getLatestSummary(dummyUser.id, "mathGroupId")
 
         then:
-        1 * userAssessmentRepository.getLatestUserAssessment(dummyUser.id, AssessmentCategory.MATHEMATICS) >> new Try.Success<UserAssessment>(dummyUserAssessments.get(0))
+        1 * userAssessmentRepository.getLatestUserAssessment(dummyUser.id, "mathGroupId") >> new Try.Success<UserAssessment>(dummyUserAssessments.get(0))
 
         then:
         maybeUserAssessmentSummary.isSuccess()
         maybeUserAssessmentSummary.get().assessmentId == dummyUserAssessments.get(0).assessmentId
     }
 
-    def "getLatestSummary 2: repo call fails, i fail"(){
+    def "getLatestSummary 2: repo call fails, i fail"() {
         when:
-        Try<UserAssessmentSummary> maybeUserAssessmentSummary = userAssessmentService.getLatestSummary(dummyUser.id, AssessmentCategory.MATHEMATICS)
+        Try<UserAssessmentSummary> maybeUserAssessmentSummary = userAssessmentService.getLatestSummary(dummyUser.id, "mathGroupId")
 
         then:
-        1 * userAssessmentRepository.getLatestUserAssessment(dummyUser.id, AssessmentCategory.MATHEMATICS) >> new Try.Failure<UserAssessment>(new Exception())
+        1 * userAssessmentRepository.getLatestUserAssessment(dummyUser.id, "mathGroupId") >> new Try.Failure<UserAssessment>(new Exception())
 
         then:
         maybeUserAssessmentSummary.isFailure()
     }
 
-    def "gradeUserAssessments - graded: success"(){
+    def "gradeUserAssessments - graded: success"() {
 
         setup:
         AssessmentCategory[] assessmentCategories = null;
@@ -740,7 +767,7 @@ class UserAssessmentServiceSpec extends Specification {
         maybeUserAssessment.isSuccess()
     }
 
-    def "gradeUserAssessments - ungraded: success"(){
+    def "gradeUserAssessments - ungraded: success"() {
 
         setup:
         AssessmentCategory[] assessmentCategories = null;
@@ -771,7 +798,7 @@ class UserAssessmentServiceSpec extends Specification {
         maybeUserAssessment.isSuccess()
     }
 
-    def "gradeUserAssessments: get user assessment fail"(){
+    def "gradeUserAssessments: get user assessment fail"() {
 
         setup:
         AssessmentCategory[] assessmentCategories = null;
@@ -790,7 +817,7 @@ class UserAssessmentServiceSpec extends Specification {
         maybeUserAssessment.isFailure()
     }
 
-    def "gradeUserAssessments: queue fail"(){
+    def "gradeUserAssessments: queue fail"() {
 
         setup:
         AssessmentCategory[] assessmentCategories = null;
@@ -810,7 +837,7 @@ class UserAssessmentServiceSpec extends Specification {
         maybeUserAssessment.isFailure()
     }
 
-    def "updateUserAssessment: autograde success"(){
+    def "updateUserAssessment: autograde success"() {
         setup:
         UpdateUserAssessmentRequest updateUserAssessmentRequest = new UpdateUserAssessmentRequest(id: dummyUserAssessmentId, status: CompletionStatus.COMPLETED)
 
@@ -834,7 +861,7 @@ class UserAssessmentServiceSpec extends Specification {
     }
 
 
-    def "updateUserAssessment: autograde failed, successfully put on queue"(){
+    def "updateUserAssessment: autograde failed, successfully put on queue"() {
         setup:
         UpdateUserAssessmentRequest updateUserAssessmentRequest = new UpdateUserAssessmentRequest(id: dummyUserAssessmentId, status: CompletionStatus.COMPLETED)
 
@@ -862,7 +889,7 @@ class UserAssessmentServiceSpec extends Specification {
         maybeUserAssessment.get().status == CompletionStatus.COMPLETED
     }
 
-    def "updateUserAssessment: autograde failed, getUserAssessmentById fails, i fail"(){
+    def "updateUserAssessment: autograde failed, getUserAssessmentById fails, i fail"() {
         setup:
         UpdateUserAssessmentRequest updateUserAssessmentRequest = new UpdateUserAssessmentRequest(id: dummyUserAssessmentId, status: CompletionStatus.COMPLETED)
 
@@ -880,7 +907,7 @@ class UserAssessmentServiceSpec extends Specification {
         maybeUserAssessment.isFailure()
     }
 
-    def "updateUserAssessment: autograde failed, saveUserAssessment fails, i fail"(){
+    def "updateUserAssessment: autograde failed, saveUserAssessment fails, i fail"() {
         setup:
         UpdateUserAssessmentRequest updateUserAssessmentRequest = new UpdateUserAssessmentRequest(id: dummyUserAssessmentId, status: CompletionStatus.COMPLETED)
 
@@ -902,7 +929,7 @@ class UserAssessmentServiceSpec extends Specification {
         maybeUserAssessment.isFailure()
     }
 
-    def "updateUserAssessment: autograde failed, queueUserAssessmentForGrading fails, i fail"(){
+    def "updateUserAssessment: autograde failed, queueUserAssessmentForGrading fails, i fail"() {
         setup:
         UpdateUserAssessmentRequest updateUserAssessmentRequest = new UpdateUserAssessmentRequest(id: dummyUserAssessmentId, status: CompletionStatus.COMPLETED)
 
@@ -924,7 +951,7 @@ class UserAssessmentServiceSpec extends Specification {
         maybeUserAssessment.isFailure()
     }
 
-    def "updateUserAssessment: manual grade success"(){
+    def "updateUserAssessment: manual grade success"() {
         setup:
         dummyUser.roles.add("ROLE_ADMIN")
 
@@ -952,7 +979,7 @@ class UserAssessmentServiceSpec extends Specification {
         maybeUserAssessment.isSuccess()
     }
 
-    def "updateUserAssessment: manual grade bad permissions"(){
+    def "updateUserAssessment: manual grade bad permissions"() {
         setup:
         UpdateUserAssessmentRequest updateUserAssessmentRequest = new UpdateUserAssessmentRequest(status: CompletionStatus.GRADED)
 
@@ -967,7 +994,7 @@ class UserAssessmentServiceSpec extends Specification {
         maybeUserAssessment.failed().get() instanceof InsufficientPermissionsException
     }
 
-    def "updateUserAssessment: bad request #1"(){
+    def "updateUserAssessment: bad request #1"() {
         setup:
         dummyUser.roles.add("ROLE_ADMIN")
         UpdateUserAssessmentRequest updateUserAssessmentRequest = new UpdateUserAssessmentRequest(
@@ -987,7 +1014,7 @@ class UserAssessmentServiceSpec extends Specification {
         maybeUserAssessment.failed().get() instanceof BadInputException
     }
 
-    def "updateUserAssessment: bad request #2"(){
+    def "updateUserAssessment: bad request #2"() {
         setup:
         dummyUser.roles.add("ROLE_ADMIN")
         UpdateUserAssessmentRequest updateUserAssessmentRequest = new UpdateUserAssessmentRequest(
@@ -1007,7 +1034,7 @@ class UserAssessmentServiceSpec extends Specification {
         maybeUserAssessment.failed().get() instanceof BadInputException
     }
 
-    def "updateUserAssessment: bad request #3"(){
+    def "updateUserAssessment: bad request #3"() {
         setup:
         dummyUser.roles.add("ROLE_ADMIN")
         UpdateUserAssessmentRequest updateUserAssessmentRequest = new UpdateUserAssessmentRequest(
@@ -1027,25 +1054,25 @@ class UserAssessmentServiceSpec extends Specification {
         maybeUserAssessment.failed().get() instanceof BadInputException
     }
 
-    def "getUserAssessment: success"(){
+    def "getUserAssessment: success"() {
         when:
-        Try<UserAssessment> maybeUserAssessment = userAssessmentService.getUserAssesment(dummyUser.getId(), dummyUserAssessments.get(0).getId())
+        Try<UserAssessment> maybeUserAssessment = userAssessmentService.getUserAssessment(dummyUser.getId(), dummyUserAssessments.get(0).getId())
 
         then:
         1 * userAssessmentRepository.getUserAssessmentById(dummyUser.getId(), dummyUserAssessments.get(0).getId()) >> new Try.Success<UserAssessment>(dummyUserAssessments.get(0))
         maybeUserAssessment.isSuccess()
     }
 
-    def "getUserAssessment: getUserAssessmentById fails, i fail"(){
+    def "getUserAssessment: getUserAssessmentById fails, i fail"() {
         when:
-        Try<UserAssessment> maybeUserAssessment = userAssessmentService.getUserAssesment(dummyUser.getId(), dummyUserAssessments.get(0).getId())
+        Try<UserAssessment> maybeUserAssessment = userAssessmentService.getUserAssessment(dummyUser.getId(), dummyUserAssessments.get(0).getId())
 
         then:
         1 * userAssessmentRepository.getUserAssessmentById(dummyUser.getId(), dummyUserAssessments.get(0).getId()) >> new Try.Failure<UserAssessment>(new Exception())
         maybeUserAssessment.isFailure()
     }
 
-    def "saveUserAssessment: success"(){
+    def "saveUserAssessment: success"() {
         when:
         Try<Void> maybeSaved = userAssessmentService.saveUserAssessment(dummyUserAssessments.get(0))
 
@@ -1054,7 +1081,7 @@ class UserAssessmentServiceSpec extends Specification {
         maybeSaved.isSuccess()
     }
 
-    def "saveUserAssessment: getUserAssessmentById fails, i fail"(){
+    def "saveUserAssessment: getUserAssessmentById fails, i fail"() {
         when:
         Try<Void> maybeSaved = userAssessmentService.saveUserAssessment(dummyUserAssessments.get(0))
 
@@ -1063,7 +1090,7 @@ class UserAssessmentServiceSpec extends Specification {
         maybeSaved.isFailure()
     }
 
-    def "getWritingPrompt: success"(){
+    def "getWritingPrompt: success"() {
         when:
         Try<WritingPrompt> maybeWritingPrompt = userAssessmentService.getWritingPrompt(dummyUser.getId(), dummyUserAssessments.get(2).getId())
 
@@ -1072,10 +1099,10 @@ class UserAssessmentServiceSpec extends Specification {
 
         then:
         maybeWritingPrompt.isSuccess()
-        maybeWritingPrompt.get().sample == ((WritingPromptUserAssessment)dummyUserAssessments.get(2)).getWritingPrompt().sample
+        maybeWritingPrompt.get().sample == ((WritingPromptUserAssessment) dummyUserAssessments.get(2)).getWritingPrompt().sample
     }
 
-    def "getWritingPrompt: getLatestUserAssessment fails, i fail"(){
+    def "getWritingPrompt: getLatestUserAssessment fails, i fail"() {
         when:
         Try<WritingPrompt> maybeWritingPrompt = userAssessmentService.getWritingPrompt(dummyUser.getId(), dummyUserAssessments.get(2).getId())
 
@@ -1086,7 +1113,7 @@ class UserAssessmentServiceSpec extends Specification {
         maybeWritingPrompt.isFailure()
     }
 
-    def "getWritingPrompt: user assessment is not WRITING_PROMPT, i fail"(){
+    def "getWritingPrompt: user assessment is not WRITING_PROMPT, i fail"() {
         when:
         Try<WritingPrompt> maybeWritingPrompt = userAssessmentService.getWritingPrompt(dummyUser.getId(), dummyUserAssessments.get(0).getId())
 
@@ -1098,7 +1125,7 @@ class UserAssessmentServiceSpec extends Specification {
         maybeWritingPrompt.failed().get() instanceof IncompatibleTypeException
     }
 
-    def "getWritingPrompt: user assessment is not IN_PROGRESS, i fail"(){
+    def "getWritingPrompt: user assessment is not IN_PROGRESS, i fail"() {
         setup:
         dummyUserAssessments.get(2).setStatus(CompletionStatus.COMPLETED)
 
@@ -1113,7 +1140,7 @@ class UserAssessmentServiceSpec extends Specification {
         maybeWritingPrompt.failed().get() instanceof IncompatibleStatusException
     }
 
-    def "getWritingPrompt: success retrieving from Assessment"(){
+    def "getWritingPrompt: success retrieving from Assessment"() {
         when:
         Try<WritingPrompt> maybeWritingPrompt = userAssessmentService.getWritingPrompt(dummyUser.getId(), dummyUserAssessments.get(3).getId())
 
@@ -1123,10 +1150,10 @@ class UserAssessmentServiceSpec extends Specification {
 
         then:
         maybeWritingPrompt.isSuccess()
-        maybeWritingPrompt.get().sample == ((WritingAssessment)dummyAssessments.get(3)).getWritingPrompt().sample
+        maybeWritingPrompt.get().sample == ((WritingAssessment) dummyAssessments.get(3)).getWritingPrompt().sample
     }
 
-    def "getWritingPrompt: getAssessment fails, i fail"(){
+    def "getWritingPrompt: getAssessment fails, i fail"() {
         when:
         Try<WritingPrompt> maybeWritingPrompt = userAssessmentService.getWritingPrompt(dummyUser.getId(), dummyUserAssessments.get(3).getId())
 
@@ -1138,7 +1165,7 @@ class UserAssessmentServiceSpec extends Specification {
         maybeWritingPrompt.isFailure()
     }
 
-    def "getSummaries (by status): returns mapped assessment summaries"(){
+    def "getSummaries (by status): returns mapped assessment summaries"() {
         setup:
         List<CompletionStatus> statuses = [CompletionStatus.COMPLETED];
         List<ScoringType> scoringTypes = [ScoringType.AVERAGE, ScoringType.SUM];
@@ -1161,7 +1188,7 @@ class UserAssessmentServiceSpec extends Specification {
         maybeUserAssessmentSummaries.get().get(0).takenDate == dummyUserAssessments.get(0).takenDate
     }
 
-    def "getSummaries (by status): repo call fails, i fail"(){
+    def "getSummaries (by status): repo call fails, i fail"() {
         setup:
         List<CompletionStatus> statuses = [CompletionStatus.COMPLETED];
         List<ScoringType> scoringTypes = [ScoringType.AVERAGE, ScoringType.SUM];
@@ -1176,7 +1203,7 @@ class UserAssessmentServiceSpec extends Specification {
         maybeUserAssessmentSummaries.isFailure()
     }
 
-    def "getUserAssessmentsForManualGrading: success"(){
+    def "getUserAssessmentsForManualGrading: success"() {
         when:
         Try<List<UserAssessment>> maybeUserAssessments = userAssessmentService.getUserAssessmentsForManualGrading()
 
@@ -1188,7 +1215,7 @@ class UserAssessmentServiceSpec extends Specification {
         maybeUserAssessments.isSuccess()
     }
 
-    def "getUserAssessmentsForManualGrading: getUserAssessments fails, i fail"(){
+    def "getUserAssessmentsForManualGrading: getUserAssessments fails, i fail"() {
         when:
         Try<List<UserAssessment>> maybeUserAssessments = userAssessmentService.getUserAssessmentsForManualGrading()
 
@@ -1200,7 +1227,7 @@ class UserAssessmentServiceSpec extends Specification {
         maybeUserAssessments.isFailure()
     }
 
-    def "getUserAssessmentsForManualGrading: getAssessments fails, i fail"(){
+    def "getUserAssessmentsForManualGrading: getAssessments fails, i fail"() {
         when:
         Try<List<UserAssessment>> maybeUserAssessments = userAssessmentService.getUserAssessmentsForManualGrading()
 
@@ -1212,7 +1239,7 @@ class UserAssessmentServiceSpec extends Specification {
         maybeUserAssessments.isFailure()
     }
 
-    def "getCompletedUserAssessmentSummaries: success"(){
+    def "getCompletedUserAssessmentSummaries: success"() {
         setup:
         Instant startDate = Instant.parse("2016-01-01T00:00:00.000Z");
         Instant endDate = Instant.parse("2016-01-01T00:00:00.000Z");
@@ -1228,7 +1255,7 @@ class UserAssessmentServiceSpec extends Specification {
         maybeUserAssessmentSummaries.get().size() == 1
     }
 
-    def "getCompletedUserAssessmentSummaries: getCompletedUserAssessments fails, i fail"(){
+    def "getCompletedUserAssessmentSummaries: getCompletedUserAssessments fails, i fail"() {
         setup:
         Instant startDate = Instant.parse("2016-01-01T00:00:00.000Z");
         Instant endDate = Instant.parse("2016-01-01T00:00:00.000Z");
@@ -1243,7 +1270,7 @@ class UserAssessmentServiceSpec extends Specification {
         maybeUserAssessmentSummaries.isFailure()
     }
 
-    def "getCompletionSummary: has completed all"(){
+    def "getCompletionSummary: has completed all"() {
         when:
         Try<CompletionSummary> maybeResults = userAssessmentService.getCompletionSummary(dummyUser.getId())
 
@@ -1260,7 +1287,7 @@ class UserAssessmentServiceSpec extends Specification {
         maybeResults.get().hasCompletedAllCategories
     }
 
-    def "getCompletionSummary: has not completed all"(){
+    def "getCompletionSummary: has not completed all"() {
         when:
         Try<CompletionSummary> maybeResults = userAssessmentService.getCompletionSummary(dummyUser.getId())
 
@@ -1276,7 +1303,7 @@ class UserAssessmentServiceSpec extends Specification {
         !maybeResults.get().hasCompletedAllCategories
     }
 
-    def "getCompletionSummary: getUserAssessments fails, i fail"(){
+    def "getCompletionSummary: getUserAssessments fails, i fail"() {
         when:
         Try<CompletionSummary> maybeResults = userAssessmentService.getCompletionSummary(dummyUser.getId())
 

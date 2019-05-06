@@ -1,5 +1,6 @@
-package com.daacs.component
+package com.daacs.unit.component
 
+import com.daacs.component.PrereqEvaluatorFactory
 import com.daacs.component.prereq.AssessmentPrereqEvaluator
 import com.daacs.component.prereq.PrereqEvaluator
 import spock.lang.Specification

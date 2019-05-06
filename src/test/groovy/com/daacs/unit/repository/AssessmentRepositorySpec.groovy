@@ -1,10 +1,12 @@
-package com.daacs.repository
+package com.daacs.unit.repository
 
 import com.daacs.component.HystrixCommandFactory
 import com.daacs.framework.exception.RepoNotFoundException
 import com.daacs.model.assessment.Assessment
 import com.daacs.model.assessment.AssessmentCategory
 import com.daacs.model.assessment.ScoringType
+import com.daacs.repository.AssessmentRepository
+import com.daacs.repository.AssessmentRepositoryImpl
 import com.daacs.repository.hystrix.*
 import com.lambdista.util.Try
 import org.springframework.data.mongodb.core.aggregation.Aggregation

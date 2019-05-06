@@ -1,5 +1,6 @@
-package com.daacs.component.prereq
+package com.daacs.unit.component.prereq
 
+import com.daacs.component.prereq.AssessmentPrereqEvaluator
 import com.daacs.model.assessment.*
 import com.daacs.model.assessment.user.CATUserAssessment
 import com.daacs.model.assessment.user.CompletionStatus

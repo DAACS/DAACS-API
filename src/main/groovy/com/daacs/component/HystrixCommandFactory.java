@@ -50,6 +50,10 @@ public class HystrixCommandFactory {
         return new MongoInsertCommand<>(hystrixGroupKey, hystrixCommandKey, mongoTemplate, entity);
     }
 
+    public <T> MongoDeleteByIdCommand<T> getMongoDeleteByIdCommand(String hystrixCommandKey, MongoTemplate mongoTemplate, Query query, Class<T> entityClass){
+        return new MongoDeleteByIdCommand<>(hystrixGroupKey, hystrixCommandKey, mongoTemplate, query, entityClass);
+    }
+
     public <T> MongoFindCommand<T> getMongoFindCommand(String hystrixCommandKey, MongoTemplate mongoTemplate, Query query, Class<T> entityClass){
         return new MongoFindCommand<>(hystrixGroupKey, hystrixCommandKey, mongoTemplate, query, entityClass);
     }

@@ -20,7 +20,7 @@ class WritingAssessment extends Assessment {
 
     @NotNull
     @Valid
-    WritingPrompt writingPrompt;
+    WritingPrompt writingPrompt = new WritingPrompt()
 
     @Valid
     @JsonView([Views.NotExport])

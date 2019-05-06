@@ -1,4 +1,4 @@
-package com.daacs.repository
+package com.daacs.unit.repository
 
 import com.daacs.component.HystrixCommandFactory
 import com.daacs.framework.exception.AlreadyExistsException
@@ -7,6 +7,8 @@ import com.daacs.framework.hystrix.FailureType
 import com.daacs.framework.hystrix.FailureTypeException
 import com.daacs.model.User
 import com.daacs.model.UserSearchResult
+import com.daacs.repository.UserRepository
+import com.daacs.repository.UserRepositoryImpl
 import com.daacs.repository.hystrix.*
 import com.lambdista.util.Try
 import org.springframework.data.mongodb.core.aggregation.*

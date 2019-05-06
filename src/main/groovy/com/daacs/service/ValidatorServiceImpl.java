@@ -22,7 +22,7 @@ public class ValidatorServiceImpl implements ValidatorService {
 
     @Override
     public Try<Void> validate(Object object, Class<?> valueType, Object... validationHints){
-        BindingResult bindingResult = new DirectFieldBindingResult(object, valueType.getName());
+        BindingResult bindingResult = new DirectFieldBindingResult(object, valueType.getSimpleName());
 
         validator.validate(object, bindingResult, validationHints);
 

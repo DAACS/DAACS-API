@@ -76,6 +76,17 @@ class OverallRubricValidatorSpec extends ValidatorSpec {
         !isValid
     }
 
+    def "isValid (WritingAssessment): failure for overall: invalid CompletionScoreMap, empty range"(){
+        setup:
+        writingAssessment.getOverallRubric().setCompletionScoreMap([(CompletionScore.HIGH): null])
+
+        when:
+        boolean isValid = validator.isValid((Assessment) writingAssessment, context)
+
+        then:
+        !isValid
+    }
+
     def "isValid (WritingAssessment): failure for overall: invalid supplementTable"(){
         setup:
         writingAssessment.getOverallRubric().setSupplementTable([])

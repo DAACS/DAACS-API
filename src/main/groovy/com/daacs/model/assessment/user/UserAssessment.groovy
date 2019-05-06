@@ -3,6 +3,7 @@ package com.daacs.model.assessment.user
 import com.daacs.model.assessment.AssessmentCategory
 import com.daacs.model.assessment.AssessmentType
 import com.daacs.model.assessment.ScoringType
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import io.swagger.annotations.ApiModel
 import io.swagger.annotations.ApiModelProperty
@@ -45,6 +46,10 @@ public abstract class UserAssessment {
     AssessmentType assessmentType;
 
     AssessmentCategory assessmentCategory;
+
+    @JsonIgnore
+    @Indexed
+    String assessmentCategoryGroupId
 
     String assessmentLabel;
 

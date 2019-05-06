@@ -1,5 +1,6 @@
-package com.daacs.framework.auth.saml.filter
+package com.daacs.unit.auth.saml.filter
 
+import com.daacs.framework.auth.saml.filter.SamlOauth2LogoutFilter
 import org.springframework.security.core.Authentication
 import org.springframework.security.oauth2.provider.OAuth2Authentication
 import org.springframework.security.oauth2.provider.token.TokenStore

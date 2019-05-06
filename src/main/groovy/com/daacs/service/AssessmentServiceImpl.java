@@ -1,36 +1,45 @@
 package com.daacs.service;
 
 import com.daacs.component.PrereqEvaluatorFactory;
+import com.daacs.component.utils.CategoryGroupUtils;
+import com.daacs.component.utils.UpgradeAssessmentSchemaUtils;
 import com.daacs.component.prereq.PrereqEvaluator;
-import com.daacs.framework.exception.IncompatibleTypeException;
-import com.daacs.framework.exception.InvalidObjectException;
+import com.daacs.framework.exception.ConstraintViolationException;
+import com.daacs.framework.exception.ErrorContainerException;
 import com.daacs.framework.exception.RepoNotFoundException;
 import com.daacs.framework.serializer.DaacsOrikaMapper;
 import com.daacs.framework.serializer.Views;
 import com.daacs.framework.validation.annotations.group.CreateGroup;
 import com.daacs.framework.validation.annotations.group.UpdateGroup;
+import com.daacs.model.ErrorContainer;
 import com.daacs.model.assessment.*;
 import com.daacs.model.assessment.user.CompletionStatus;
 import com.daacs.model.assessment.user.UserAssessment;
 import com.daacs.model.assessment.user.UserAssessmentSummary;
+import com.daacs.model.dto.AssessmentResponse;
+import com.daacs.model.dto.CATItemGroupUpdateAssessmentRequest;
+import com.daacs.model.dto.ItemGroupUpdateAssessmentRequest;
 import com.daacs.model.dto.UpdateAssessmentRequest;
-import com.daacs.model.dto.UpdateLightSideModelsRequest;
+import com.daacs.model.dto.assessmentUpdate.DomainRequest;
+import com.daacs.model.dto.assessmentUpdate.ItemGroupRequest;
+import com.daacs.model.dto.assessmentUpdate.ScoringDomainRequest;
+import com.daacs.model.item.CATItemGroup;
+import com.daacs.model.item.ItemGroup;
+import com.daacs.model.prereqs.Prerequisite;
 import com.daacs.repository.AssessmentRepository;
 import com.daacs.repository.UserAssessmentRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lambdista.util.Try;
-import org.apache.commons.fileupload.FileItemIterator;
-import org.apache.commons.fileupload.FileItemStream;
+import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.fileupload.FileUploadException;
-import org.apache.commons.fileupload.util.Streams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Instant;
@@ -52,6 +61,9 @@ public class AssessmentServiceImpl implements AssessmentService {
     private UserAssessmentRepository userAssessmentRepository;
 
     @Autowired
+    private AssessmentCategoryGroupService assessmentCategoryGroupService;
+
+    @Autowired
     private DaacsOrikaMapper daacsOrikaMapper;
 
     @Autowired
@@ -66,7 +78,13 @@ public class AssessmentServiceImpl implements AssessmentService {
     @Autowired
     private LightSideService lightSideService;
 
-    private List<CompletionStatus> validTakenStatuses = new ArrayList<CompletionStatus>(){{
+    @Autowired
+    private UpgradeAssessmentSchemaUtils upgradeAssessmentSchemaUtils;
+
+    @Autowired
+    private CategoryGroupUtils categoryGroupUtils;
+
+    private List<CompletionStatus> validTakenStatuses = new ArrayList<CompletionStatus>() {{
         add(CompletionStatus.COMPLETED);
         add(CompletionStatus.GRADED);
         add(CompletionStatus.GRADING_FAILURE);
@@ -74,23 +92,35 @@ public class AssessmentServiceImpl implements AssessmentService {
 
     @Override
     public Try<Assessment> getAssessment(String id) {
-        return assessmentRepository.getAssessment(id);
+
+        Try<Assessment> maybeAssessment = assessmentRepository.getAssessment(id);
+        if (maybeAssessment.isFailure()) {
+            return maybeAssessment;
+        }
+        return upgradeAssessmentSchemaUtils.upgradeAssessmentSchema(maybeAssessment.get());
     }
 
     @Override
-    public Try<Assessment> createAssessment(Assessment assessment) {
+    public Try<AssessmentResponse> createAssessment(Assessment assessment) {
+
+        Try<AssessmentResponse> maybeAssessmentResponse = validateAndUpdateAssessment(assessment, CreateGroup.class);
+        if (maybeAssessmentResponse.isFailure()) {
+            return new Try.Failure<>(maybeAssessmentResponse.failed().get());
+        }
+        AssessmentResponse assessmentResponse = maybeAssessmentResponse.get();
+
         Try<Void> maybeResults = assessmentRepository.insertAssessment(assessment);
-        if(maybeResults.isFailure()){
+        if (maybeResults.isFailure()) {
             return new Try.Failure<>(maybeResults.failed().get());
         }
 
-        return new Try.Success<>(assessment);
+        return new Try.Success<>(assessmentResponse);
     }
 
     @Override
     public Try<Assessment> saveAssessment(Assessment assessment) {
         Try<Void> maybeResults = assessmentRepository.saveAssessment(assessment);
-        if(maybeResults.isFailure()){
+        if (maybeResults.isFailure()) {
             return new Try.Failure<>(maybeResults.failed().get());
         }
 
@@ -98,116 +128,148 @@ public class AssessmentServiceImpl implements AssessmentService {
     }
 
     @Override
-    public Try<Assessment> updateAssessment(UpdateAssessmentRequest updateAssessmentRequest){
+    public Try<AssessmentResponse> updateAssessment(UpdateAssessmentRequest updateAssessmentRequest) {
 
         Try<Assessment> maybeAssessment = assessmentRepository.getAssessment(updateAssessmentRequest.getId());
-        if(maybeAssessment.isFailure()){
+        if (maybeAssessment.isFailure()) {
             return new Try.Failure<>(maybeAssessment.failed().get());
         }
-
         Assessment assessment = maybeAssessment.get();
-
         daacsOrikaMapper.map(updateAssessmentRequest, assessment);
 
-        Try<Assessment> maybeSavedAssessment = saveAssessment(assessment);
-        if(maybeSavedAssessment.isFailure()){
-            return new Try.Failure<>(maybeSavedAssessment.failed().get());
-        }
+        //map itemGroups
+        if (updateAssessmentRequest instanceof ItemGroupUpdateAssessmentRequest) { //if not a writing assessment
+            List<ItemGroupRequest> itemGroupRequests = ((ItemGroupUpdateAssessmentRequest) updateAssessmentRequest).getItemGroups();
 
-        return new Try.Success<>(maybeSavedAssessment.get());
-    }
+            if (itemGroupRequests != null) {
 
-    @Override
-    public Try<Assessment> updateWritingAssessment(UpdateLightSideModelsRequest updateLightSideModelsRequest){
-
-        Try<Assessment> maybeAssessment = assessmentRepository.getAssessment(updateLightSideModelsRequest.getAssessmentId());
-        if(maybeAssessment.isFailure()){
-            return new Try.Failure<>(maybeAssessment.failed().get());
-        }
-
-        Assessment assessment = maybeAssessment.get();
-        if(assessment.getAssessmentType() != AssessmentType.WRITING_PROMPT){
-            return new Try.Failure<>(new IncompatibleTypeException("Assessment", new AssessmentType[]{ AssessmentType.WRITING_PROMPT }, assessment.getAssessmentType()));
-        }
-
-        Set<String> domainIds = new HashSet<>();
-        findDomainsThatRequireLightSideFiles(domainIds, assessment.getDomains());
-
-        LightSideConfig lightSideConfig = new LightSideConfig();
-        FileItemIterator fileItemIterator = updateLightSideModelsRequest.getFileItemIterator();
-
-        try {
-            while(fileItemIterator.hasNext()) {
-                //iterate over all POSTed fields, write files and pull out other data
-                FileItemStream fileItem = fileItemIterator.next();
-                String fieldName = fileItem.getFieldName();
-
-                if(fileItem.isFormField()) {
-                    //normal form field
-                    if(fieldName.equals("scoringType")){
-                        InputStream stream = fileItem.openStream();
-                        String value = Streams.asString(stream);
-                        stream.close();
-
-                        assessment.setScoringType(ScoringType.valueOf(value));
+                if (updateAssessmentRequest instanceof CATItemGroupUpdateAssessmentRequest) {
+                    List<CATItemGroup> itemGroups = new ArrayList<>();
+                    for (ItemGroupRequest itemGroupRequest : itemGroupRequests) {
+                        itemGroups.add(daacsOrikaMapper.map(itemGroupRequest, CATItemGroup.class));
                     }
-
+                    ((CATAssessment) assessment).setItemGroups(itemGroups);
+                } else {
+                    List<ItemGroup> itemGroups = new ArrayList<>();
+                    for (ItemGroupRequest itemGroupRequest : itemGroupRequests) {
+                        itemGroups.add(daacsOrikaMapper.map(itemGroupRequest, ItemGroup.class));
+                    }
+                    ((ItemGroupAssessment) assessment).setItemGroups(itemGroups);
                 }
-                else {
-                    if(assessment.getScoringType() != ScoringType.LIGHTSIDE){
-                        return new Try.Failure<>(new IncompatibleTypeException("Assessment", new ScoringType[]{ ScoringType.LIGHTSIDE }, assessment.getScoringType()));
-                    }
+            }
+        }
 
-                    String domainId = fieldName.replace("lightside_", "");
-                    if(!domainIds.contains(domainId)){
-                        return new Try.Failure<>(new InvalidObjectException(
-                                "UpdateLightSideModelsRequest",
-                                "must only contain file for each domain model " + domainIds));
-                    }
+        //map domains
+        List<DomainRequest> domainRequests = updateAssessmentRequest.getDomains();
+        if (domainRequests != null) {
+            List<Domain> domains = new ArrayList<>();
+            for (DomainRequest domainRequest : domainRequests) {
+                if (domainRequest.getDomainType() == DomainType.SCORING) {
+                    domains.add(daacsOrikaMapper.map(domainRequest, ScoringDomain.class));
+                } else {
+                    domains.add(daacsOrikaMapper.map(domainRequest, Domain.class));
+                }
+            }
+            assessment.setDomains(domains);
+        }
 
-                    //this is a file, stream to disk
-                    Try<Void> maybeSaved = lightSideService.saveUploadedModelFile(fileItem);
-                    if (maybeSaved.isFailure()) {
-                        return new Try.Failure<>(maybeSaved.failed().get());
-                    }
+        //map prerequisite
+        List<Prerequisite> prerequisites = updateAssessmentRequest.getPrerequisites();
+        if (prerequisites != null) {
+            assessment.setPrerequisites(prerequisites);
+        }
 
-                    lightSideConfig.getDomainModels().put(domainId, fileItem.getName());
+        //attach new lightSide models to domain if it's a writing assignment
+        if (assessment.getScoringType() == ScoringType.LIGHTSIDE) {
+
+            LightSideConfig lightSideConfig;
+            LightSideConfig oldLightSideConfig = ((WritingAssessment) assessment).getLightSideConfig();
+            if (oldLightSideConfig != null) {
+                lightSideConfig = oldLightSideConfig;
+            } else {
+                lightSideConfig = new LightSideConfig();
+            }
+
+            for (DomainRequest domain : domainRequests) {
+                if (domain.getLightsideModelFilename() != null) {
+                    lightSideConfig.getDomainModels().put(domain.getId(), domain.getLightsideModelFilename());
+                }
+                if (domain.getDomainType() == DomainType.SCORING) {
+                    for (DomainRequest subDomain : ((ScoringDomainRequest) domain).getSubDomains()) {
+                        if (subDomain.getLightsideModelFilename() != null) {
+                            lightSideConfig.getDomainModels().put(subDomain.getId(), subDomain.getLightsideModelFilename());
+                        }
+                    }
                 }
 
             }
-        }
-        catch(FileUploadException ex){
-            return new Try.Failure<>(ex);
-        }
-        catch(IOException ex){
-            return new Try.Failure<>(ex);
-        }
 
-        if(assessment.getScoringType() == ScoringType.LIGHTSIDE){
             ((WritingAssessment) assessment).setLightSideConfig(lightSideConfig);
         }
-        else{
-            ((WritingAssessment) assessment).setLightSideConfig(null);
+
+        Try<AssessmentResponse> maybeAssessmentResponse = validateAndUpdateAssessment(assessment, UpdateGroup.class);
+        if (maybeAssessmentResponse.isFailure()) {
+            return new Try.Failure<>(maybeAssessmentResponse.failed().get());
+        }
+        AssessmentResponse assessmentResponse = maybeAssessmentResponse.get();
+
+        Try<Assessment> maybeSavedAssessment = saveAssessment(assessment);
+        if (maybeSavedAssessment.isFailure()) {
+            return new Try.Failure<>(maybeSavedAssessment.failed().get());
         }
 
-        Try<Void> maybeValidated = validatorService.validate(assessment, WritingAssessment.class, UpdateGroup.class);
-        if(maybeValidated.isFailure()){
-            return new Try.Failure<>(maybeValidated.failed().get());
-        }
-
-        Try<Assessment> maybeUpdatedAssessment = saveAssessment(assessment);
-        if(maybeUpdatedAssessment.isFailure()){
-            return new Try.Failure<>(maybeUpdatedAssessment.failed().get());
-        }
-
-        return new Try.Success<>(maybeUpdatedAssessment.get());
+        return new Try.Success<>(assessmentResponse);
     }
+
+    private Try<AssessmentResponse> validateAndUpdateAssessment(Assessment assessment, Class<?> type) {
+
+        List<ErrorContainer> errors = new ArrayList<>();
+
+        Try<Void> maybeValidated = validatorService.validate(assessment, Assessment.class, type);
+
+        if (maybeValidated.isFailure()) {
+
+            if (assessment.getEnabled() != null && assessment.getEnabled()) {
+                //if assessment is enabled then validation should trigger failure
+                return new Try.Failure<>(maybeValidated.failed().get());
+            } else {
+                //if assessment is disabled then validation does not trigger failure
+                if (maybeValidated.failed().get() instanceof ConstraintViolationException) {
+                    errors = ((ErrorContainerException) maybeValidated.failed().get()).getErrorContainers();
+                }
+                assessment.setIsValid(false);
+            }
+
+        } else {
+            assessment.setIsValid(true);
+        }
+
+
+        return new Try.Success<>(new AssessmentResponse(assessment, errors));
+    }
+
+    @Override
+    public Try<String> uploadLightSideModel(MultipartFile file) {
+
+        if (file == null) {
+            return new Try.Failure<>(new FileUploadException("uploadLightSideModel no file"));
+        }
+
+        //stream file to disk
+        Try<String> maybeName = lightSideService.saveUploadedModelFile(file);
+        if (maybeName.isFailure()) {
+            return new Try.Failure<>(maybeName.failed().get());
+        }
+
+        return maybeName;
+    }
+
 
     private void findDomainsThatRequireLightSideFiles(Set<String> domainIds, List<Domain> domains) {
         domains.stream().forEach(domain -> {
             if (domain instanceof ScoringDomain) {
                 ScoringDomain scoringDomain = (ScoringDomain) domain;
-                if(!scoringDomain.getScoreIsSubDomainAverage()) {
+                if (!scoringDomain.getScoreIsSubDomainAverage()) {
                     domainIds.add(domain.getId());
                 }
                 if (scoringDomain.getSubDomains() != null && scoringDomain.getSubDomains().size() > 0) {
@@ -218,10 +280,10 @@ public class AssessmentServiceImpl implements AssessmentService {
     }
 
     @Override
-    public Try<AssessmentContent> getContent(String assessmentId){
+    public Try<AssessmentContent> getContent(String assessmentId) {
 
         Try<Assessment> maybeAssessment = assessmentRepository.getAssessment(assessmentId);
-        if(maybeAssessment.isFailure()){
+        if (maybeAssessment.isFailure()) {
             return new Try.Failure<>(maybeAssessment.failed().get());
         }
 
@@ -231,15 +293,15 @@ public class AssessmentServiceImpl implements AssessmentService {
     }
 
     @Override
-    public Try<AssessmentContent> getContent(AssessmentCategory assessmentCategory){
+    public Try<AssessmentContent> getContentByCategoryGroup(String groupId) {
 
-        Try<List<Assessment>> maybeAssessments = getAssessments(true, Arrays.asList(assessmentCategory));
-        if(maybeAssessments.isFailure()){
+        Try<List<Assessment>> maybeAssessments = getAssessments(true, Arrays.asList(groupId));
+        if (maybeAssessments.isFailure()) {
             return new Try.Failure<>(maybeAssessments.failed().get());
         }
 
         List<Assessment> assessments = maybeAssessments.get();
-        if(assessments.size() == 0){
+        if (assessments.size() == 0) {
             return new Try.Failure<>(new RepoNotFoundException("Assessment"));
         }
 
@@ -249,20 +311,20 @@ public class AssessmentServiceImpl implements AssessmentService {
     }
 
     @Override
-    public Try<AssessmentContent> getContentForUserAssessment(String userId, AssessmentCategory assessmentCategory, Instant takenDate){
+    public Try<AssessmentContent> getContentForUserAssessment(String userId, String groupId, Instant takenDate) {
 
-        Try<List<UserAssessment>> maybeUserAssessments = userAssessmentRepository.getUserAssessments(userId, assessmentCategory, takenDate);
-        if(maybeUserAssessments.isFailure()){
+        Try<List<UserAssessment>> maybeUserAssessments = userAssessmentRepository.getUserAssessments(userId, groupId, takenDate);
+        if (maybeUserAssessments.isFailure()) {
             return new Try.Failure<>(maybeUserAssessments.failed().get());
         }
 
         List<UserAssessment> userAssessments = maybeUserAssessments.get();
-        if(userAssessments.size() == 0){
+        if (userAssessments.size() == 0) {
             return new Try.Failure<>(new RepoNotFoundException("UserAssessment"));
         }
 
         Try<Assessment> maybeAssessment = getAssessment(userAssessments.get(0).getAssessmentId());
-        if(maybeAssessment.isFailure()){
+        if (maybeAssessment.isFailure()) {
             return new Try.Failure<>(maybeAssessment.failed().get());
         }
 
@@ -273,17 +335,32 @@ public class AssessmentServiceImpl implements AssessmentService {
         return new Try.Success<>(assessmentContent);
     }
 
-
     @Override
-    public Try<List<Assessment>> getAssessments(Boolean enabled, List<AssessmentCategory> assessmentCategories){
-        return assessmentRepository.getAssessments(enabled, assessmentCategories);
+    public Try<List<Assessment>> getAssessments(Boolean enabled, List<String> groupIds) {
+
+        Try<List<Assessment>> maybeAssessments = assessmentRepository.getAssessments(enabled, groupIds);
+        if (maybeAssessments.isFailure()) {
+            return maybeAssessments;
+        }
+        List<Assessment> assessments = maybeAssessments.get();
+
+        for (Assessment assessment : ListUtils.emptyIfNull(assessments)) {
+
+            Try<Assessment> maybeAssessment = upgradeAssessmentSchemaUtils.upgradeAssessmentSchema(assessment);
+            if (maybeAssessment.isFailure()) {
+                return new Try.Failure<>(maybeAssessment.failed().get());
+            }
+        }
+
+        return new Try.Success<>(assessments);
     }
 
     @Override
-    public Try<List<AssessmentSummary>> getSummaries(String userId, Boolean enabled, List<AssessmentCategory> assessmentCategories){
+    public Try<List<AssessmentSummary>> getSummaries(String userId, Boolean enabled, List<String> groupIds) {
 
-        Try<List<Assessment>> maybeAssessments = getAssessments(enabled, assessmentCategories);
-        if(maybeAssessments.isFailure()){
+        //get assessments by category
+        Try<List<Assessment>> maybeAssessments = getAssessments(enabled, groupIds);
+        if (maybeAssessments.isFailure()) {
             return new Try.Failure<>(maybeAssessments.failed().get());
         }
 
@@ -291,21 +368,20 @@ public class AssessmentServiceImpl implements AssessmentService {
                 .map(Assessment::getId)
                 .collect(Collectors.toList());
 
-        Try<List<UserAssessment>> maybeLatestUserAssessments = userAssessmentRepository.getLatestUserAssessments(userId, assessmentIds);
-        if(maybeLatestUserAssessments.isFailure()){
+        Try<Map<String, UserAssessment>> maybeLatestUserAssessments = userAssessmentRepository.getLatestUserAssessments(userId, assessmentIds);
+        if (maybeLatestUserAssessments.isFailure()) {
             return new Try.Failure<>(maybeLatestUserAssessments.failed().get());
         }
+        Map<String, UserAssessment> latestUserAssessments = maybeLatestUserAssessments.get();
 
         List<AssessmentSummary> assessmentSummaries = maybeAssessments.get().stream()
                 .map(assessment -> {
                     AssessmentSummary assessmentSummary = daacsOrikaMapper.map(assessment, AssessmentSummary.class);
 
-                    Optional<UserAssessment> myUserAssessment = maybeLatestUserAssessments.get().stream()
-                            .filter(userAssessment -> userAssessment.getAssessmentId().equals(assessment.getId()))
-                            .findFirst();
+                    UserAssessment myUserAssessment = latestUserAssessments.get(assessment.getId());
 
-                    if(myUserAssessment.isPresent()){
-                        UserAssessmentSummary userAssessmentSummary = daacsOrikaMapper.map(myUserAssessment.get(), UserAssessmentSummary.class);
+                    if (myUserAssessment != null) {
+                        UserAssessmentSummary userAssessmentSummary = daacsOrikaMapper.map(myUserAssessment, UserAssessmentSummary.class);
                         assessmentSummary.setUserAssessmentSummary(userAssessmentSummary);
                     }
 
@@ -315,12 +391,12 @@ public class AssessmentServiceImpl implements AssessmentService {
 
         //get them all for prereq evaluation
         Try<List<UserAssessment>> maybeAllUserAssessments = userAssessmentRepository.getUserAssessments(userId);
-        if(maybeAllUserAssessments.isFailure()){
+        if (maybeAllUserAssessments.isFailure()) {
             return new Try.Failure<>(maybeAllUserAssessments.failed().get());
         }
 
         PrereqEvaluator prereqEvaluator = prereqEvaluatorFactory.getAssessmentPrereqEvaluator(maybeAllUserAssessments.get());
-        for(AssessmentSummary assessmentSummary : assessmentSummaries){
+        for (AssessmentSummary assessmentSummary : assessmentSummaries) {
             prereqEvaluator.evaluatePrereqs(assessmentSummary);
         }
 
@@ -328,33 +404,50 @@ public class AssessmentServiceImpl implements AssessmentService {
     }
 
     @Override
-    public Try<List<AssessmentCategorySummary>> getCategorySummaries(String userId, List<AssessmentCategory> assessmentCategories){
+    public Try<List<AssessmentCategorySummary>> getCategorySummaries(String userId, List<String> groupIds) {
 
-        Try<List<AssessmentSummary>> maybeAssessmentSummaries = getSummaries(userId, true, assessmentCategories);
-        if(maybeAssessmentSummaries.isFailure()){
+        if(groupIds == null || groupIds.isEmpty()){
+            groupIds = categoryGroupUtils.getDefaultIds();
+        }
+
+        //get global category ids and add to groupId list
+        Try<List<String>> maybeGlobalIds = assessmentCategoryGroupService.getGlobalGroupIds();
+        if (maybeGlobalIds.isFailure()) {
+            return new Try.Failure<>(maybeGlobalIds.failed().get());
+        }
+        groupIds.addAll(maybeGlobalIds.get());
+
+        //get AssessmentSummaries
+        Try<List<AssessmentSummary>> maybeAssessmentSummaries = getSummaries(userId, true, groupIds);
+        if (maybeAssessmentSummaries.isFailure()) {
             return new Try.Failure<>(maybeAssessmentSummaries.failed().get());
         }
 
-        Try<Map<AssessmentCategory, List<UserAssessment>>> maybeUserAssessmentsByCategory = userAssessmentRepository.getUserAssessmentsByCategory(userId);
-        if(maybeUserAssessmentsByCategory.isFailure()){
+        List<AssessmentSummary> assessmentSummaries = maybeAssessmentSummaries.get();
+
+        //get UserAssessments
+        Try<Map<String, List<UserAssessment>>> maybeUserAssessmentsByCategory = userAssessmentRepository.getUserAssessmentsByCategory(userId, groupIds);
+        if (maybeUserAssessmentsByCategory.isFailure()) {
             return new Try.Failure<>(maybeUserAssessmentsByCategory.failed().get());
         }
 
-        Map<AssessmentCategory, List<UserAssessment>> userAssessmentsByCategory = maybeUserAssessmentsByCategory.get();
+        Map<String, List<UserAssessment>> userAssessmentsByCategory = maybeUserAssessmentsByCategory.get();
 
+        //create AssessmentCategorySummaries
         List<AssessmentCategorySummary> assessmentCategorySummaries = new ArrayList<>();
-        for(AssessmentCategory assessmentCategory : assessmentCategories){
-            Optional<AssessmentSummary> maybeAssessmentSummary = maybeAssessmentSummaries.get().stream()
-                    .filter(it -> it.getAssessmentCategory().equals(assessmentCategory))
+        for (String groupId : groupIds) {
+            Optional<AssessmentSummary> maybeAssessmentSummary = assessmentSummaries.stream()
+                    .filter(it -> it.getAssessmentCategoryGroup().getId().equals(groupId))
                     .findFirst();
 
-            if(maybeAssessmentSummary.isPresent()){
+            if (maybeAssessmentSummary.isPresent()) {
+                AssessmentSummary assessmentSummary = maybeAssessmentSummary.get();
                 AssessmentCategorySummary assessmentCategorySummary = new AssessmentCategorySummary();
-                assessmentCategorySummary.setAssessmentCategory(assessmentCategory);
-                assessmentCategorySummary.setEnabledAssessmentSummary(maybeAssessmentSummary.get());
+                assessmentCategorySummary.setEnabledAssessmentSummary(assessmentSummary);
+                assessmentCategorySummary.setAssessmentCategory(assessmentSummary.getAssessmentCategory());
 
-                List<UserAssessment> userAssessments = userAssessmentsByCategory.get(assessmentCategory);
-                if(userAssessments != null && userAssessments.size() > 0){
+                List<UserAssessment> userAssessments = userAssessmentsByCategory.get(assessmentSummary.getAssessmentId());
+                if (userAssessments != null && userAssessments.size() > 0) {
                     UserAssessment latestUserAssessment = userAssessments.get(0);
                     assessmentCategorySummary.setLatestUserAssessmentSummary(daacsOrikaMapper.map(latestUserAssessment, UserAssessmentSummary.class));
 
@@ -365,6 +458,7 @@ public class AssessmentServiceImpl implements AssessmentService {
                     assessmentCategorySummary.setUserHasTakenCategory(completedUserAssessments.size() > 0);
                 }
 
+                assessmentCategorySummary.setAssessmentCategoryGroupId(groupId);
                 assessmentCategorySummaries.add(assessmentCategorySummary);
             }
         }
@@ -373,10 +467,10 @@ public class AssessmentServiceImpl implements AssessmentService {
     }
 
     @Override
-    public Try<Void> reloadDummyAssessments(){
+    public Try<Void> reloadDummyAssessments() {
 
-        Try<List<Assessment>> maybeAssessments = getAssessments(true, Arrays.asList(AssessmentCategory.class.getEnumConstants()));
-        if(maybeAssessments.isFailure()){
+        Try<List<Assessment>> maybeAssessments = getAssessments(true, null);
+        if (maybeAssessments.isFailure()) {
             return new Try.Failure<>(maybeAssessments.failed().get());
         }
 
@@ -388,22 +482,22 @@ public class AssessmentServiceImpl implements AssessmentService {
         pathClassMap.put("classpath:/assessment_examples/srl.json", Assessment.class);
         pathClassMap.put("classpath:/assessment_examples/writing.json", Assessment.class);
 
-        for(Map.Entry<String, Class> entry : pathClassMap.entrySet()){
+        for (Map.Entry<String, Class> entry : pathClassMap.entrySet()) {
             Try<?> maybeAssessment = buildAssessmentFromFile(entry.getKey(), entry.getValue());
-            if(maybeAssessment.isFailure()){
+            if (maybeAssessment.isFailure()) {
                 return new Try.Failure<>(maybeAssessment.failed().get());
             }
 
-            Try<Assessment> maybeCreatedAssessment = createAssessment((Assessment) maybeAssessment.get());
-            if(maybeCreatedAssessment.isFailure()){
-                return new Try.Failure<>(maybeCreatedAssessment.failed().get());
+            Try<AssessmentResponse> maybeCreatedAssessmentResponse = createAssessment((Assessment) maybeAssessment.get());
+            if (maybeCreatedAssessmentResponse.isFailure()) {
+                return new Try.Failure<>(maybeCreatedAssessmentResponse.failed().get());
             }
         }
 
-        for(Assessment assessment : assessments){
+        for (Assessment assessment : assessments) {
             assessment.setEnabled(false);
             Try<Assessment> maybeSavedAssessment = saveAssessment(assessment);
-            if(maybeSavedAssessment.isFailure()){
+            if (maybeSavedAssessment.isFailure()) {
                 return new Try.Failure<>(maybeSavedAssessment.failed().get());
             }
         }
@@ -414,7 +508,7 @@ public class AssessmentServiceImpl implements AssessmentService {
     @Override
     public Try<List<AssessmentStatSummary>> getAssessmentStats() {
         Try<List<Map>> maybeAssessments = assessmentRepository.getAssessmentStats();
-        if (maybeAssessments.isFailure()){
+        if (maybeAssessments.isFailure()) {
             return new Try.Failure<>(maybeAssessments.failed().get());
         }
 
@@ -442,22 +536,21 @@ public class AssessmentServiceImpl implements AssessmentService {
                 .collect(Collectors.toList()));
     }
 
-    private <T extends Assessment> Try<T> buildAssessmentFromFile(String path, Class<T> valueType){
+    private <T extends Assessment> Try<T> buildAssessmentFromFile(String path, Class<T> valueType) {
 
         DefaultResourceLoader loader = new DefaultResourceLoader();
 
-        try{
+        try {
             String json = new String(Files.readAllBytes(Paths.get(loader.getResource(path).getURI())));
             T assessment = objectMapper.readerWithView(Views.Admin.class).forType(valueType).readValue(json);
 
             Try<Void> maybeValidated = validatorService.validate(assessment, valueType, CreateGroup.class);
-            if(maybeValidated.isFailure()){
+            if (maybeValidated.isFailure()) {
                 return new Try.Failure<>(maybeValidated.failed().get());
             }
 
             return new Try.Success<>(assessment);
-        }
-        catch(IOException ex){
+        } catch (IOException ex) {
             return new Try.Failure<>(ex);
         }
     }

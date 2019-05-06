@@ -1,4 +1,4 @@
-package com.daacs.service
+package com.daacs.unit.service
 
 import com.daacs.framework.exception.NotFoundException
 import com.daacs.framework.exception.RepoNotFoundException
@@ -14,6 +14,8 @@ import com.daacs.model.dto.UpdateUserRequest
 import com.daacs.model.event.UserEvent
 import com.daacs.repository.EventContainerRepository
 import com.daacs.repository.UserRepository
+import com.daacs.service.UserService
+import com.daacs.service.UserServiceImpl
 import com.lambdista.util.Try
 import org.opensaml.saml2.core.Attribute
 import org.opensaml.saml2.core.NameID

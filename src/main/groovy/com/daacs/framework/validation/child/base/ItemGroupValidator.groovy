@@ -5,6 +5,7 @@ import com.daacs.framework.validation.child.ChildValidator
 import com.daacs.model.assessment.Assessment
 import com.daacs.model.assessment.AssessmentType
 import com.daacs.model.assessment.ItemGroupAssessment
+import com.daacs.model.assessment.WritingAssessment
 import com.daacs.model.item.Item
 import com.daacs.model.item.ItemGroup
 
@@ -21,7 +22,12 @@ public class ItemGroupValidator extends AbstractValidator implements ChildValida
         switch(assessment.getAssessmentType()){
 
             case AssessmentType.LIKERT:
-                return isValidLikertItemGroups(((ItemGroupAssessment) assessment).getItemGroups(), context);
+
+                if (assessment instanceof ItemGroupAssessment) {
+                    return isValidLikertItemGroups(((ItemGroupAssessment) assessment).getItemGroups(), context);
+                } else {
+                    return buildAndReturnAssessmentTypePropertyViolation(context, assessment.getAssessmentType())
+                }
 
             case AssessmentType.MULTIPLE_CHOICE:
             case AssessmentType.CAT:
@@ -29,8 +35,7 @@ public class ItemGroupValidator extends AbstractValidator implements ChildValida
                 return true;
 
             default:
-                addPropertyViolation(context, "assessmentType", MessageFormat.format("Invalid assessmentType: {0}", assessment.getAssessmentType()))
-                return false;
+                return buildAndReturnAssessmentTypePropertyViolation(context, assessment.getAssessmentType())
         }
     }
 
@@ -42,7 +47,7 @@ public class ItemGroupValidator extends AbstractValidator implements ChildValida
 
             items.eachWithIndex{ Item item, int j ->
                 if(item.getPossibleItemAnswers().collect{ it.content } != answerOrder){
-                    addPropertyViolation(context, "itemGroups[" + i + "]", "All possibleItemAnswers must be the same and in the same order across all items in the ItemGroup");
+                    addPropertyViolation(context, "itemGroups", "All possibleItemAnswers must be the same and in the same order across all items in the ItemGroup");
                     isValid = false;
                 }
             }

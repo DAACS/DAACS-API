@@ -1,7 +1,6 @@
 package com.daacs.resource
 
 import com.daacs.model.ErrorResponse
-import com.daacs.model.assessment.AssessmentCategory
 import com.daacs.model.assessment.AssessmentCategorySummary
 import com.daacs.service.AssessmentService
 import io.swagger.annotations.ApiOperation
@@ -34,14 +33,10 @@ public class AssessmentCategorySummaryController extends AuthenticatedController
     ])
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json")
     public List<AssessmentCategorySummary> getSummaries(
-            @RequestParam(value = "assessmentCategory[]", required = false) List<AssessmentCategory> assessmentCategories,
+            @RequestParam(value = "assessmentCategoryGroupId[]", required = false) List<String> groupIds,
             @RequestParam(value = "userId", required = false) String userId){
 
-        if(assessmentCategories == null){
-            assessmentCategories = AssessmentCategory.values();
-        }
-
-        return assessmentService.getCategorySummaries(determineUserId(userId), assessmentCategories).checkedGet();
+        return assessmentService.getCategorySummaries(determineUserId(userId), groupIds).checkedGet();
     }
 
 }

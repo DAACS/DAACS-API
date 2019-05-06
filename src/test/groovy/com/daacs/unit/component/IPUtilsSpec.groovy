@@ -1,7 +1,7 @@
 package com.daacs.unit.component
 
-import com.daacs.component.IPUtils
-import com.daacs.component.IPUtilsImpl
+import com.daacs.component.utils.IPUtils
+import com.daacs.component.utils.IPUtilsImpl
 import spock.lang.Specification
 
 import javax.servlet.http.HttpServletRequest

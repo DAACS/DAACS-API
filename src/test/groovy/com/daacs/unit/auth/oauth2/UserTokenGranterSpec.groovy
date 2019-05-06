@@ -1,5 +1,6 @@
-package com.daacs.framework.auth.oauth2
+package com.daacs.unit.auth.oauth2
 
+import com.daacs.framework.auth.oauth2.UserTokenGranter
 import com.daacs.framework.core.ThreadLocalTrackingData
 import com.daacs.framework.hystrix.FailureType
 import com.daacs.framework.hystrix.FailureTypeException

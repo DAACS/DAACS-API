@@ -1,6 +1,6 @@
 package com.daacs.resource
 
-import com.daacs.component.IPUtils
+import com.daacs.component.utils.IPUtils
 import com.daacs.model.ErrorResponse
 import com.daacs.model.event.ErrorEvent
 import com.daacs.service.EventService

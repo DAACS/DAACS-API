@@ -1,46 +1,63 @@
-package com.daacs.service
+package com.daacs.unit.service
 
 import com.daacs.component.PrereqEvaluatorFactory
+import com.daacs.component.utils.CategoryGroupUtils
+import com.daacs.component.utils.CategoryGroupUtilsImpl
+import com.daacs.component.utils.UpgradeAssessmentSchemaUtils
 import com.daacs.component.prereq.AssessmentPrereqEvaluator
 import com.daacs.framework.serializer.DaacsOrikaMapper
 import com.daacs.framework.serializer.ObjectMapperConfig
+import com.daacs.framework.validation.annotations.group.CreateGroup
 import com.daacs.framework.validation.annotations.group.UpdateGroup
 import com.daacs.model.User
 import com.daacs.model.assessment.*
 import com.daacs.model.assessment.user.CATUserAssessment
 import com.daacs.model.assessment.user.CompletionStatus
 import com.daacs.model.assessment.user.UserAssessment
+import com.daacs.model.dto.AssessmentResponse
 import com.daacs.model.dto.UpdateAssessmentRequest
 import com.daacs.model.dto.UpdateLightSideModelsRequest
 import com.daacs.model.dto.WritingUpdateAssessmentRequest
+import com.daacs.model.dto.assessmentUpdate.ScoringDomainRequest
 import com.daacs.model.prereqs.AssessmentPrereq
 import com.daacs.model.prereqs.PrereqType
 import com.daacs.repository.AssessmentRepository
 import com.daacs.repository.UserAssessmentRepository
+import com.daacs.service.AssessmentCategoryGroupService
+import com.daacs.service.AssessmentServiceImpl
+import com.daacs.service.LightSideService
+import com.daacs.service.ValidatorService
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.lambdista.util.Try
 import org.apache.commons.fileupload.FileItemIterator
 import org.apache.commons.fileupload.FileItemStream
-import org.apache.commons.fileupload.FileUploadException
+import org.springframework.web.multipart.MultipartFile
 import spock.lang.Specification
 
 import java.time.Instant
+import java.util.function.Function
+import java.util.stream.Collectors
 
 /**
  * Created by chostetter on 6/22/16.
  */
 class AssessmentServiceSpec extends Specification {
 
-    AssessmentService assessmentService;
+    CategoryGroupUtils defaultCategoryGroupUtils
+    AssessmentServiceImpl assessmentService;
+    AssessmentCategoryGroupService assessmentCategoryGroupService
     AssessmentRepository assessmentRepository;
     UserAssessmentRepository userAssessmentRepository;
     LightSideService lightSideService;
 
+    UpgradeAssessmentSchemaUtils upgradeAssessmentSchemaUtils;
     PrereqEvaluatorFactory prereqEvaluatorFactory;
     AssessmentPrereqEvaluator assessmentPrereqEvaluator;
     ValidatorService validatorService;
     DaacsOrikaMapper daacsOrikaMapper;
     ObjectMapper objectMapper;
+
+    String defaultAssessmentCategoryGroupIds = "[groupId1,groupId2,groupId3]"
 
     User dummyUser = new User("username", "Mr", "Dummy");
 
@@ -49,6 +66,9 @@ class AssessmentServiceSpec extends Specification {
                     id: "assessment-1",
                     assessmentType: AssessmentType.CAT,
                     assessmentCategory: AssessmentCategory.MATHEMATICS,
+                    assessmentCategoryGroup: new AssessmentCategoryGroup(
+                            id: "groupId1"
+                    ),
                     label: "Mathematics",
                     enabled: true,
                     prerequisites: [
@@ -63,9 +83,24 @@ class AssessmentServiceSpec extends Specification {
                     id: "assessment-2",
                     assessmentType: AssessmentType.WRITING_PROMPT,
                     assessmentCategory: AssessmentCategory.WRITING,
+                    assessmentCategoryGroup: new AssessmentCategoryGroup(
+                            id: "groupId2"
+                    ),
                     scoringType: ScoringType.MANUAL,
                     domains: [
-                            new ScoringDomain(id: "domain-1")
+                            new ScoringDomain(id: "domain-1",subDomains: [])
+                    ]
+            ),
+            new WritingAssessment(
+                    id: "assessment-3",
+                    assessmentType: AssessmentType.WRITING_PROMPT,
+                    assessmentCategory: AssessmentCategory.WRITING,
+                    assessmentCategoryGroup: new AssessmentCategoryGroup(
+                            id: "groupId3"
+                    ),
+                    scoringType: ScoringType.LIGHTSIDE,
+                    domains: [
+                            new ScoringDomain(id: "domain-1",subDomains: [])
                     ]
             )
     ]
@@ -74,39 +109,45 @@ class AssessmentServiceSpec extends Specification {
             new CATUserAssessment(
                     assessmentId: "assessment-1",
                     assessmentType: AssessmentType.CAT,
-                    assessmentCategory: AssessmentCategory.MATHEMATICS
+                    assessmentCategory: AssessmentCategory.MATHEMATICS,
+                    assessmentCategoryGroupId: "groupId1"
             )
     ]
 
     List<Map> dummyAssessmentStats = [
-            ["assessmentId": "eeba6280-a367-431a-ae04-e0dc0882aa29",
-             "status": "IN_PROGRESS",
+            ["assessmentId"      : "eeba6280-a367-431a-ae04-e0dc0882aa29",
+             "status"            : "IN_PROGRESS",
              "assessmentCategory": "WRITING",
-             "total": "1"],
-            ["assessmentId": "eeba6280-a367-431a-ae04-e0dc0882aa29",
-             "status": "COMPLETED",
+             "total"             : "1"],
+            ["assessmentId"      : "eeba6280-a367-431a-ae04-e0dc0882aa29",
+             "status"            : "COMPLETED",
              "assessmentCategory": "WRITING",
-             "total": "2"],
-            ["assessmentId": "eeba6280-a367-431a-ae04-e0dc0882aa29",
-             "status": "GRADED",
+             "total"             : "2"],
+            ["assessmentId"      : "eeba6280-a367-431a-ae04-e0dc0882aa29",
+             "status"            : "GRADED",
              "assessmentCategory": "WRITING",
-             "total": "3"],
-            ["assessmentId": "aaba6280-a367-431a-ae04-e0dc0882aa29",
-             "status": "IN_PROGRESS",
+             "total"             : "3"],
+            ["assessmentId"      : "aaba6280-a367-431a-ae04-e0dc0882aa29",
+             "status"            : "IN_PROGRESS",
              "assessmentCategory": "READING",
-             "total": "4"]
+             "total"             : "4"]
     ]
 
     UpdateAssessmentRequest updateAssessmentRequest;
+    UpdateAssessmentRequest updateAssessmentRequest1;
+    UpdateAssessmentRequest updateAssessmentRequestBadInput;
 
     FileItemStream fileItemStream
     FileItemIterator fileItemIterator
     UpdateLightSideModelsRequest updateLightSideModelsRequest
+    MultipartFile dummyMultipartFile
 
-    def setup(){
+    def setup() {
+        defaultCategoryGroupUtils = new CategoryGroupUtilsImpl()
         daacsOrikaMapper = new DaacsOrikaMapper();
         dummyUser.setId(UUID.randomUUID().toString());
 
+        assessmentCategoryGroupService = Mock(AssessmentCategoryGroupService)
         assessmentRepository = Mock(AssessmentRepository);
         userAssessmentRepository = Mock(UserAssessmentRepository);
         lightSideService = Mock(LightSideService)
@@ -115,9 +156,31 @@ class AssessmentServiceSpec extends Specification {
         assessmentPrereqEvaluator = Mock(AssessmentPrereqEvaluator);
         objectMapper = new ObjectMapperConfig().objectMapper();
         validatorService = Mock(ValidatorService);
+        dummyMultipartFile = Mock(MultipartFile)
 
-        updateAssessmentRequest = new WritingUpdateAssessmentRequest(id: "assessment-1", enabled: false)
+        updateAssessmentRequest = new WritingUpdateAssessmentRequest(
+                id: "assessment-1",
+                enabled: false
+        )
+        updateAssessmentRequest1 = new WritingUpdateAssessmentRequest(
+                id: "assessment-2",
+                scoringType: ScoringType.LIGHTSIDE,
+                enabled: false,
+                domains: [
+                        new ScoringDomainRequest(id: "domain-2", lightsideModelFilename: "model-2.xml",subDomains: [])
+                ]
+        )
 
+        updateAssessmentRequestBadInput = new WritingUpdateAssessmentRequest(
+                id: "assessment-3",
+                scoringType: ScoringType.LIGHTSIDE,
+                enabled: true,
+                domains: [
+                        new ScoringDomainRequest(id: "domain-3")
+                ]
+        )
+
+        upgradeAssessmentSchemaUtils = Mock(UpgradeAssessmentSchemaUtils)
         fileItemStream = Mock(FileItemStream)
         fileItemIterator = Mock(FileItemIterator)
         fileItemIterator.next() >> fileItemStream
@@ -132,17 +195,26 @@ class AssessmentServiceSpec extends Specification {
                 userAssessmentRepository: userAssessmentRepository,
                 daacsOrikaMapper: daacsOrikaMapper,
                 prereqEvaluatorFactory: prereqEvaluatorFactory,
-                lightSideService: lightSideService);
+                lightSideService: lightSideService,
+                upgradeAssessmentSchemaUtils: upgradeAssessmentSchemaUtils,
+                categoryGroupUtils: defaultCategoryGroupUtils,
+                assessmentCategoryGroupService: assessmentCategoryGroupService
+        );
 
     }
 
-    def "getAssessmentSummaries: returns mapped assessment summaries"(){
+    def "getAssessmentSummaries: returns mapped assessment summaries"() {
         when:
-        Try<List<AssessmentSummary>> maybeAssessmentSummaries = assessmentService.getSummaries(dummyUser.getId(), true, Arrays.asList(AssessmentCategory.class.getEnumConstants()))
+        Try<List<AssessmentSummary>> maybeAssessmentSummaries = assessmentService.getSummaries(dummyUser.getId(), true,null)
 
         then:
-        1 * assessmentRepository.getAssessments(true, _) >> new Try.Success<List<Assessment>>(dummyAssessments)
-        1 * userAssessmentRepository.getLatestUserAssessments(dummyUser.getId(), _) >> new Try.Success<List<UserAssessment>>(dummyUserAssessments)
+        1 * assessmentRepository.getAssessments(true,null) >> new Try.Success<List<Assessment>>(dummyAssessments)
+        upgradeAssessmentSchemaUtils.upgradeAssessmentSchema(_) >> new Try.Success<Assessment>(dummyAssessments.get(0))
+        1 * userAssessmentRepository.getLatestUserAssessments(dummyUser.getId(), _) >> new Try.Success<Map<String, UserAssessment>>(dummyUserAssessments.stream().
+                collect(Collectors.toMap(new Function<UserAssessment, String>() {
+                    String apply(UserAssessment p) { return p.getAssessmentId(); }
+                },
+                        Function.<UserAssessment> identity())))
         1 * userAssessmentRepository.getUserAssessments(dummyUser.getId()) >> new Try.Success<List<UserAssessment>>(dummyUserAssessments)
         1 * prereqEvaluatorFactory.getAssessmentPrereqEvaluator(_) >> assessmentPrereqEvaluator
 
@@ -159,69 +231,123 @@ class AssessmentServiceSpec extends Specification {
         assessmentSummary.userAssessmentSummary.assessmentId == dummyUserAssessments.get(0).assessmentId
     }
 
-    def "getAssessmentSummaries: if repo call fails, i fail #1"(){
+    def "getAssessmentSummaries: if repo call fails, i fail #1"() {
         when:
-        Try<List<AssessmentSummary>> maybeAssessmentSummaries = assessmentService.getSummaries("123", true, Arrays.asList(AssessmentCategory.class.getEnumConstants()));
+        Try<List<AssessmentSummary>> maybeAssessmentSummaries = assessmentService.getSummaries("123", true, null);
 
         then:
-        1 * assessmentRepository.getAssessments(_, _) >> new Try.Failure<List<Assessment>>(new Exception())
+        1 * assessmentRepository.getAssessments(_, null) >> new Try.Failure<List<Assessment>>(new Exception())
         maybeAssessmentSummaries.isFailure()
     }
 
-    def "getAssessmentSummaries: if repo call fails, i fail #2"(){
+    def "getAssessmentSummaries: if repo call fails, i fail #2"() {
         setup:
-        List<Assessment> assessments = [ new CATAssessment(id: "123") ]
+        List<Assessment> assessments = [new CATAssessment(id: "123")]
 
         when:
-        Try<List<AssessmentSummary>> maybeAssessmentSummaries = assessmentService.getSummaries("123", true, Arrays.asList(AssessmentCategory.class.getEnumConstants()));
+        Try<List<AssessmentSummary>> maybeAssessmentSummaries = assessmentService.getSummaries("123", true, null);
 
         then:
-        1 * assessmentRepository.getAssessments(true, _) >> new Try.Success<List<Assessment>>(assessments)
+        1 * assessmentRepository.getAssessments(true, null) >> new Try.Success<List<Assessment>>(assessments)
+        1 * upgradeAssessmentSchemaUtils.upgradeAssessmentSchema(_) >> new Try.Success<Assessment>(dummyAssessments.get(0))
         1 * userAssessmentRepository.getLatestUserAssessments(*_) >> new Try.Failure<List<UserAssessment>>(new Exception())
         maybeAssessmentSummaries.isFailure()
     }
 
-    def "getAssessment: pass through to repo"(){
+    def "getAssessmentSummaries: if upgrade fails, i fail"() {
+        setup:
+        List<Assessment> assessments = [new CATAssessment(id: "123")]
+
+        when:
+        Try<List<AssessmentSummary>> maybeAssessmentSummaries = assessmentService.getSummaries("123", true, null);
+
+        then:
+        1 * assessmentRepository.getAssessments(true, null) >> new Try.Success<List<Assessment>>(assessments)
+        1 * upgradeAssessmentSchemaUtils.upgradeAssessmentSchema(_) >> new Try.Failure<Assessment>(new Exception())
+        0 * userAssessmentRepository.getLatestUserAssessments(*_)
+
+        then:
+        maybeAssessmentSummaries.isFailure()
+    }
+
+    def "getAssessment: pass through to repo"() {
         when:
         assessmentService.getAssessment("123")
 
         then:
-        1 * assessmentRepository.getAssessment("123")
+        1 * assessmentRepository.getAssessment("123") >> new Try.Success<Assessment>(dummyAssessments.get(0))
+        1 * upgradeAssessmentSchemaUtils.upgradeAssessmentSchema(_) >> new Try.Success<Assessment>(dummyAssessments.get(0))
     }
 
-    def "insertAssessment: pass through to repo, on success returns assessment"(){
+    def "insertAssessment: pass through to repo, on success returns assessment"() {
         when:
-        Try<Assessment> maybeAssessment = assessmentService.createAssessment(dummyAssessments.get(0))
+        Try<AssessmentResponse> maybeAssessment = assessmentService.createAssessment(dummyAssessments.get(0))
 
         then:
+        1 * validatorService.validate(dummyAssessments.get(0), Assessment.class, CreateGroup.class) >> new Try.Success<Void>(null)
         1 * assessmentRepository.insertAssessment(dummyAssessments.get(0)) >> new Try.Success<Void>(null)
-        maybeAssessment.isSuccess()
-        maybeAssessment.get() == dummyAssessments.get(0)
-    }
-
-    def "insertAssessment: pass through to repo, if failure, i fail"(){
-        when:
-        Try<Assessment> maybeAssessment = assessmentService.createAssessment(dummyAssessments.get(0))
 
         then:
-        1 * assessmentRepository.insertAssessment(_) >> new Try.Failure<Void>(new Exception())
+        maybeAssessment.isSuccess()
+        maybeAssessment.get().data == dummyAssessments.get(0)
+    }
+
+    def "insertAssessment: validation failure on enabled assessment, i fail"() {
+        when:
+        Try<AssessmentResponse> maybeAssessment = assessmentService.createAssessment(dummyAssessments.get(0))
+
+        then:
+        1 * validatorService.validate(dummyAssessments.get(0), Assessment.class, CreateGroup.class) >> new Try.Failure<Void>(new Exception())
+        0 * assessmentRepository.insertAssessment(dummyAssessments.get(0))
+
+        then:
         maybeAssessment.isFailure()
     }
 
-    def "reloadDummyAssessments: success"(){
+    def "insertAssessment: validation failure on disabled assessment, i pass"() {
+        setup:
+        Assessment disabledAssessment = dummyAssessments.get(0)
+        disabledAssessment.enabled = false
+
+        when:
+        Try<AssessmentResponse> maybeAssessment = assessmentService.createAssessment(disabledAssessment)
+
+        then:
+        1 * validatorService.validate(disabledAssessment, Assessment.class, CreateGroup.class) >> new Try.Failure<Void>(new Exception())
+        1 * assessmentRepository.insertAssessment(disabledAssessment) >> new Try.Success<Void>(null)
+
+        then:
+        maybeAssessment.isSuccess()
+        !maybeAssessment.get().data.enabled
+        !maybeAssessment.get().data.isValid
+    }
+
+    def "insertAssessment: pass through to repo, if failure, i fail"() {
+        when:
+        Try<Assessment> maybeAssessment = assessmentService.createAssessment(dummyAssessments.get(0))
+
+        then:
+        1 * validatorService.validate(dummyAssessments.get(0), Assessment.class, CreateGroup.class) >> new Try.Success<Void>(null)
+        1 * assessmentRepository.insertAssessment(_) >> new Try.Failure<Void>(new Exception())
+
+        then:
+        maybeAssessment.isFailure()
+    }
+
+    def "reloadDummyAssessments: success"() {
         when:
         Try<Void> maybeResults = assessmentService.reloadDummyAssessments()
 
         then:
         assessmentRepository.insertAssessment(_) >> new Try.Success<Void>(null);
-        assessmentRepository.getAssessments(_, _) >> new Try.Success<List<Assessment>>([]);
+        assessmentRepository.getAssessments(_, null) >> new Try.Success<List<Assessment>>([]);
         validatorService.validate(*_) >> new Try.Success<Void>(null);
 
         then:
         maybeResults.isSuccess()
     }
 
-    def "saveAssessment: pass through to repo, on success returns assessment"(){
+    def "saveAssessment: pass through to repo, on success returns assessment"() {
         when:
         Try<Assessment> maybeAssessment = assessmentService.saveAssessment(dummyAssessments.get(0))
 
@@ -231,7 +357,7 @@ class AssessmentServiceSpec extends Specification {
         maybeAssessment.get() == dummyAssessments.get(0)
     }
 
-    def "saveAssessment: pass through to repo, if failure, i fail"(){
+    def "saveAssessment: pass through to repo, if failure, i fail"() {
         when:
         Try<Assessment> maybeAssessment = assessmentService.saveAssessment(dummyAssessments.get(0))
 
@@ -240,7 +366,7 @@ class AssessmentServiceSpec extends Specification {
         maybeAssessment.isFailure()
     }
 
-    def "getContent: success"(){
+    def "getContent: success"() {
         when:
         Try<AssessmentContent> maybeAssessmentContent = assessmentService.getContent(dummyAssessments.get(0).getId())
 
@@ -253,7 +379,7 @@ class AssessmentServiceSpec extends Specification {
         maybeAssessmentContent.get().getContent() == dummyAssessments.get(0).getContent()
     }
 
-    def "getContent: getAssessment fails, i fail"(){
+    def "getContent: getAssessment fails, i fail"() {
         when:
         Try<AssessmentContent> maybeAssessmentContent = assessmentService.getContent(dummyAssessments.get(0).getId())
 
@@ -264,12 +390,13 @@ class AssessmentServiceSpec extends Specification {
         maybeAssessmentContent.isFailure()
     }
 
-    def "getContent 2: success"(){
+    def "getContent 2: success"() {
         when:
-        Try<AssessmentContent> maybeAssessmentContent = assessmentService.getContent(AssessmentCategory.MATHEMATICS)
+        Try<AssessmentContent> maybeAssessmentContent = assessmentService.getContentByCategoryGroup("mathGroupId")
 
         then:
-        1 * assessmentRepository.getAssessments(true, [AssessmentCategory.MATHEMATICS]) >> new Try.Success<List<Assessment>>([dummyAssessments.get(0)])
+        1 * assessmentRepository.getAssessments(true, ["mathGroupId"]) >> new Try.Success<List<Assessment>>([dummyAssessments.get(0)])
+        1 * upgradeAssessmentSchemaUtils.upgradeAssessmentSchema(_) >> new Try.Success<Assessment>(dummyAssessments.get(0))
 
         then:
         maybeAssessmentContent.isSuccess()
@@ -277,27 +404,28 @@ class AssessmentServiceSpec extends Specification {
         maybeAssessmentContent.get().getContent() == dummyAssessments.get(0).getContent()
     }
 
-    def "getContent 2: getAssessment fails, i fail"(){
+    def "getContent 2: getAssessment fails, i fail"() {
         when:
-        Try<AssessmentContent> maybeAssessmentContent = assessmentService.getContent(AssessmentCategory.MATHEMATICS)
+        Try<AssessmentContent> maybeAssessmentContent = assessmentService.getContentByCategoryGroup("mathGroupId")
 
         then:
-        1 * assessmentRepository.getAssessments(true, [AssessmentCategory.MATHEMATICS]) >> new Try.Failure<List<Assessment>>(new Exception())
+        1 * assessmentRepository.getAssessments(true, ["mathGroupId"]) >> new Try.Failure<List<Assessment>>(new Exception())
 
         then:
         maybeAssessmentContent.isFailure()
     }
 
-    def "getContentForUserAssessment: success"(){
+    def "getContentForUserAssessment: success"() {
         setup:
         Instant takenDate = Instant.now()
 
         when:
-        Try<AssessmentContent> maybeAssessmentContent = assessmentService.getContentForUserAssessment(dummyUser.getId(), AssessmentCategory.MATHEMATICS, takenDate)
+        Try<AssessmentContent> maybeAssessmentContent = assessmentService.getContentForUserAssessment(dummyUser.getId(), "mathGroupId", takenDate)
 
         then:
-        1 * userAssessmentRepository.getUserAssessments(dummyUser.getId(), AssessmentCategory.MATHEMATICS, takenDate) >> new Try.Success<List<UserAssessment>>([dummyUserAssessments.get(0)])
+        1 * userAssessmentRepository.getUserAssessments(dummyUser.getId(), "mathGroupId", takenDate) >> new Try.Success<List<UserAssessment>>([dummyUserAssessments.get(0)])
         1 * assessmentRepository.getAssessment(dummyUserAssessments.get(0).getAssessmentId()) >> new Try.Success<Assessment>(dummyAssessments.get(0))
+        1 * upgradeAssessmentSchemaUtils.upgradeAssessmentSchema(_) >> new Try.Success<Assessment>(dummyAssessments.get(0))
 
         then:
         maybeAssessmentContent.isSuccess()
@@ -305,41 +433,42 @@ class AssessmentServiceSpec extends Specification {
         maybeAssessmentContent.get().getContent() == dummyAssessments.get(0).getContent()
     }
 
-    def "getContentForUserAssessment: getAssessment fails, i fail"(){
+    def "getContentForUserAssessment: getAssessment fails, i fail"() {
         setup:
         Instant takenDate = Instant.now()
 
         when:
-        Try<AssessmentContent> maybeAssessmentContent = assessmentService.getContentForUserAssessment(dummyUser.getId(), AssessmentCategory.MATHEMATICS, takenDate)
+        Try<AssessmentContent> maybeAssessmentContent = assessmentService.getContentForUserAssessment(dummyUser.getId(), "mathGroupId", takenDate)
 
         then:
-        1 * userAssessmentRepository.getUserAssessments(dummyUser.getId(), AssessmentCategory.MATHEMATICS, takenDate) >> new Try.Success<List<UserAssessment>>([dummyUserAssessments.get(0)])
+        1 * userAssessmentRepository.getUserAssessments(dummyUser.getId(), "mathGroupId", takenDate) >> new Try.Success<List<UserAssessment>>([dummyUserAssessments.get(0)])
         1 * assessmentRepository.getAssessment(dummyUserAssessments.get(0).getAssessmentId()) >> new Try.Failure<Assessment>(new Exception())
 
         then:
         maybeAssessmentContent.isFailure()
     }
 
-    def "getContentForUserAssessment: getUserAssessments fails, i fail"(){
+    def "getContentForUserAssessment: getUserAssessments fails, i fail"() {
         setup:
         Instant takenDate = Instant.now()
 
         when:
-        Try<AssessmentContent> maybeAssessmentContent = assessmentService.getContentForUserAssessment(dummyUser.getId(), AssessmentCategory.MATHEMATICS, takenDate)
+        Try<AssessmentContent> maybeAssessmentContent = assessmentService.getContentForUserAssessment(dummyUser.getId(), "mathGroupId", takenDate)
 
         then:
-        1 * userAssessmentRepository.getUserAssessments(dummyUser.getId(), AssessmentCategory.MATHEMATICS, takenDate) >> new Try.Failure<List<UserAssessment>>(new Exception())
+        1 * userAssessmentRepository.getUserAssessments(dummyUser.getId(), "mathGroupId", takenDate) >> new Try.Failure<List<UserAssessment>>(new Exception())
 
         then:
         maybeAssessmentContent.isFailure()
     }
 
-    def "updateAssessment: success"(){
+    def "updateAssessment: success"() {
         when:
-        Try<Assessment> maybeAssessment = assessmentService.updateAssessment(updateAssessmentRequest)
+        Try<AssessmentResponse> maybeAssessment = assessmentService.updateAssessment(updateAssessmentRequest)
 
         then:
         1 * assessmentRepository.getAssessment(updateAssessmentRequest.getId()) >> new Try.Success<Assessment>(dummyAssessments.get(0))
+        1 * validatorService.validate(dummyAssessments.get(0), Assessment.class, UpdateGroup.class) >> new Try.Success<Void>(null)
         1 * assessmentRepository.saveAssessment(_) >> { args ->
             Assessment assessment = args[0]
             assert !assessment.getEnabled()
@@ -350,219 +479,123 @@ class AssessmentServiceSpec extends Specification {
         maybeAssessment.isSuccess()
     }
 
-    def "updateAssessment: getAssessment fails, i fail"(){
+    def "updateAssessment: writing assesment with no new domains, i pass"() {
         when:
-        Try<Assessment> maybeAssessment = assessmentService.updateAssessment(updateAssessmentRequest)
+        Try<AssessmentResponse> maybeAssessment = assessmentService.updateAssessment(updateAssessmentRequest)
+
+        then:
+        1 * assessmentRepository.getAssessment(updateAssessmentRequest.getId()) >> new Try.Success<Assessment>(dummyAssessments.get(2))
+        1 * validatorService.validate(dummyAssessments.get(2), Assessment.class, UpdateGroup.class) >> new Try.Success<Void>(null)
+        1 * assessmentRepository.saveAssessment(_) >> { args ->
+            Assessment assessment = args[0]
+            assert !assessment.getEnabled()
+            return new Try.Success<Assessment>(assessment)
+        }
+
+        then:
+        maybeAssessment.isSuccess()
+    }
+
+    def "updateAssessment: writing assessment with new domains, i pass"() {
+        when:
+        Try<AssessmentResponse> maybeAssessment = assessmentService.updateAssessment(updateAssessmentRequest1)
+
+        then:
+        1 * assessmentRepository.getAssessment(updateAssessmentRequest1.getId()) >> new Try.Success<Assessment>(dummyAssessments.get(2))
+        1 * validatorService.validate(dummyAssessments.get(2), Assessment.class, UpdateGroup.class) >> new Try.Success<Void>(null)
+        1 * assessmentRepository.saveAssessment(_) >> { args ->
+            Assessment assessment = args[0]
+            assert !assessment.getEnabled()
+            return new Try.Success<Assessment>(assessment)
+        }
+
+        then:
+        maybeAssessment.isSuccess()
+    }
+
+    def "updateAssessment: getAssessment fails, i fail"() {
+        when:
+        Try<AssessmentResponse> maybeAssessment = assessmentService.updateAssessment(updateAssessmentRequest)
 
         then:
         1 * assessmentRepository.getAssessment(updateAssessmentRequest.getId()) >> new Try.Failure<Assessment>(new Exception())
+        0 * validatorService.validate(dummyAssessments.get(0), Assessment.class, UpdateGroup.class)
         0 * assessmentRepository.saveAssessment(_)
 
         then:
         maybeAssessment.isFailure()
     }
 
-    def "updateAssessment: save fails, i fail"(){
+    def "updateAssessment: save fails, i fail"() {
         when:
-        Try<Assessment> maybeAssessment = assessmentService.updateAssessment(updateAssessmentRequest)
+        Try<AssessmentResponse> maybeAssessment = assessmentService.updateAssessment(updateAssessmentRequest)
 
         then:
         1 * assessmentRepository.getAssessment(updateAssessmentRequest.getId()) >> new Try.Success<Assessment>(dummyAssessments.get(0))
+        1 * validatorService.validate(dummyAssessments.get(0), Assessment.class, UpdateGroup.class) >> new Try.Success<Void>(null)
         1 * assessmentRepository.saveAssessment(_) >> new Try.Failure<Assessment>(new Exception())
 
         then:
         maybeAssessment.isFailure()
     }
 
-    def "updateWritingAssessment: success"(){
-        setup:
-        WritingAssessment writingAssessment = (WritingAssessment) dummyAssessments.get(1)
-
+    def "updateAssessment: validation failure on disabled assessment, i pass"() {
         when:
-        Try<Assessment> maybeAssessment = assessmentService.updateWritingAssessment(updateLightSideModelsRequest)
+        Try<AssessmentResponse> maybeAssessment = assessmentService.updateAssessment(updateAssessmentRequest)
 
         then:
-        1 * assessmentRepository.getAssessment("assessment-2") >> new Try.Success<Assessment>(writingAssessment)
-
-        //scoringType
-        then:
-        1 * fileItemIterator.hasNext() >> true
-        1 * fileItemStream.isFormField() >> true
-        1 * fileItemStream.getFieldName() >> "scoringType"
-        1 * fileItemStream.openStream() >> new ByteArrayInputStream("LIGHTSIDE".bytes)
-
-        //lightside_domain-1
-        then:
-        1 * fileItemIterator.hasNext() >> true
-        1 * fileItemStream.isFormField() >> false
-        1 * fileItemStream.getFieldName() >> "lightside_domain-1"
-        1 * lightSideService.saveUploadedModelFile(fileItemStream) >> new Try.Success<Void>(null)
-        1 * fileItemStream.getName() >> "domain-1.xml"
-
-        then:
-        1 * fileItemIterator.hasNext() >> false
-
-        then:
-        1 * validatorService.validate(writingAssessment, WritingAssessment.class, UpdateGroup.class) >> new Try.Success<Void>(null)
-        1 * assessmentRepository.saveAssessment(writingAssessment) >> new Try.Success<Assessment>(writingAssessment)
-
-        then:
-        writingAssessment.getScoringType() == ScoringType.LIGHTSIDE
-        writingAssessment.getLightSideConfig() != null
-        writingAssessment.getLightSideConfig().getDomainModels().get("domain-1") == "domain-1.xml"
+        1 * assessmentRepository.getAssessment(updateAssessmentRequest.getId()) >> new Try.Success<Assessment>(dummyAssessments.get(0))
+        1 * validatorService.validate(dummyAssessments.get(0), Assessment.class, UpdateGroup.class) >> new Try.Failure<Void>(new Exception())
+        1 * assessmentRepository.saveAssessment(_) >> new Try.Success<Void>(null)
 
         then:
         maybeAssessment.isSuccess()
+        !maybeAssessment.get().data.enabled
+        !maybeAssessment.get().data.isValid
     }
 
-    def "updateWritingAssessment: assessment not writing"(){
+    def "updateAssessment: validation failure on enabled assessment, i fail"() {
         setup:
-        updateLightSideModelsRequest.assessmentId = "assessment-1"
+        updateAssessmentRequest.enabled = true
 
         when:
-        Try<Assessment> maybeAssessment = assessmentService.updateWritingAssessment(updateLightSideModelsRequest)
+        Try<AssessmentResponse> maybeAssessment = assessmentService.updateAssessment(updateAssessmentRequest)
 
         then:
-        1 * assessmentRepository.getAssessment("assessment-1") >> new Try.Success<Assessment>(dummyAssessments.get(0))
-        0 * validatorService.validate(*_)
-        0 * assessmentRepository.saveAssessment(*_)
+        1 * assessmentRepository.getAssessment(updateAssessmentRequest.getId()) >> new Try.Success<Assessment>(dummyAssessments.get(0))
+        1 * validatorService.validate(dummyAssessments.get(0), Assessment.class, UpdateGroup.class) >> new Try.Failure<Void>(new Exception())
+        0 * assessmentRepository.saveAssessment(_)
 
         then:
         maybeAssessment.isFailure()
     }
 
-    def "updateWritingAssessment: getAssessment fails, i fail"(){
-        when:
-        Try<Assessment> maybeAssessment = assessmentService.updateWritingAssessment(updateLightSideModelsRequest)
-
-        then:
-        1 * assessmentRepository.getAssessment("assessment-2") >> new Try.Failure<Assessment>(new Exception())
-        0 * validatorService.validate(*_)
-        0 * assessmentRepository.saveAssessment(*_)
-
-        then:
-        maybeAssessment.isFailure()
-    }
-
-    def "updateWritingAssessment: validate fails, i fail"(){
-        when:
-        Try<Assessment> maybeAssessment = assessmentService.updateWritingAssessment(updateLightSideModelsRequest)
-
-        then:
-        1 * assessmentRepository.getAssessment("assessment-2") >> new Try.Success<Assessment>(dummyAssessments.get(1))
-        1 * validatorService.validate(dummyAssessments.get(1), WritingAssessment.class, UpdateGroup.class) >> new Try.Failure<Void>(new Exception())
-        0 * assessmentRepository.saveAssessment(*_)
-
-        then:
-        maybeAssessment.isFailure()
-    }
-
-    def "updateWritingAssessment: saveAssessment fails, i fail"(){
-        when:
-        Try<Assessment> maybeAssessment = assessmentService.updateWritingAssessment(updateLightSideModelsRequest)
-
-        then:
-        1 * assessmentRepository.getAssessment("assessment-2") >> new Try.Success<Assessment>(dummyAssessments.get(1))
-        1 * validatorService.validate(dummyAssessments.get(1), WritingAssessment.class, UpdateGroup.class) >> new Try.Success<Void>(null)
-        1 * assessmentRepository.saveAssessment(dummyAssessments.get(1)) >> new Try.Failure<Assessment>(new Exception())
-
-        then:
-        maybeAssessment.isFailure()
-    }
-
-    def "updateWritingAssessment: fails if scoringType not LIGHTSIDE"(){
-        setup:
-        WritingAssessment writingAssessment = (WritingAssessment) dummyAssessments.get(1)
+    def "uploadLightSideModel: success"() {
 
         when:
-        Try<Assessment> maybeAssessment = assessmentService.updateWritingAssessment(updateLightSideModelsRequest)
+        Try<String> maybeFileName = assessmentService.uploadLightSideModel(dummyMultipartFile)
 
         then:
-        1 * assessmentRepository.getAssessment("assessment-2") >> new Try.Success<Assessment>(writingAssessment)
-
-        //lightside_overall
-        then:
-        1 * fileItemIterator.hasNext() >> true
-        1 * fileItemStream.isFormField() >> false
-        1 * fileItemStream.getFieldName() >> "lightside_overall"
-        0 * lightSideService.saveUploadedModelFile(fileItemStream)
+        1 * lightSideService.saveUploadedModelFile(_) >> new Try.Success<String>("filename.ext")
 
         then:
-        0 * assessmentRepository.saveAssessment(*_)
-
-        then:
-        maybeAssessment.isFailure()
+        maybeFileName.isSuccess()
     }
 
-    def "updateWritingAssessment: fails if file is not for domain or overall"(){
-        setup:
-        WritingAssessment writingAssessment = (WritingAssessment) dummyAssessments.get(1)
+    def "uploadLightSideModel: saveUploadedModelFile failure"() {
 
         when:
-        Try<Assessment> maybeAssessment = assessmentService.updateWritingAssessment(updateLightSideModelsRequest)
+        Try<String> maybeFileName = assessmentService.uploadLightSideModel(dummyMultipartFile)
 
         then:
-        1 * assessmentRepository.getAssessment("assessment-2") >> new Try.Success<Assessment>(writingAssessment)
-
-        //scoringType
-        then:
-        1 * fileItemIterator.hasNext() >> true
-        1 * fileItemStream.isFormField() >> true
-        1 * fileItemStream.getFieldName() >> "scoringType"
-        1 * fileItemStream.openStream() >> new ByteArrayInputStream("LIGHTSIDE".bytes)
+        1 * lightSideService.saveUploadedModelFile(_) >> new Try.Failure<Void>(null)
 
         then:
-        1 * fileItemIterator.hasNext() >> true
-        1 * fileItemStream.isFormField() >> false
-        1 * fileItemStream.getFieldName() >> "lightside_blah"
-        0 * lightSideService.saveUploadedModelFile(fileItemStream)
-
-        then:
-        0 * assessmentRepository.saveAssessment(*_)
-
-        then:
-        maybeAssessment.isFailure()
+        maybeFileName.isFailure()
     }
 
-    def "updateWritingAssessment: FileUploadException"(){
-        setup:
-        WritingAssessment writingAssessment = (WritingAssessment) dummyAssessments.get(1)
 
-        when:
-        Try<Assessment> maybeAssessment = assessmentService.updateWritingAssessment(updateLightSideModelsRequest)
-
-        then:
-        1 * assessmentRepository.getAssessment("assessment-2") >> new Try.Success<Assessment>(writingAssessment)
-
-        then:
-        1 * fileItemIterator.hasNext() >> { throw new FileUploadException() }
-        then:
-        0 * assessmentRepository.saveAssessment(*_)
-
-        then:
-        maybeAssessment.isFailure()
-    }
-
-    def "updateWritingAssessment: IOException"(){
-        setup:
-        WritingAssessment writingAssessment = (WritingAssessment) dummyAssessments.get(1)
-
-        when:
-        Try<Assessment> maybeAssessment = assessmentService.updateWritingAssessment(updateLightSideModelsRequest)
-
-        then:
-        1 * assessmentRepository.getAssessment("assessment-2") >> new Try.Success<Assessment>(writingAssessment)
-
-        then:
-        1 * fileItemIterator.hasNext() >> { throw new IOException() }
-        then:
-        0 * assessmentRepository.saveAssessment(*_)
-
-        then:
-        maybeAssessment.isFailure()
-    }
-
-    def "getAssessmentStats: success"(){
+    def "getAssessmentStats: success"() {
         when:
         Try<List<AssessmentStatSummary>> maybeAssessments = assessmentService.getAssessmentStats()
 
@@ -583,7 +616,7 @@ class AssessmentServiceSpec extends Specification {
         secondSummary.stat.size() == 1
     }
 
-    def "getAssessmentStats: failure"(){
+    def "getAssessmentStats: failure"() {
         when:
         Try<List<AssessmentStatSummary>> maybeAssessments = assessmentService.getAssessmentStats()
 
@@ -594,23 +627,29 @@ class AssessmentServiceSpec extends Specification {
         maybeAssessments.isFailure()
     }
 
-    def "getCategorySummaries: success"(){
+    def "getCategorySummaries: success"() {
         setup:
-        Map<AssessmentCategory, List<UserAssessment>> userAssessmentsByCategory = dummyUserAssessments.collectEntries{
-            [(it.getAssessmentCategory()) : [it]]
+        Map<String, List<UserAssessment>> userAssessmentsByCategory = dummyUserAssessments.collectEntries {
+            [(it.getAssessmentId()): [it]]
         }
 
         when:
-        Try<List<AssessmentCategorySummary>> categorySummaries = assessmentService.getCategorySummaries(dummyUser.getId(), Arrays.asList(AssessmentCategory.class.getEnumConstants()))
+        Try<List<AssessmentCategorySummary>> categorySummaries = assessmentService.getCategorySummaries(dummyUser.getId(), ["groupId1","groupId2"])
 
         then:
-        1 * assessmentRepository.getAssessments(true, _) >> new Try.Success<List<Assessment>>(dummyAssessments)
-        1 * userAssessmentRepository.getLatestUserAssessments(dummyUser.getId(), _) >> new Try.Success<List<UserAssessment>>(dummyUserAssessments)
+        1 * assessmentCategoryGroupService.getGlobalGroupIds() >> new Try.Success<Try<List<String>>> ([])
+        1 * assessmentRepository.getAssessments(true,_) >> new Try.Success<List<Assessment>>(dummyAssessments)
+        upgradeAssessmentSchemaUtils.upgradeAssessmentSchema(_) >> new Try.Success<Assessment>(dummyAssessments.get(0))
+        1 * userAssessmentRepository.getLatestUserAssessments(dummyUser.getId(), _) >> new Try.Success<Map<String, UserAssessment>>(dummyUserAssessments.stream().
+                collect(Collectors.toMap(new Function<UserAssessment, String>() {
+                    String apply(UserAssessment p) { return p.getAssessmentId() }
+                },
+                        Function.<UserAssessment> identity())))
         1 * userAssessmentRepository.getUserAssessments(dummyUser.getId()) >> new Try.Success<List<UserAssessment>>(dummyUserAssessments)
         1 * prereqEvaluatorFactory.getAssessmentPrereqEvaluator(_) >> assessmentPrereqEvaluator
 
         then:
-        1 * userAssessmentRepository.getUserAssessmentsByCategory(dummyUser.getId()) >> new Try.Success<Map<AssessmentCategory, List<UserAssessment>>>(userAssessmentsByCategory);
+        1 * userAssessmentRepository.getUserAssessmentsByCategory(dummyUser.getId(), _) >> new Try.Success<Map<String, List<UserAssessment>>>(userAssessmentsByCategory);
 
         then:
         categorySummaries.isSuccess()
@@ -623,20 +662,85 @@ class AssessmentServiceSpec extends Specification {
         categorySummaries.get().get(1).latestUserAssessmentSummary == null
     }
 
-    def "getCategorySummaries: getUserAssessmentsByCategory fails, i fail"(){
+    def "getCategorySummaries: getUserAssessmentsByCategory fails, i fail"() {
         when:
-        Try<List<AssessmentCategorySummary>> categorySummaries = assessmentService.getCategorySummaries(dummyUser.getId(), Arrays.asList(AssessmentCategory.class.getEnumConstants()))
+        Try<List<AssessmentCategorySummary>> categorySummaries = assessmentService.getCategorySummaries(dummyUser.getId(), null)
 
         then:
+        1 * assessmentCategoryGroupService.getGlobalGroupIds() >> new Try.Success<Try<List<String>>> ([])
         1 * assessmentRepository.getAssessments(true, _) >> new Try.Success<List<Assessment>>(dummyAssessments)
-        1 * userAssessmentRepository.getLatestUserAssessments(dummyUser.getId(), _) >> new Try.Success<List<UserAssessment>>(dummyUserAssessments)
+        upgradeAssessmentSchemaUtils.upgradeAssessmentSchema(_) >> new Try.Success<Assessment>(dummyAssessments.get(0))
+        1 * userAssessmentRepository.getLatestUserAssessments(dummyUser.getId(), _) >> new Try.Success<Map<String, UserAssessment>>(dummyUserAssessments.stream().
+                collect(Collectors.toMap(new Function<UserAssessment, String>() {
+                    String apply(UserAssessment p) { return p.getAssessmentCategoryGroupId() }
+                },
+                        Function.<UserAssessment> identity())))
         1 * userAssessmentRepository.getUserAssessments(dummyUser.getId()) >> new Try.Success<List<UserAssessment>>(dummyUserAssessments)
         1 * prereqEvaluatorFactory.getAssessmentPrereqEvaluator(_) >> assessmentPrereqEvaluator
 
         then:
-        1 * userAssessmentRepository.getUserAssessmentsByCategory(dummyUser.getId()) >> new Try.Failure<Map<AssessmentCategory, List<UserAssessment>>>(new Exception());
+        1 * userAssessmentRepository.getUserAssessmentsByCategory(dummyUser.getId(), _) >> new Try.Failure<Map<AssessmentCategory, List<UserAssessment>>>(new Exception());
 
         then:
         categorySummaries.isFailure()
+    }
+
+    def "getCategorySummaries: getGlobalGroupIds fails, i fail"() {
+        when:
+        Try<List<AssessmentCategorySummary>> categorySummaries = assessmentService.getCategorySummaries(dummyUser.getId(), null)
+
+        then:
+        1 * assessmentCategoryGroupService.getGlobalGroupIds() >> new Try.Failure<Try<List<String>>> (new Exception())
+        0 * assessmentRepository.getAssessments(true, _) >> new Try.Success<List<Assessment>>(dummyAssessments)
+        upgradeAssessmentSchemaUtils.upgradeAssessmentSchema(_) >> new Try.Success<Assessment>(dummyAssessments.get(0))
+        0 * userAssessmentRepository.getLatestUserAssessments(dummyUser.getId(), _) >> new Try.Success<Map<String, UserAssessment>>(dummyUserAssessments.stream().
+                collect(Collectors.toMap(new Function<UserAssessment, String>() {
+                    String apply(UserAssessment p) { return p.getAssessmentCategoryGroupId() }
+                },
+                        Function.<UserAssessment> identity())))
+        0 * userAssessmentRepository.getUserAssessments(dummyUser.getId()) >> new Try.Success<List<UserAssessment>>(dummyUserAssessments)
+        0 * prereqEvaluatorFactory.getAssessmentPrereqEvaluator(_) >> assessmentPrereqEvaluator
+
+        then:
+        0 * userAssessmentRepository.getUserAssessmentsByCategory(dummyUser.getId(), _) >> new Try.Success<Map<String, List<UserAssessment>>>(null);
+        then:
+        categorySummaries.isFailure()
+    }
+
+    def "validateAndUpdateAssessment: validation failure"(Assessment assessment, boolean expectedSucess) {
+        when:
+        Try<AssessmentResponse> maybeAssessment = assessmentService.validateAndUpdateAssessment(assessment, UpdateGroup.class)
+
+        then:
+        1 * validatorService.validate(assessment, Assessment.class, UpdateGroup.class) >> new Try.Failure<Void>(new Exception())
+
+        then:
+        maybeAssessment.isSuccess() == expectedSucess
+        if (maybeAssessment.isSuccess()) {
+            !maybeAssessment.get().data.enabled
+            !maybeAssessment.get().data.isValid
+        }
+
+        where:
+        assessment                        | expectedSucess
+        new CATAssessment(enabled: true)  | false
+        new CATAssessment(enabled: false) | true
+    }
+
+    def "validateAndUpdateAssessment: validation success"(Assessment assessment) {
+        when:
+        Try<AssessmentResponse> maybeAssessment = assessmentService.validateAndUpdateAssessment(assessment, UpdateGroup.class)
+
+        then:
+        1 * validatorService.validate(assessment, Assessment.class, UpdateGroup.class) >> new Try.Success<Void>(null)
+
+        then:
+        maybeAssessment.isSuccess()
+        maybeAssessment.get().data.isValid
+
+        where:
+        assessment                        | _
+        new CATAssessment(enabled: true)  | _
+        new CATAssessment(enabled: false) | _
     }
 }

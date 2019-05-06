@@ -4,9 +4,7 @@ import com.daacs.framework.serializer.ObjectMapperConfig
 import com.daacs.integration.resource.model.DataWrapper
 import com.daacs.model.ErrorContainer
 import com.daacs.model.ErrorResponse
-import com.daacs.model.assessment.Assessment
-import com.daacs.model.assessment.AssessmentType
-import com.daacs.model.assessment.CATAssessment
+import com.daacs.model.assessment.*
 import com.daacs.model.assessment.user.CompletionScore
 import com.daacs.model.dto.UpdateAssessmentRequest
 import com.daacs.model.dto.WritingUpdateAssessmentRequest
@@ -19,6 +17,8 @@ import com.daacs.service.AssessmentServiceImpl
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
+import org.apache.commons.fileupload.FileItemIterator
+import org.apache.commons.fileupload.FileItemStream
 import org.springframework.core.io.ClassPathResource
 import org.springframework.core.io.DefaultResourceLoader
 import org.springframework.core.io.FileSystemResource
@@ -38,30 +38,51 @@ class AssessmentControllerSpec extends RestControllerSpec {
     AssessmentService assessmentService
     WritingUpdateAssessmentRequest writingUpdateAssessmentRequest
 
+    FileItemStream fileItemStream
+    FileItemIterator fileItemIterator
+
     String getBasePath() {
         return "/assessments"
     }
 
-    def setup(){
+    def setup() {
         objectMapper = new ObjectMapperConfig().objectMapper()
-        writingUpdateAssessmentRequest = new WritingUpdateAssessmentRequest(
+        writingUpdateAssessmentRequest = new WritingUpdateAssessmentRequest(scoringType: ScoringType.MANUAL,
                 id: "writing-assessment-2",
-                enabled: false,
                 assessmentType: AssessmentType.WRITING_PROMPT,
-                content: [:],
-                domains: [new ScoringDomainRequest(content: "Domain",
-                                            id: "domain-1",
-                                            rubric: new RubricRequest(supplementTable: [new SupplementTableRowRequest(content: "test", completionScore: CompletionScore.LOW, contentSummary: "summary")]))],
-                overallRubric: new RubricRequest(supplementTable: [new SupplementTableRowRequest(content: "test", completionScore: CompletionScore.LOW, contentSummary: "summary")]),
-                writingPrompt: new WritingPromptRequest(content: "Writing Prompt"),
+                domains: [
+                        new ScoringDomainRequest(
+                                id: "domain-1",
+                                label: "domain-1",
+                                content: "",
+                                rubric: new RubricRequest(
+                                        completionScoreMap: [:],
+                                        supplementTable: [
+                                                new SupplementTableRowRequest(completionScore: CompletionScore.HIGH, content: "")
+                                        ]))
+                ],
+                prerequisites: [],
+                overallRubric: new RubricRequest(
+                        completionScoreMap: [:],
+                        supplementTable: [
+                                new SupplementTableRowRequest(completionScore: CompletionScore.HIGH, content: "")
+                        ]),
+                assessmentCategory: AssessmentCategory.WRITING,
+                enabled: false,
+                label: "Writing",
+                content: ["": ""],
+                writingPrompt: new WritingPromptRequest(content: "")
         )
-
 
         login();
         headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         assessmentService = new AssessmentServiceImpl()
+
+        fileItemStream = Mock(FileItemStream)
+        fileItemIterator = Mock(FileItemIterator)
+        fileItemIterator.next() >> fileItemStream
     }
 
     def "attempt w/out session auth header"() {
@@ -75,7 +96,7 @@ class AssessmentControllerSpec extends RestControllerSpec {
         response.statusCode == HttpStatus.UNAUTHORIZED
     }
 
-    def "get assessments"(){
+    def "get assessments"() {
         setup:
         headers.add("Authorization", "Bearer " + oauthToken)
         HttpEntity<?> httpEntity = new HttpEntity<Object>(headers);
@@ -90,11 +111,12 @@ class AssessmentControllerSpec extends RestControllerSpec {
         then:
         response.statusCode == HttpStatus.OK
         JsonNode jsonNode = objectMapper.readTree(response.getBody())
-        List<Assessment> assessments = objectMapper.readValue(jsonNode.get("data").toString(), new TypeReference<List<Assessment>>(){})
+        List<Assessment> assessments = objectMapper.readValue(jsonNode.get("data").toString(), new TypeReference<List<Assessment>>() {
+        })
         assessments.size() > 0
     }
 
-    def "create new assessment"(){
+    def "create new assessment"() {
         setup:
         headers.add("Authorization", "Bearer " + oauthToken)
 
@@ -114,11 +136,11 @@ class AssessmentControllerSpec extends RestControllerSpec {
         then:
         response.statusCode == HttpStatus.OK
         JsonNode jsonNode = objectMapper.readTree(response.getBody())
-        Assessment assessment = objectMapper.readValue(jsonNode.get("data").toString(), Assessment)
-        assessment != null
+        String id = jsonNode.get("data").get("id").toString()
+        id != null
     }
 
-    def "create new assessment w/nested domains"(){
+    def "create new assessment w/nested domains"() {
         setup:
         headers.add("Authorization", "Bearer " + oauthToken)
 
@@ -138,11 +160,11 @@ class AssessmentControllerSpec extends RestControllerSpec {
         then:
         response.statusCode == HttpStatus.OK
         JsonNode jsonNode = objectMapper.readTree(response.getBody())
-        Assessment assessment = objectMapper.readValue(jsonNode.get("data").toString(), Assessment)
-        assessment != null
+        String id = jsonNode.get("data").get("id").toString()
+        id != null
     }
 
-    def "create new assessment (validation error)"(){
+    def "create new assessment (validation error)"() {
         setup:
         headers.add("Authorization", "Bearer " + oauthToken)
 
@@ -162,17 +184,18 @@ class AssessmentControllerSpec extends RestControllerSpec {
         then:
         response.statusCode == HttpStatus.BAD_REQUEST
         JsonNode jsonNode = objectMapper.readTree(response.getBody())
-        List<ErrorContainer> errors = objectMapper.readValue(jsonNode.get("errors").toString(), new TypeReference<List<ErrorContainer>>(){});
+        List<ErrorContainer> errors = objectMapper.readValue(jsonNode.get("errors").toString(), new TypeReference<List<ErrorContainer>>() {
+        });
         errors.size() == 1
-        errors.get(0).code == "assessment.constraintViolation"
+        errors.get(0).code == "Assessment.constraintViolation"
         errors.get(0).meta.get("code") == "NotNull"
         errors.get(0).meta.get("field") == "scoringType"
     }
 
-    def "update assessment"(){
+    def "update assessment"() {
         setup:
         headers.add("Authorization", "Bearer " + oauthToken)
-
+        writingUpdateAssessmentRequest.scoringType = null
         DataWrapper<UpdateAssessmentRequest> updateAssessmentRequest =
                 new DataWrapper(data: writingUpdateAssessmentRequest);
 
@@ -191,10 +214,17 @@ class AssessmentControllerSpec extends RestControllerSpec {
         Assessment assessment = objectMapper.readValue(jsonNode.get("data").toString(), Assessment)
         assessment.id == writingUpdateAssessmentRequest.id
         !assessment.enabled
+        !assessment.isValid
+
+  //      List<ErrorContainer> meta = objectMapper.readValue(jsonNode.get("data").get("errors").toString(), ErrorContainer[].class)
+//        meta.size() == 1
+//        meta.get(0).code == 'Assessment.constraintViolation'
+    //    meta.get(0).detail == 'scoringType may not be null'
 
         when:
         //put it back
         writingUpdateAssessmentRequest.enabled = true
+        writingUpdateAssessmentRequest.scoringType = ScoringType.MANUAL
         updateAssessmentRequest = new DataWrapper(data: writingUpdateAssessmentRequest);
         request = new HttpEntity<DataWrapper<UpdateAssessmentRequest>>(updateAssessmentRequest, headers);
         response = restTemplate.exchange(
@@ -205,29 +235,35 @@ class AssessmentControllerSpec extends RestControllerSpec {
 
         then:
         response.statusCode == HttpStatus.OK
+        JsonNode fixedJsonNode = objectMapper.readTree(response.getBody())
+        Assessment fixedAssessment = objectMapper.readValue(fixedJsonNode.get("data").toString(), Assessment)
+        fixedAssessment.id == writingUpdateAssessmentRequest.id
+        fixedAssessment.enabled
+        fixedAssessment.isValid
+
+       // List<ErrorContainer> fixedMeta = objectMapper.readValue(fixedJsonNode.get("data").get("errors").toString(), ErrorContainer[].class)
+        // fixedMeta.size() == 0
     }
 
-    private static String getAssessmentJson(String path){
+    private static String getAssessmentJson(String path) {
         DefaultResourceLoader loader = new DefaultResourceLoader();
         String json = new String(Files.readAllBytes(Paths.get(loader.getResource(path).getURI())));
         return json;
     }
 
-    def "update writing assessment: success"(){
+    def "uploadLightSideModel: success"() {
         setup:
-        String assessmentId = "writing-assessment-1"
-        headers.add("Authorization", "Bearer " + oauthToken);
+        headers = new HttpHeaders()
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+        headers.add("Authorization", "Bearer " +  oauthToken)
 
-        MultiValueMap<String, Object> parts = new LinkedMultiValueMap<String, Object>();
-        parts.add("scoringType", "LIGHTSIDE");
-        parts.add("lightside_domain-1", new FileSystemResource(new ClassPathResource("sample.xml").getFile()));
-
-        HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<MultiValueMap<String, Object>>(parts, headers);
+        MultiValueMap<String, Object> parts = new LinkedMultiValueMap<String, Object>()
+        parts.add("file", new FileSystemResource(new ClassPathResource("sample.xml").getFile()))
+        HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<MultiValueMap<String, Object>>(parts, headers)
 
         when:
         ResponseEntity<String> response = restTemplate.exchange(
-                serviceURI("/" + assessmentId + "/upload-lightside-models"),
+                serviceURI("/upload-lightside-models"),
                 HttpMethod.POST,
                 request,
                 String.class);
@@ -236,54 +272,7 @@ class AssessmentControllerSpec extends RestControllerSpec {
         response.statusCode == HttpStatus.OK
     }
 
-    def "update writing assessment: fails missing overall"(){
-        setup:
-        String assessmentId = "writing-assessment-1"
-        headers.add("Authorization", "Bearer " + oauthToken);
-        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-
-        MultiValueMap<String, Object> parts = new LinkedMultiValueMap<String, Object>();
-        parts.add("scoringType", "LIGHTSIDE");
-        parts.add("lightside_overall", new FileSystemResource(new ClassPathResource("sample.xml").getFile()));
-        parts.add("lightside_domain-1", new FileSystemResource(new ClassPathResource("sample.xml").getFile()));
-
-        HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<MultiValueMap<String, Object>>(parts, headers);
-
-        when:
-        ResponseEntity<String> response = restTemplate.exchange(
-                serviceURI("/" + assessmentId + "/upload-lightside-models"),
-                HttpMethod.POST,
-                request,
-                String.class);
-
-        then:
-        response.statusCode == HttpStatus.BAD_REQUEST
-    }
-
-    def "update writing assessment: fails missing domain"(){
-        setup:
-        String assessmentId = "writing-assessment-1"
-        headers.add("Authorization", "Bearer " + oauthToken);
-        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-
-        MultiValueMap<String, Object> parts = new LinkedMultiValueMap<String, Object>();
-        parts.add("scoringType", "LIGHTSIDE");
-        parts.add("lightside_overall", new FileSystemResource(new ClassPathResource("sample.xml").getFile()));
-
-        HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<MultiValueMap<String, Object>>(parts, headers);
-
-        when:
-        ResponseEntity<String> response = restTemplate.exchange(
-                serviceURI("/" + assessmentId + "/upload-lightside-models"),
-                HttpMethod.POST,
-                request,
-                String.class);
-
-        then:
-        response.statusCode == HttpStatus.BAD_REQUEST
-    }
-
-    def "get assessment"(){
+    def "get assessment"() {
         setup:
         headers.add("Authorization", "Bearer " + oauthToken)
         HttpEntity<?> httpEntity = new HttpEntity<Object>(headers);
@@ -298,7 +287,8 @@ class AssessmentControllerSpec extends RestControllerSpec {
         then:
         response.statusCode == HttpStatus.OK
         JsonNode jsonNode = objectMapper.readTree(response.getBody())
-        Assessment assessment = objectMapper.readValue(jsonNode.get("data").toString(), new TypeReference<CATAssessment>(){})
+        Assessment assessment = objectMapper.readValue(jsonNode.get("data").toString(), new TypeReference<CATAssessment>() {
+        })
         assessment.id == "32c91abf-fc9b-4b41-ac4e-3f36b3e323d8"
     }
 }

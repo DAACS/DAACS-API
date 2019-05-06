@@ -1,5 +1,6 @@
-package com.daacs.framework.auth.saml.handler
+package com.daacs.unit.auth.saml.handler
 
+import com.daacs.framework.auth.saml.handler.SamlOauth2LogoutHandler
 import com.daacs.model.SessionedUser
 import com.daacs.model.User
 import com.daacs.model.UserFieldConfig

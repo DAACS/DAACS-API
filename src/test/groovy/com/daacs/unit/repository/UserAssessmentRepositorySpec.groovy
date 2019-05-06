@@ -1,4 +1,4 @@
-package com.daacs.repository
+package com.daacs.unit.repository
 
 import com.daacs.component.HystrixCommandFactory
 import com.daacs.framework.exception.AlreadyExistsException
@@ -8,6 +8,8 @@ import com.daacs.framework.hystrix.FailureTypeException
 import com.daacs.model.assessment.AssessmentCategory
 import com.daacs.model.assessment.ScoringType
 import com.daacs.model.assessment.user.*
+import com.daacs.repository.UserAssessmentRepository
+import com.daacs.repository.UserAssessmentRepositoryImpl
 import com.daacs.repository.hystrix.*
 import com.lambdista.util.Try
 import org.springframework.data.domain.Sort
@@ -17,6 +19,9 @@ import spock.lang.Specification
 import spock.lang.Unroll
 
 import java.time.Instant
+import java.util.function.Function
+import java.util.stream.Collectors
+
 /**
  * Created by chostetter on 6/22/16.
  */
@@ -134,7 +139,7 @@ class UserAssessmentRepositorySpec extends Specification {
 
     def "getUserAssessments by category: success"(){
         when:
-        Try<List<UserAssessment>> maybeUserAssessments = userAssessmentRepository.getUserAssessments(userId, AssessmentCategory.MATHEMATICS, null)
+        Try<List<UserAssessment>> maybeUserAssessments = userAssessmentRepository.getUserAssessmentsByGroupId(userId, "mathGroupId", null)
 
         then:
         1 * hystrixCommandFactory.getMongoFindCommand(*_) >> { arguments ->
@@ -145,7 +150,7 @@ class UserAssessmentRepositorySpec extends Specification {
             } != null
 
             assert query.criteria.find { Criteria criteria ->
-                criteria.key == "assessmentCategory" && criteria.isValue == AssessmentCategory.MATHEMATICS.toString()
+                criteria.key == "assessmentCategoryGroupId" && criteria.isValue == "mathGroupId"
             } != null
 
             assert query.sort.getOrderFor("takenDate").getDirection() == Sort.Direction.DESC
@@ -161,16 +166,11 @@ class UserAssessmentRepositorySpec extends Specification {
     def "getUserAssessmentsByCategory: success"(){
         setup:
         List<UserAssessment> userAssessmentList = [
-                new CATUserAssessment(assessmentCategory: AssessmentCategory.MATHEMATICS),
-                new CATUserAssessment(assessmentCategory: AssessmentCategory.READING),
-                new WritingPromptUserAssessment(assessmentCategory: AssessmentCategory.WRITING),
-                new MultipleChoiceUserAssessment(assessmentCategory: AssessmentCategory.COLLEGE_SKILLS),
-                new MultipleChoiceUserAssessment(assessmentCategory: AssessmentCategory.COLLEGE_SKILLS),
-                new MultipleChoiceUserAssessment(assessmentCategory: AssessmentCategory.COLLEGE_SKILLS)
+                new CATUserAssessment()
         ]
 
         when:
-        Try<Map<AssessmentCategory, List<UserAssessment>>> maybeUserAssessments = userAssessmentRepository.getUserAssessmentsByCategory(userId)
+        Try<Map<AssessmentCategory, List<UserAssessment>>> maybeUserAssessments = userAssessmentRepository.getUserAssessmentsByCategory(userId, [])
 
         then:
         1 * hystrixCommandFactory.getMongoFindCommand(*_) >> { arguments ->
@@ -189,12 +189,12 @@ class UserAssessmentRepositorySpec extends Specification {
 
         then:
         maybeUserAssessments.isSuccess()
-        maybeUserAssessments.get().size() == 4
+        maybeUserAssessments.get().size() == 1
     }
 
     def "getUserAssessmentsByCategory: mongoFindCommand fails, i fail"(){
         when:
-        Try<Map<AssessmentCategory, List<UserAssessment>>> maybeUserAssessments = userAssessmentRepository.getUserAssessmentsByCategory(userId)
+        Try<Map<AssessmentCategory, List<UserAssessment>>> maybeUserAssessments = userAssessmentRepository.getUserAssessmentsByCategory(userId,[])
 
         then:
         1 * hystrixCommandFactory.getMongoFindCommand(*_) >> mongoFindCommand
@@ -207,7 +207,7 @@ class UserAssessmentRepositorySpec extends Specification {
 
     def "getUserAssessments by category: mongoFindCommand fails, i fail"(){
         when:
-        Try<List<UserAssessment>> maybeUserAssessments = userAssessmentRepository.getUserAssessments(userId, AssessmentCategory.MATHEMATICS, null)
+        Try<List<UserAssessment>> maybeUserAssessments = userAssessmentRepository.getUserAssessmentsByGroupId(userId, "groupId", null)
 
         then:
         1 * hystrixCommandFactory.getMongoFindCommand(*_) >> mongoFindCommand
@@ -262,17 +262,18 @@ class UserAssessmentRepositorySpec extends Specification {
         ];
 
         when:
-        Try<List<UserAssessment>> maybeUserAssessments = userAssessmentRepository.getLatestUserAssessments(userId, [assessmentId1, assessmentId2, assessmentId3])
+        Try<Map<String, UserAssessment>> maybeUserAssessments = userAssessmentRepository.getLatestUserAssessments(userId, [assessmentId1, assessmentId2, assessmentId3])
 
         then:
         1 * mongoFindCommand.execute() >> new Try.Success<List<UserAssessment>>(dummyUserAssessments)
         maybeUserAssessments.isSuccess()
 
         then:
-        maybeUserAssessments.get().size() == 3
-        maybeUserAssessments.get().find { it.assessmentId == assessmentId1 && it.takenDate == Instant.parse("2016-01-01T00:00:00.000Z") } != null
-        maybeUserAssessments.get().find { it.assessmentId == assessmentId2 && it.takenDate == Instant.parse("2015-01-01T00:00:00.000Z") } != null
-        maybeUserAssessments.get().find { it.assessmentId == assessmentId3 && it.takenDate == Instant.parse("2014-01-01T00:00:00.000Z") } != null
+        List<UserAssessment> resultList = new ArrayList<UserAssessment>(maybeUserAssessments.get().values())
+        resultList.size() == 3
+        resultList.find { it.assessmentId == assessmentId1 && it.takenDate == Instant.parse("2016-01-01T00:00:00.000Z") } != null
+        resultList.find { it.assessmentId == assessmentId2 && it.takenDate == Instant.parse("2015-01-01T00:00:00.000Z") } != null
+        resultList.find { it.assessmentId == assessmentId3 && it.takenDate == Instant.parse("2014-01-01T00:00:00.000Z") } != null
     }
 
     def "getUserAssessments: multiple assessmentIds returns latest takenDate of each assessment when an invalid assessmentId is provided"(){
@@ -290,16 +291,17 @@ class UserAssessmentRepositorySpec extends Specification {
         ];
 
         when:
-        Try<List<UserAssessment>> maybeUserAssessments = userAssessmentRepository.getLatestUserAssessments(userId, [assessmentId1, assessmentId2, assessmentId3])
+        Try<Map<String, UserAssessment>> maybeUserAssessments = userAssessmentRepository.getLatestUserAssessments(userId, [assessmentId1, assessmentId2, assessmentId3])
 
         then:
         1 * mongoFindCommand.execute() >> new Try.Success<List<UserAssessment>>(dummyUserAssessments)
         maybeUserAssessments.isSuccess()
 
         then:
-        maybeUserAssessments.get().size() == 2
-        maybeUserAssessments.get().find { it.assessmentId == assessmentId1 && it.takenDate == Instant.parse("2016-01-01T00:00:00.000Z") } != null
-        maybeUserAssessments.get().find { it.assessmentId == assessmentId2 && it.takenDate == Instant.parse("2015-01-01T00:00:00.000Z") } != null
+        List<UserAssessment> resultList = new ArrayList<UserAssessment>(maybeUserAssessments.get().values())
+        resultList.size() == 2
+        resultList.find { it.assessmentId == assessmentId1 && it.takenDate == Instant.parse("2016-01-01T00:00:00.000Z") } != null
+        resultList.find { it.assessmentId == assessmentId2 && it.takenDate == Instant.parse("2015-01-01T00:00:00.000Z") } != null
     }
 
     def "getUserAssessments: multiple assessmentIds mongo call fails, i fail"(){
@@ -708,7 +710,7 @@ class UserAssessmentRepositorySpec extends Specification {
 
     def "getLatestUserAssessment 2: success"(){
         when:
-        Try<UserAssessment> maybeUserAssessment = userAssessmentRepository.getLatestUserAssessment(userId, AssessmentCategory.MATHEMATICS)
+        Try<UserAssessment> maybeUserAssessment = userAssessmentRepository.getLatestUserAssessmentByGroup(userId, "groupId")
 
         then:
         1 * hystrixCommandFactory.getMongoFindOneCommand(*_) >> { arguments ->
@@ -719,7 +721,7 @@ class UserAssessmentRepositorySpec extends Specification {
             } != null
 
             assert query.criteria.find { Criteria criteria ->
-                criteria.key == "assessmentCategory" && criteria.isValue == AssessmentCategory.MATHEMATICS.toString()
+                criteria.key == "assessmentCategoryGroupId" && criteria.isValue == "groupId"
             } != null
 
             assert query.sort.getOrderFor("takenDate").getDirection() == Sort.Direction.DESC
@@ -736,7 +738,7 @@ class UserAssessmentRepositorySpec extends Specification {
 
     def "getLatestUserAssessment 2: failed, return failure"(){
         when:
-        Try<UserAssessment> maybeUserAssessment = userAssessmentRepository.getLatestUserAssessment(userId, AssessmentCategory.MATHEMATICS)
+        Try<UserAssessment> maybeUserAssessment = userAssessmentRepository.getLatestUserAssessmentByGroup(userId, "groupId")
 
         then:
         1 * mongoFindOneCommand.execute() >> new Try.Failure<UserAssessment>(new RepoNotFoundException("not found"))
@@ -746,7 +748,7 @@ class UserAssessmentRepositorySpec extends Specification {
 
     def "getLatestUserAssessment 2: success w/null, return failure"(){
         when:
-        Try<UserAssessment> maybeUserAssessment = userAssessmentRepository.getLatestUserAssessment(userId, AssessmentCategory.MATHEMATICS)
+        Try<UserAssessment> maybeUserAssessment = userAssessmentRepository.getLatestUserAssessmentByGroup(userId, "groupId")
 
         then:
         1 * mongoFindOneCommand.execute() >> new Try.Success<UserAssessment>(null)

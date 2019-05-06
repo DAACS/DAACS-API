@@ -15,3 +15,4 @@ out/
 classes/
 src/main/resources/saml/excelsior-metadata.xml
 src/main/resources/saml/samlKeystore.jks
+src/main/resources/saml/logintest-metadata.xml

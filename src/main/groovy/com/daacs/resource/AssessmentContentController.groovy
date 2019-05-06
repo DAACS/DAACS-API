@@ -47,18 +47,18 @@ public class AssessmentContentController extends AuthenticatedController{
             @ApiResponse(code = 500, response = ErrorResponse.class, message = "Unknown error"),
             @ApiResponse(code = 503, response = ErrorResponse.class, message = "Retryable error")
     ])
-    @RequestMapping(value = "", method = RequestMethod.GET, params = ["assessmentCategory"], produces = "application/json")
+    @RequestMapping(value = "", method = RequestMethod.GET, params = ["assessmentCategoryGroupId"], produces = "application/json")
     public AssessmentContent getContentByCategory(
-            @RequestParam(value = "assessmentCategory") AssessmentCategory assessmentCategory,
+            @RequestParam(value = "assessmentCategoryGroupId") String groupId,
             @RequestParam(value = "takenDate", required = false) String takenDate,
             @RequestParam(value = "userId", required = false) String userId){
 
         Try<AssessmentContent> maybeAssessmentContent;
         if(takenDate == null){
-            maybeAssessmentContent = assessmentService.getContent(assessmentCategory);
+            maybeAssessmentContent = assessmentService.getContentByCategoryGroup(groupId);
         }
         else{
-            maybeAssessmentContent = assessmentService.getContentForUserAssessment(determineUserId(userId), assessmentCategory, Instant.parse(takenDate));
+            maybeAssessmentContent = assessmentService.getContentForUserAssessment(determineUserId(userId), groupId, Instant.parse(takenDate));
         }
 
         return maybeAssessmentContent.checkedGet();

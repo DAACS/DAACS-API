@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.group;
+import static org.springframework.data.mongodb.core.query.Criteria.where;
 
 /**
  * Created by chostetter on 7/7/16.
@@ -64,13 +65,14 @@ public class AssessmentRepositoryImpl implements AssessmentRepository {
     }
 
     @Override
-    public Try<List<Assessment>> getAssessments(Boolean enabled, List<AssessmentCategory> assessmentCategories) {
+    public Try<List<Assessment>> getAssessments(Boolean enabled, List<String> groupIds) {
         Query query = new Query();
         if(enabled != null){
             query.addCriteria(Criteria.where("enabled").is(enabled));
         }
-
-        query.addCriteria(Criteria.where("assessmentCategory").in(assessmentCategories));
+        if (groupIds != null && !groupIds.isEmpty()) {
+            query.addCriteria(where("assessmentCategoryGroup._id").in(groupIds));
+        }
 
         return hystrixCommandFactory.getMongoFindCommand(
                 "AssessmentRepositoryImpl-getAssessments", mongoTemplate, query, Assessment.class).execute();

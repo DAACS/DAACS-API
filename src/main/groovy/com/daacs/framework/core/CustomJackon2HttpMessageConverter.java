@@ -34,6 +34,7 @@ import java.lang.reflect.Type;
 public class CustomJackon2HttpMessageConverter extends MappingJackson2HttpMessageConverter {
 
     private String[] unwrappableRequestUris = { "swagger-resources", "api-docs" };
+    private String[] unwrappableParentClasses = { "com.daacs.model.dto.UnwrappableResponse" };
     private String[] unwrappableClasses = { "ErrorResponse", "MetaData", "springfox" };
 
     // Check for Jackson 2.6+ for support of generic type aware serialization of polymorphic collections
@@ -163,14 +164,23 @@ public class CustomJackon2HttpMessageConverter extends MappingJackson2HttpMessag
     }
 
     private boolean shouldWrapObject(Object object) {
-        String className = object.getClass().getName();
 
+        String className = object.getClass().getName();
         for(String unwrappableClass : unwrappableClasses){
             if(className.contains(unwrappableClass)) return false;
         }
 
+        for(String unwrappableParentClass : unwrappableParentClasses){
+            try {
+                if (Class.forName(unwrappableParentClass).isInstance(object))return false;
+            }catch(Exception ex){
+                logger.warn("Unable to check for unwrappable parent classes: " + ex.getMessage(), ex);
+            }
+        }
+
         return true;
     }
+
 
     private boolean shouldWrapResponse(HttpOutput httpOutputOptional) throws IOException{
         String requestUri = httpOutputOptional.getHttpChannel().getRequest().getRequestURI();

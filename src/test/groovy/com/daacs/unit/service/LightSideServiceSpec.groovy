@@ -9,7 +9,9 @@ import com.daacs.service.LightSideServiceImpl
 import com.daacs.service.hystrix.*
 import com.lambdista.util.Try
 import org.apache.commons.fileupload.FileItemStream
+import org.apache.commons.io.FilenameUtils
 import org.omg.CORBA.CompletionStatus
+import org.springframework.web.multipart.MultipartFile
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -39,6 +41,7 @@ class LightSideServiceSpec extends Specification {
     ReadCsvHystrixCommand readCsvHystrixCommand
     DeleteFileHystrixCommand deleteFileHystrixCommand
     WriteFileHystrixCommand writeFileHystrixCommand
+    MultipartFile dummyMultipartFile
 
     def setup(){
         hystrixCommandFactory = Mock(HystrixCommandFactory)
@@ -74,6 +77,7 @@ class LightSideServiceSpec extends Specification {
                 lightSideModelsDirString: lightSideModelsDirString,
                 lightSideOutputDirString: lightSideOutputDirString
         )
+        dummyMultipartFile = Mock(MultipartFile)
     }
 
     def "setupFileSystem: success"(){
@@ -382,17 +386,16 @@ class LightSideServiceSpec extends Specification {
 
     def "saveUploadedModelFile: success"(){
         setup:
-        FileItemStream fileItemStream = Mock(FileItemStream)
         InputStream inputStream = Mock(InputStream)
         String outputFileName = "test_file.xml"
 
         when:
-        Try<Void> maybeSavedFile = lightSideService.saveUploadedModelFile(fileItemStream)
+        Try<Void> maybeSavedFile = lightSideService.saveUploadedModelFile(dummyMultipartFile)
 
         then:
-        1 * fileItemStream.getContentType() >> "text/xml"
-        1 * fileItemStream.getName() >> outputFileName
-        1 * fileItemStream.openStream() >> inputStream
+
+        1 * dummyMultipartFile.getOriginalFilename() >> outputFileName
+        1 * dummyMultipartFile.getInputStream() >> inputStream
 
         then:
         1 * hystrixCommandFactory.getWriteFileHystrixCommand(_, inputStream, lightSideModelsDir.resolve(outputFileName)) >> writeFileHystrixCommand
@@ -407,10 +410,10 @@ class LightSideServiceSpec extends Specification {
         FileItemStream fileItemStream = Mock(FileItemStream)
 
         when:
-        Try<Void> maybeSavedFile = lightSideService.saveUploadedModelFile(fileItemStream)
+        Try<Void> maybeSavedFile = lightSideService.saveUploadedModelFile(dummyMultipartFile)
 
         then:
-        1 * fileItemStream.getContentType() >> "text/plain"
+        1 * dummyMultipartFile.getOriginalFilename() >> "sample.text"
 
         then:
         0 * hystrixCommandFactory.getWriteFileHystrixCommand(*_)
@@ -421,16 +424,14 @@ class LightSideServiceSpec extends Specification {
 
     def "saveUploadedModelFile: write file fails, i fail"(){
         setup:
-        FileItemStream fileItemStream = Mock(FileItemStream)
         InputStream inputStream = Mock(InputStream)
 
         when:
-        Try<Void> maybeSavedFile = lightSideService.saveUploadedModelFile(fileItemStream)
+        Try<Void> maybeSavedFile = lightSideService.saveUploadedModelFile(dummyMultipartFile)
 
         then:
-        1 * fileItemStream.getContentType() >> "text/xml"
-        1 * fileItemStream.getName() >> "test_file.xml"
-        1 * fileItemStream.openStream() >> inputStream
+        1 * dummyMultipartFile.getOriginalFilename() >> "test_file.xml"
+        1 * dummyMultipartFile.getInputStream() >> inputStream
 
         then:
         1 * writeFileHystrixCommand.execute() >> new Try.Failure<Void>(new Exception())
@@ -440,15 +441,13 @@ class LightSideServiceSpec extends Specification {
     }
 
     def "saveUploadedModelFile: openStream throws exception"(){
-        setup:
-        FileItemStream fileItemStream = Mock(FileItemStream)
 
         when:
-        Try<Void> maybeSavedFile = lightSideService.saveUploadedModelFile(fileItemStream)
+        Try<Void> maybeSavedFile = lightSideService.saveUploadedModelFile(dummyMultipartFile)
 
         then:
-        1 * fileItemStream.getContentType() >> "text/xml"
-        1 * fileItemStream.openStream() >> { throw new IOException() }
+        1 * dummyMultipartFile.getOriginalFilename() >> "test_file.xml"
+        1 * dummyMultipartFile.getInputStream() >> { throw new IOException() }
 
         then:
         0 * writeFileHystrixCommand.execute()

@@ -147,7 +147,7 @@ public class SystemController extends AuthenticatedController{
     ])
     @RequestMapping(value = "/calculate-grades", method = RequestMethod.GET, produces = "application/json")
     public void recalculateGrades(
-            @RequestParam(value = "assessmentCategories[]", required = false) AssessmentCategory[] assessmentCategories,
+            @RequestParam(value = "assessmentCategoryGroupIds[]", required = false) AssessmentCategory[] assessmentCategories,
             @RequestParam(value = "completionStatus", required = false, defaultValue="GRADED") CompletionStatus completionStatus,
             @RequestParam(value = "startDate", required = true) String startDateString,
             @RequestParam(value = "endDate", required = true) String endDateString,

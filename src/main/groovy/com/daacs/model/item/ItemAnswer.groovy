@@ -12,7 +12,7 @@ import javax.validation.constraints.NotNull
  */
 
 @JsonIgnoreProperties(["metaClass"])
-class ItemAnswer implements ListItemMappable {
+class DefaultItemAnswer implements ListItemMappable {
     @NotNull
     @JsonView([Views.NotExport])
     String id = UUID.randomUUID().toString() //default to new ID
@@ -20,7 +20,12 @@ class ItemAnswer implements ListItemMappable {
     @NotNull
     String content;
 
+}
+
+@JsonIgnoreProperties(["metaClass"])
+class ItemAnswer extends DefaultItemAnswer {
+
     @JsonView([Views.CompletedAssessment, Views.Admin, Views.Export])
-    @NotNull(groups = [ CreateGroup.class ])
     Integer score;
+
 }

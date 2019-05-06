@@ -11,7 +11,7 @@ import spock.lang.Specification
 class DownloadTokenRepositorySpec extends Specification {
 
     DownloadTokenRepository downloadTokenRepository
-    int tokenTTL = 100
+    int tokenTTL = 500
     User dummyUser = new User("username", "mr", "dummy")
 
     def setup(){

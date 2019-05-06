@@ -136,7 +136,7 @@ class SystemControllerSpec extends RestControllerSpec {
 
         when:
         ResponseEntity<String> response = restTemplate.exchange(
-                serviceURI("/calculate-grades?assessmentCategories[]=MATHEMATIC&startDate=2016-07-01T00:00:00.000Z&endDate=2017-07-30T00:00:00.000Z&dryRun=false"),
+                serviceURI("/calculate-grades?assessmentCategoryGroupIds[]=MATHEMATIC&startDate=2016-07-01T00:00:00.000Z&endDate=2017-07-30T00:00:00.000Z&dryRun=false"),
                 HttpMethod.GET,
                 httpEntity,
                 String.class)

@@ -143,23 +143,23 @@ class ItemGroupServiceSpec extends Specification {
                 new ItemGroupTransition(
                         groupDifficulty: Difficulty.EASY,
                         transitionMap: [
-                                (Difficulty.EASY): Range.atMost(2),
-                                (Difficulty.MEDIUM): Range.atLeast(3)
+                                (Difficulty.EASY): Range.atMost((Double)2.0),
+                                (Difficulty.MEDIUM): Range.atLeast((Double)3.0)
                         ]
                 ),
                 new ItemGroupTransition(
                         groupDifficulty: Difficulty.MEDIUM,
                         transitionMap: [
-                                (Difficulty.EASY): Range.atMost(2),
-                                (Difficulty.MEDIUM): Range.closed(3, 4),
-                                (Difficulty.HARD): Range.atLeast(5)
+                                (Difficulty.EASY): Range.atMost((Double)2.0),
+                                (Difficulty.MEDIUM): Range.closed((Double)3.0, (Double)4.0),
+                                (Difficulty.HARD): Range.atLeast((Double)5.0)
                         ]
                 ),
                 new ItemGroupTransition(
                         groupDifficulty: Difficulty.HARD,
                         transitionMap: [
-                                (Difficulty.MEDIUM): Range.atMost(4),
-                                (Difficulty.HARD): Range.atLeast(5)
+                                (Difficulty.MEDIUM): Range.atMost((Double)4.0),
+                                (Difficulty.HARD): Range.atLeast((Double)5.0)
                         ]
                 )
         ]
@@ -340,7 +340,7 @@ class ItemGroupServiceSpec extends Specification {
 
     def "determineNextGroupDifficulty: fails if no valid transition entry in the group"(){
         setup:
-        itemGroupTransitions.get(0).getTransitionMap().put(Difficulty.EASY, Range.atMost(1))
+        itemGroupTransitions.get(0).getTransitionMap().put(Difficulty.EASY, Range.atMost((Double)1))
 
         when:
         Try<Difficulty> maybeDifficulty = itemGroupService.determineNextGroupDifficulty(itemGroupTransitions, [userItemGroups.get(0)])

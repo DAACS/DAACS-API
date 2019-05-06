@@ -14,7 +14,7 @@ class ScoringDomain extends Domain {
     Rubric rubric;
 
     @Valid
-    List<Domain> subDomains;
+    List<Domain> subDomains = new ArrayList<>();
 
     @NotNull
     Boolean scoreIsSubDomainAverage = false;

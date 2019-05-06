@@ -64,6 +64,7 @@ class LightSideConfigValidatorSpec extends ValidatorSpec {
     def "isValid: fails when lightSideConfig doesn't have all domains"(){
         setup:
         writingAssessment.lightSideConfig.domainModels = [:]
+        writingAssessment.enabled = true
 
         when:
         boolean isValid = validator.isValid(writingAssessment, context)

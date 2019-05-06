@@ -19,13 +19,13 @@ public class WritingPrompt {
     String id = UUID.randomUUID().toString();
 
     @NotNull
-    String content;
+    String content = "";
 
     @NotNull
     int minWords;
 
     @JsonView([Views.NotExport])
-    String sample;
+    String sample = "";
 
     @ApiModelProperty(dataType = "java.lang.String")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)

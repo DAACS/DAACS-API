@@ -2,7 +2,8 @@ package com.daacs.service;
 
 import com.daacs.model.assessment.user.CompletionScore;
 import com.lambdista.util.Try;
-import org.apache.commons.fileupload.FileItemStream;
+import org.springframework.web.multipart.MultipartFile;
+
 
 /**
  * Created by chostetter on 8/15/16.
@@ -13,5 +14,5 @@ public interface LightSideService {
     Try<CompletionScore> readOutputFile(String fileName);
     Try<Void> cleanUpFiles(String inputFileName, String outputFileName);
     Try<Void> setupFileSystem();
-    Try<Void> saveUploadedModelFile(FileItemStream fileItemStream);
+    Try<String> saveUploadedModelFile(MultipartFile file);
 }

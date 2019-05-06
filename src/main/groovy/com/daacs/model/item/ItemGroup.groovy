@@ -20,6 +20,10 @@ class ItemGroup implements ListItemMappable {
     String id = UUID.randomUUID().toString() //default to new ID
 
     @NotNull
+    @Valid
+    List<DefaultItemAnswer> possibleItemAnswers;
+
+    @NotNull
     @Size(min = 1)
     @Valid
     List<Item> items;

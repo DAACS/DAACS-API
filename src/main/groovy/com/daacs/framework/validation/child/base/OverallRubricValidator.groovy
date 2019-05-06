@@ -17,18 +17,26 @@ public class OverallRubricValidator extends RubricValidator implements ChildVali
     @Override
     public boolean isValid(Assessment assessment, ConstraintValidatorContext context) {
 
-        switch(assessment.getAssessmentType()){
+        switch (assessment.getAssessmentType()) {
             case AssessmentType.WRITING_PROMPT:
-                return isValid((WritingAssessment) assessment, context, null);
+
+                if (assessment instanceof WritingAssessment) {
+                    return isValid((WritingAssessment) assessment, context, null);
+                } else {
+                    return buildAndReturnAssessmentTypePropertyViolation(context, assessment.getAssessmentType())
+                }
 
             case AssessmentType.LIKERT:
             case AssessmentType.MULTIPLE_CHOICE:
             case AssessmentType.CAT:
-                return isValid((ItemGroupAssessment) assessment, context, null);
+                if (assessment instanceof ItemGroupAssessment) {
+                    return isValid((ItemGroupAssessment) assessment, context, null);
+                } else {
+                    return buildAndReturnAssessmentTypePropertyViolation(context, assessment.getAssessmentType())
+                }
 
             default:
-                addPropertyViolation(context, "assessmentType", MessageFormat.format("Invalid assessmentType: {0}", assessment.getAssessmentType()))
-                return false;
+                return buildAndReturnAssessmentTypePropertyViolation(context, assessment.getAssessmentType())
         }
     }
 }

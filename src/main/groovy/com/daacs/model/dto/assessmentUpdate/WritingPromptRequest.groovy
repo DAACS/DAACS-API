@@ -10,4 +10,6 @@ class WritingPromptRequest {
     @NotNull
     String content
 
+    @NotNull
+    int minWords
 }

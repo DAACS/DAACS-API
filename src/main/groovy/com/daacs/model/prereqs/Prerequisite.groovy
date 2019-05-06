@@ -25,6 +25,7 @@ public abstract class Prerequisite {
     @NotNull
     PrereqType prereqType;
 
+    @NotNull
     String reason;
 }
 

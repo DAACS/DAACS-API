@@ -16,7 +16,16 @@ public class InvalidObjectException extends FailureTypeException {
         );
     }
 
-    private static String getCode(String entityType){
+    public InvalidObjectException(String entityType, String detail, Throwable cause) {
+        super(
+                getCode(entityType),
+                detail,
+                FailureType.NOT_RETRYABLE,
+                cause
+        );
+    }
+
+    private static String getCode(String entityType) {
         return entityType + ".invalidObject";
     }
 }

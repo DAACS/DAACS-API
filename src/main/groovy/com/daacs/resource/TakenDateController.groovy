@@ -34,12 +34,12 @@ class TakenDateController extends AuthenticatedController{
             @ApiResponse(code = 500, response = ErrorResponse.class, message = "Unknown error"),
             @ApiResponse(code = 503, response = ErrorResponse.class, message = "Retryable error")
     ])
-    @RequestMapping(value = "", method = RequestMethod.GET, params = ["assessmentCategory"], produces = "application/json")
+    @RequestMapping(value = "", method = RequestMethod.GET, params = ["assessmentCategoryGroupId"], produces = "application/json")
     public List<UserAssessmentTakenDate> getTakenDatesByCategory(
             @RequestParam(value = "userId", required = false) String userId,
-            @RequestParam(value = "assessmentCategory") AssessmentCategory assessmentCategory){
+            @RequestParam(value = "assessmentCategoryGroupId") String groupId){
 
-        Try<List<UserAssessmentTakenDate>> maybeTakenDates = userAssessmentService.getTakenDates(determineUserId(userId), assessmentCategory);
+        Try<List<UserAssessmentTakenDate>> maybeTakenDates = userAssessmentService.getTakenDates(determineUserId(userId), groupId);
         if(maybeTakenDates.isFailure()){
             throw maybeTakenDates.failed().get();
         }

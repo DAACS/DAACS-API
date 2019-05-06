@@ -1,5 +1,6 @@
-package com.daacs.framework.auth.saml.handler
+package com.daacs.unit.auth.saml.handler
 
+import com.daacs.framework.auth.saml.handler.SimpleLogoutSuccessHandler
 import org.springframework.security.core.Authentication
 import spock.lang.Specification
 

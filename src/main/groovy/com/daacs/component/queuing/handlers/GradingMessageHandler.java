@@ -48,7 +48,7 @@ public class GradingMessageHandler implements  MessageHandler<GradingMessage> {
         log.info("Processing GradingMessage: {}", objectMapper.writeValueAsString(gradingMessage));
 
 
-        Try<UserAssessment> maybeUserAssessment = userAssessmentService.getUserAssesment(gradingMessage.getUserId(), gradingMessage.getUserAssessmentId());
+        Try<UserAssessment> maybeUserAssessment = userAssessmentService.getUserAssessment(gradingMessage.getUserId(), gradingMessage.getUserAssessmentId());
         if(maybeUserAssessment.isFailure()){
             return new Try.Failure<>(maybeUserAssessment.failed().get());
         }

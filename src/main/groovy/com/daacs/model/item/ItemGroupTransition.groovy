@@ -15,5 +15,5 @@ class ItemGroupTransition {
     Difficulty groupDifficulty;
 
     @NotNull
-    Map<Difficulty, Range<Integer>> transitionMap;
+    Map<Difficulty, Range<Double>> transitionMap;
 }

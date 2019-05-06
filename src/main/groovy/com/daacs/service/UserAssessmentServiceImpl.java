@@ -58,70 +58,70 @@ public class UserAssessmentServiceImpl implements UserAssessmentService {
 
     protected static String adminRole = "ROLE_ADMIN";
 
-    private List<CompletionStatus> validTakenStatuses = new ArrayList<CompletionStatus>(){{
+    private List<CompletionStatus> validTakenStatuses = new ArrayList<CompletionStatus>() {{
         add(CompletionStatus.COMPLETED);
         add(CompletionStatus.GRADED);
         add(CompletionStatus.GRADING_FAILURE);
     }};
 
     @Override
-    public Try<List<UserAssessmentSummary>> getSummaries(String userId, String assessmentId, Instant takenDate){
+    public Try<List<UserAssessmentSummary>> getSummaries(String userId, String assessmentId, Instant takenDate) {
         Try<List<UserAssessment>> maybeUserAssessments = userAssessmentRepository.getUserAssessments(userId, assessmentId, takenDate);
-        if(maybeUserAssessments.isFailure()){
+        if (maybeUserAssessments.isFailure()) {
             return new Try.Failure<>(maybeUserAssessments.failed().get());
         }
 
         List<UserAssessmentSummary> userAssessmentSummaries = maybeUserAssessments.get().stream()
-                .map(userAssessment ->  daacsOrikaMapper.map(userAssessment, UserAssessmentSummary.class))
+                .map(userAssessment -> daacsOrikaMapper.map(userAssessment, UserAssessmentSummary.class))
                 .collect(Collectors.toList());
 
         return new Try.Success<>(userAssessmentSummaries);
     }
 
     @Override
-    public Try<List<UserAssessmentSummary>> getSummaries(String userId, AssessmentCategory assessmentCategory, Instant takenDate){
-        Try<List<UserAssessment>> maybeUserAssessments = userAssessmentRepository.getUserAssessments(userId, assessmentCategory, takenDate);
-        if(maybeUserAssessments.isFailure()){
+    public Try<List<UserAssessmentSummary>> getSummariesByGroup(String userId, String groupId, Instant takenDate) {
+        Try<List<UserAssessment>> maybeUserAssessments = userAssessmentRepository.getUserAssessmentsByGroupId(userId, groupId, takenDate);
+        if (maybeUserAssessments.isFailure()) {
             return new Try.Failure<>(maybeUserAssessments.failed().get());
         }
 
         List<UserAssessmentSummary> userAssessmentSummaries = maybeUserAssessments.get().stream()
-                .map(userAssessment ->  daacsOrikaMapper.map(userAssessment, UserAssessmentSummary.class))
+                .map(userAssessment -> daacsOrikaMapper.map(userAssessment, UserAssessmentSummary.class))
                 .collect(Collectors.toList());
 
         return new Try.Success<>(userAssessmentSummaries);
     }
 
     @Override
-    public Try<List<UserAssessmentSummary>> getSummaries(List<CompletionStatus> statuses, List<ScoringType> scoringTypes, String userId, int limit, int offset){
+    public Try<List<UserAssessmentSummary>> getSummaries(List<CompletionStatus> statuses, List<ScoringType> scoringTypes, String userId, int limit, int offset) {
         Try<List<UserAssessment>> maybeUserAssessments = userAssessmentRepository.getUserAssessments(statuses, scoringTypes, userId, limit, offset);
-        if(maybeUserAssessments.isFailure()){
+        if (maybeUserAssessments.isFailure()) {
             return new Try.Failure<>(maybeUserAssessments.failed().get());
         }
 
         List<UserAssessmentSummary> userAssessmentSummaries = maybeUserAssessments.get().stream()
-                .map(userAssessment ->  daacsOrikaMapper.map(userAssessment, UserAssessmentSummary.class))
+                .map(userAssessment -> daacsOrikaMapper.map(userAssessment, UserAssessmentSummary.class))
                 .collect(Collectors.toList());
 
         return new Try.Success<>(userAssessmentSummaries);
     }
 
     @Override
-    public Try<List<UserAssessmentSummary>> getCompletedUserAssessmentSummaries(Instant startDate, Instant endDate){
+    public Try<List<UserAssessmentSummary>> getCompletedUserAssessmentSummaries(Instant startDate, Instant endDate) {
         Try<List<UserAssessment>> maybeUserAssessments = userAssessmentRepository.getCompletedUserAssessments(startDate, endDate);
-        if(maybeUserAssessments.isFailure()){
+        if (maybeUserAssessments.isFailure()) {
             return new Try.Failure<>(maybeUserAssessments.failed().get());
         }
 
         List<UserAssessmentSummary> userAssessmentSummaries = maybeUserAssessments.get().stream()
-                .map(userAssessment ->  daacsOrikaMapper.map(userAssessment, UserAssessmentSummary.class))
+                .map(userAssessment -> daacsOrikaMapper.map(userAssessment, UserAssessmentSummary.class))
                 .collect(Collectors.toList());
 
         return new Try.Success<>(userAssessmentSummaries);
     }
 
     @Override
-    public Try<List<UserAssessment>> gradeUserAssessments(AssessmentCategory[] assessmentCategories, CompletionStatus completionStatus, Instant startDate, Instant endDate, boolean dryRun){
+    public Try<List<UserAssessment>> gradeUserAssessments(AssessmentCategory[] assessmentCategories, CompletionStatus completionStatus, Instant startDate, Instant endDate, boolean dryRun) {
 
         Try<List<UserAssessment>> maybeUserAssessments = userAssessmentRepository.getUserAssessments(assessmentCategories, completionStatus, startDate, endDate);
         if (maybeUserAssessments.isFailure()) {
@@ -154,7 +154,7 @@ public class UserAssessmentServiceImpl implements UserAssessmentService {
                     assessmentRequest.setOverallScore(userAssessment.getOverallScore());
 
                     Try<UserAssessment> maybeUpdateUserAssessment = updateUserAssessment(userAssessment.getUserId(), null, assessmentRequest);
-                    if(maybeUpdateUserAssessment.isFailure()){
+                    if (maybeUpdateUserAssessment.isFailure()) {
                         return new Try.Failure<>(maybeUpdateUserAssessment.failed().get());
                     }
 
@@ -168,9 +168,9 @@ public class UserAssessmentServiceImpl implements UserAssessmentService {
     }
 
     @Override
-    public Try<UserAssessmentSummary> getLatestSummary(String userId, String assessmentId){
+    public Try<UserAssessmentSummary> getLatestSummary(String userId, String assessmentId) {
         Try<UserAssessment> maybeUserAssessment = userAssessmentRepository.getLatestUserAssessment(userId, assessmentId);
-        if(maybeUserAssessment.isFailure()){
+        if (maybeUserAssessment.isFailure()) {
             return new Try.Failure<>(maybeUserAssessment.failed().get());
         }
 
@@ -178,9 +178,9 @@ public class UserAssessmentServiceImpl implements UserAssessmentService {
     }
 
     @Override
-    public Try<UserAssessmentSummary> getLatestSummary(String userId, AssessmentCategory assessmentCategory){
-        Try<UserAssessment> maybeUserAssessment = userAssessmentRepository.getLatestUserAssessment(userId, assessmentCategory);
-        if(maybeUserAssessment.isFailure()){
+    public Try<UserAssessmentSummary> getLatestSummaryByGroup(String userId, String groupId) {
+        Try<UserAssessment> maybeUserAssessment = userAssessmentRepository.getLatestUserAssessmentByGroup(userId, groupId);
+        if (maybeUserAssessment.isFailure()) {
             return new Try.Failure<>(maybeUserAssessment.failed().get());
         }
 
@@ -188,9 +188,9 @@ public class UserAssessmentServiceImpl implements UserAssessmentService {
     }
 
     @Override
-    public Try<UserAssessment> createUserAssessment(User user, String assessmentId){
-        Try<List<Assessment>> maybeAssessments = assessmentRepository.getAssessments(true, Arrays.asList(AssessmentCategory.class.getEnumConstants()));
-        if(maybeAssessments.isFailure()){
+    public Try<UserAssessment> createUserAssessment(User user, String assessmentId) {
+        Try<List<Assessment>> maybeAssessments = assessmentRepository.getAssessments(true, null);
+        if (maybeAssessments.isFailure()) {
             return new Try.Failure<>(maybeAssessments.failed().get());
         }
 
@@ -198,7 +198,7 @@ public class UserAssessmentServiceImpl implements UserAssessmentService {
                 .filter(assessment -> assessment.getId().equals(assessmentId))
                 .findFirst();
 
-        if(!maybeAssessment.isPresent()){
+        if (!maybeAssessment.isPresent()) {
             return new Try.Failure<>(new RepoNotFoundException("Assessment"));
         }
 
@@ -208,39 +208,37 @@ public class UserAssessmentServiceImpl implements UserAssessmentService {
                 .map(Assessment::getId)
                 .collect(Collectors.toList());
 
-        Try<List<UserAssessment>> maybeLatestUserAssessments = userAssessmentRepository.getLatestUserAssessments(user.getId(), assessmentIds);
-        if(maybeLatestUserAssessments.isFailure()){
+        Try<Map<String, UserAssessment>> maybeLatestUserAssessments = userAssessmentRepository.getLatestUserAssessments(user.getId(), assessmentIds);
+        if (maybeLatestUserAssessments.isFailure()) {
             return new Try.Failure<>(maybeLatestUserAssessments.failed().get());
         }
 
-        Optional<UserAssessment> maybeLatestUserAssessment = maybeLatestUserAssessments.get().stream()
-                .filter(userAssessment -> userAssessment.getAssessmentId().equals(assessmentId))
-                .findFirst();
+        Map<String, UserAssessment> latestUserAssessments = maybeLatestUserAssessments.get();
 
-        if(maybeLatestUserAssessment.isPresent()){
-            UserAssessment latestUserAssessment = maybeLatestUserAssessment.get();
+        UserAssessment latestUserAssessment = latestUserAssessments.get(assessmentId);
+        if (latestUserAssessment != null) {
 
-            if(latestUserAssessment.getStatus() == CompletionStatus.IN_PROGRESS ||
-                    latestUserAssessment.getStatus() == CompletionStatus.COMPLETED){
+            if (latestUserAssessment.getStatus() == CompletionStatus.IN_PROGRESS ||
+                    latestUserAssessment.getStatus() == CompletionStatus.COMPLETED) {
                 return new Try.Success<>(latestUserAssessment);
             }
         }
 
         //get them all for prereq evaluation
         Try<List<UserAssessment>> maybeAllUserAssessments = userAssessmentRepository.getUserAssessments(user.getId());
-        if(maybeAllUserAssessments.isFailure()){
+        if (maybeAllUserAssessments.isFailure()) {
             return new Try.Failure<>(maybeAllUserAssessments.failed().get());
         }
 
         AssessmentPrereqEvaluator prereqEvaluator = prereqEvaluatorFactory.getAssessmentPrereqEvaluator(maybeAllUserAssessments.get());
         List<Prerequisite> failedPrereqs = prereqEvaluator.getFailedPrereqs(assessment);
-        if(failedPrereqs.size() > 0){
+        if (failedPrereqs.size() > 0) {
             return new Try.Failure<>(new FailedPrereqException(assessmentId, failedPrereqs));
         }
 
         UserAssessment userAssessment;
 
-        switch(assessment.getAssessmentType()){
+        switch (assessment.getAssessmentType()) {
             case CAT:
                 userAssessment = daacsOrikaMapper.map(assessment, CATUserAssessment.class);
                 break;
@@ -257,14 +255,15 @@ public class UserAssessmentServiceImpl implements UserAssessmentService {
             default:
                 return new Try.Failure<>(new IncompatibleTypeException(
                         "Assessment",
-                        new AssessmentType[]{ AssessmentType.LIKERT, AssessmentType.MULTIPLE_CHOICE, AssessmentType.CAT, AssessmentType.WRITING_PROMPT },
+                        new AssessmentType[]{AssessmentType.LIKERT, AssessmentType.MULTIPLE_CHOICE, AssessmentType.CAT, AssessmentType.WRITING_PROMPT},
                         assessment.getAssessmentType()));
         }
 
         daacsOrikaMapper.map(user, userAssessment);
+        userAssessment.setAssessmentCategoryGroupId(assessment.getAssessmentCategoryGroup().getId());
 
         Try<Void> maybeResults = userAssessmentRepository.insertUserAssessment(userAssessment);
-        if(maybeResults.isFailure()){
+        if (maybeResults.isFailure()) {
             return new Try.Failure<>(maybeResults.failed().get());
         }
 
@@ -272,21 +271,21 @@ public class UserAssessmentServiceImpl implements UserAssessmentService {
     }
 
     @Override
-    public Try<List<ItemGroup>> getAnswers(String userId, String assessmentId, String domainId, Instant takenDate){
+    public Try<List<ItemGroup>> getAnswers(String userId, String assessmentId, String domainId, Instant takenDate) {
 
         Try<UserAssessment> maybeUserAssessment = userAssessmentRepository.getUserAssessment(userId, assessmentId, takenDate);
-        if(maybeUserAssessment.isFailure()){
+        if (maybeUserAssessment.isFailure()) {
             return new Try.Failure<>(maybeUserAssessment.failed().get());
         }
 
         UserAssessment userAssessment = maybeUserAssessment.get();
-        if(userAssessment.getStatus() == CompletionStatus.IN_PROGRESS){
-            return new Try.Failure<>(new IncompatibleStatusException("UserAssessment", new CompletionStatus[]{ CompletionStatus.IN_PROGRESS }, userAssessment.getStatus(), userAssessment.getId()));
+        if (userAssessment.getStatus() == CompletionStatus.IN_PROGRESS) {
+            return new Try.Failure<>(new IncompatibleStatusException("UserAssessment", new CompletionStatus[]{CompletionStatus.IN_PROGRESS}, userAssessment.getStatus(), userAssessment.getId()));
         }
 
         List<ItemGroup> itemGroups = null;
 
-        if(userAssessment instanceof CATUserAssessment){
+        if (userAssessment instanceof CATUserAssessment) {
             List<CATItemGroup> catItemGroups = ((CATUserAssessment) userAssessment).getItemGroups();
 
             itemGroups = catItemGroups.stream()
@@ -294,12 +293,12 @@ public class UserAssessmentServiceImpl implements UserAssessmentService {
                     .collect(Collectors.toList());
         }
 
-        if(userAssessment instanceof MultipleChoiceUserAssessment){
+        if (userAssessment instanceof MultipleChoiceUserAssessment) {
             itemGroups = ((MultipleChoiceUserAssessment) userAssessment).getItemGroups();
         }
 
 
-        if(itemGroups != null) {
+        if (itemGroups != null) {
             itemGroups.forEach(itemGroup -> {
                 List<Item> items = itemGroup.getItems().stream()
                         .filter(item -> item.getDomainId().equals(domainId))
@@ -317,23 +316,23 @@ public class UserAssessmentServiceImpl implements UserAssessmentService {
 
         return new Try.Failure<>(new IncompatibleTypeException(
                 "UserAssessment",
-                new AssessmentType[]{ AssessmentType.LIKERT, AssessmentType.MULTIPLE_CHOICE, AssessmentType.CAT },
+                new AssessmentType[]{AssessmentType.LIKERT, AssessmentType.MULTIPLE_CHOICE, AssessmentType.CAT},
                 userAssessment.getAssessmentType()));
     }
 
 
     @Override
-    public Try<WritingPrompt> getWritingSample(String userId, String assessmentId, Instant takenDate){
+    public Try<WritingPrompt> getWritingSample(String userId, String assessmentId, Instant takenDate) {
 
         Try<UserAssessment> maybeUserAssessment = userAssessmentRepository.getUserAssessment(userId, assessmentId, takenDate);
-        if(maybeUserAssessment.isFailure()){
+        if (maybeUserAssessment.isFailure()) {
             return new Try.Failure<>(maybeUserAssessment.failed().get());
         }
 
-        if(maybeUserAssessment.get().getAssessmentType() != AssessmentType.WRITING_PROMPT){
+        if (maybeUserAssessment.get().getAssessmentType() != AssessmentType.WRITING_PROMPT) {
             return new Try.Failure<>(new IncompatibleTypeException(
                     "UserAssessment",
-                    new AssessmentType[]{ AssessmentType.WRITING_PROMPT },
+                    new AssessmentType[]{AssessmentType.WRITING_PROMPT},
                     maybeUserAssessment.get().getAssessmentType()));
         }
 
@@ -343,9 +342,9 @@ public class UserAssessmentServiceImpl implements UserAssessmentService {
 
 
     @Override
-    public Try<List<UserAssessmentTakenDate>> getTakenDates(String userId, AssessmentCategory assessmentCategory){
-        Try<List<UserAssessment>> maybeUserAssessments = userAssessmentRepository.getUserAssessments(userId, assessmentCategory, null);
-        if(maybeUserAssessments.isFailure()){
+    public Try<List<UserAssessmentTakenDate>> getTakenDates(String userId, String groupId) {
+        Try<List<UserAssessment>> maybeUserAssessments = userAssessmentRepository.getUserAssessmentsByGroupId(userId, groupId, null);
+        if (maybeUserAssessments.isFailure()) {
             return new Try.Failure<>(maybeUserAssessments.failed().get());
         }
 
@@ -367,27 +366,27 @@ public class UserAssessmentServiceImpl implements UserAssessmentService {
     @Override
     public Try<WritingPrompt> saveWritingSample(String userId, String assessmentId, SaveWritingSampleRequest saveWritingSampleRequest) {
         Try<UserAssessment> maybeUserAssessment = userAssessmentRepository.getLatestUserAssessment(userId, assessmentId);
-        if(maybeUserAssessment.isFailure()){
+        if (maybeUserAssessment.isFailure()) {
             return new Try.Failure<>(maybeUserAssessment.failed().get());
         }
 
-        if(maybeUserAssessment.get().getAssessmentType() != AssessmentType.WRITING_PROMPT){
+        if (maybeUserAssessment.get().getAssessmentType() != AssessmentType.WRITING_PROMPT) {
             return new Try.Failure<>(new IncompatibleTypeException(
                     "UserAssessment",
-                    new AssessmentType[]{ AssessmentType.WRITING_PROMPT },
+                    new AssessmentType[]{AssessmentType.WRITING_PROMPT},
                     maybeUserAssessment.get().getAssessmentType()));
         }
 
-        if(maybeUserAssessment.get().getStatus() != CompletionStatus.IN_PROGRESS){
-            return new Try.Failure<>(new IncompatibleStatusException("UserAssessment", new CompletionStatus[]{ CompletionStatus.IN_PROGRESS }, maybeUserAssessment.get().getStatus(), maybeUserAssessment.get().getId()));
+        if (maybeUserAssessment.get().getStatus() != CompletionStatus.IN_PROGRESS) {
+            return new Try.Failure<>(new IncompatibleStatusException("UserAssessment", new CompletionStatus[]{CompletionStatus.IN_PROGRESS}, maybeUserAssessment.get().getStatus(), maybeUserAssessment.get().getId()));
         }
 
         WritingPromptUserAssessment userAssessment = (WritingPromptUserAssessment) maybeUserAssessment.get();
 
         WritingPrompt writingPrompt = userAssessment.getWritingPrompt();
-        if(writingPrompt == null){
+        if (writingPrompt == null) {
             Try<Assessment> maybeAssessment = assessmentRepository.getAssessment(assessmentId);
-            if(maybeAssessment.isFailure()){
+            if (maybeAssessment.isFailure()) {
                 return new Try.Failure<>(maybeAssessment.failed().get());
             }
 
@@ -399,7 +398,7 @@ public class UserAssessmentServiceImpl implements UserAssessmentService {
         userAssessment.setWritingPrompt(writingPrompt);
 
         Try<Void> maybeResults = userAssessmentRepository.saveUserAssessment(userAssessment);
-        if(maybeResults.isFailure()){
+        if (maybeResults.isFailure()) {
             return new Try.Failure<>(maybeResults.failed().get());
         }
 
@@ -411,11 +410,11 @@ public class UserAssessmentServiceImpl implements UserAssessmentService {
 
         Try<UserAssessment> maybeUpdatedUserAssessment = null;
         boolean queueForAutoGrade = false;
-        switch(updateUserAssessmentRequest.getStatus()){
+        switch (updateUserAssessmentRequest.getStatus()) {
             case COMPLETED:
 
                 Try<UserAssessment> maybeUserAssessment = userAssessmentRepository.getUserAssessmentById(userId, updateUserAssessmentRequest.getId());
-                if(maybeUserAssessment.isFailure()){
+                if (maybeUserAssessment.isFailure()) {
                     return new Try.Failure<>(maybeUserAssessment.failed().get());
                 }
 
@@ -426,23 +425,23 @@ public class UserAssessmentServiceImpl implements UserAssessmentService {
 
                 boolean canAutoGrade = scoringService.canAutoGradeFromUpdate(userAssessment);
 
-                if(canAutoGrade){
+                if (canAutoGrade) {
                     maybeUpdatedUserAssessment = scoringService.autoGradeUserAssessment(userAssessment);
                 }
 
                 queueForAutoGrade = (!canAutoGrade || maybeUpdatedUserAssessment.isFailure());
 
-                if(queueForAutoGrade){
+                if (queueForAutoGrade) {
                     maybeUpdatedUserAssessment = new Try.Success<>(userAssessment);
                 }
 
                 break;
 
             case GRADED:
-                if(!actingUserRoles.contains(adminRole)){
+                if (!actingUserRoles.contains(adminRole)) {
                     return new Try.Failure<>(new InsufficientPermissionsException("User"));
                 }
-                
+
                 if(updateUserAssessmentRequest.getUserId() == null
                         || updateUserAssessmentRequest.getDomainScores() == null){
                     return new Try.Failure<>(new BadInputException("UserAssessment", "UserId and domainScores must be provided"));
@@ -454,7 +453,7 @@ public class UserAssessmentServiceImpl implements UserAssessmentService {
                         updateUserAssessmentRequest.getDomainScores(),
                         updateUserAssessmentRequest.getOverallScore());
 
-                if(maybeUpdatedUserAssessment.isFailure()){
+                if (maybeUpdatedUserAssessment.isFailure()) {
                     return new Try.Failure<>(maybeUpdatedUserAssessment.failed().get());
                 }
 
@@ -467,20 +466,20 @@ public class UserAssessmentServiceImpl implements UserAssessmentService {
         UserAssessment updatedUserAssessment = maybeUpdatedUserAssessment.get();
 
         Try<Void> maybeSavedResults = userAssessmentRepository.saveUserAssessment(updatedUserAssessment);
-        if(maybeSavedResults.isFailure()){
+        if (maybeSavedResults.isFailure()) {
             return new Try.Failure<>(maybeSavedResults.failed().get());
         }
 
-        if(queueForAutoGrade){
+        if (queueForAutoGrade) {
             Try<Void> maybeQueueResults = messageService.queueUserAssessmentForGrading(updatedUserAssessment);
-            if(maybeQueueResults.isFailure()){
+            if (maybeQueueResults.isFailure()) {
                 return new Try.Failure<>(maybeQueueResults.failed().get());
             }
         }
 
-        if(canvasService.isEnabled()){
+        if (canvasService.isEnabled()) {
             Try<Void> maybeQueueCanvasSubmissionUpdate = messageService.queueCanvasSubmissionUpdate(updatedUserAssessment.getUserId());
-            if(maybeQueueCanvasSubmissionUpdate.isFailure()){
+            if (maybeQueueCanvasSubmissionUpdate.isFailure()) {
                 return new Try.Failure<>(maybeQueueCanvasSubmissionUpdate.failed().get());
             }
         }
@@ -489,58 +488,58 @@ public class UserAssessmentServiceImpl implements UserAssessmentService {
     }
 
     @Override
-    public Try<UserAssessment> getUserAssesment(String userId, String userAssessmentId){
+    public Try<UserAssessment> getUserAssessment(String userId, String userAssessmentId) {
         return userAssessmentRepository.getUserAssessmentById(userId, userAssessmentId);
     }
 
     @Override
-    public Try<Void> saveUserAssessment(UserAssessment userAssessment){
+    public Try<Void> saveUserAssessment(UserAssessment userAssessment) {
         return userAssessmentRepository.saveUserAssessment(userAssessment);
     }
 
     @Override
     public Try<WritingPrompt> getWritingPrompt(String userId, String assessmentId) {
         Try<UserAssessment> maybeUserAssessment = userAssessmentRepository.getLatestUserAssessment(userId, assessmentId);
-        if(maybeUserAssessment.isFailure()){
+        if (maybeUserAssessment.isFailure()) {
             return new Try.Failure<>(maybeUserAssessment.failed().get());
         }
 
         UserAssessment userAssessment = maybeUserAssessment.get();
 
-        if(userAssessment.getAssessmentType() != AssessmentType.WRITING_PROMPT){
-            return new Try.Failure<>(new IncompatibleTypeException("UserAssessment", new AssessmentType[]{ AssessmentType.WRITING_PROMPT }, userAssessment.getAssessmentType()));
+        if (userAssessment.getAssessmentType() != AssessmentType.WRITING_PROMPT) {
+            return new Try.Failure<>(new IncompatibleTypeException("UserAssessment", new AssessmentType[]{AssessmentType.WRITING_PROMPT}, userAssessment.getAssessmentType()));
         }
 
-        if(userAssessment.getStatus() != CompletionStatus.IN_PROGRESS){
-            return new Try.Failure<>(new IncompatibleStatusException("UserAssessment", new CompletionStatus[]{ CompletionStatus.IN_PROGRESS }, userAssessment.getStatus(), userAssessment.getId()));
+        if (userAssessment.getStatus() != CompletionStatus.IN_PROGRESS) {
+            return new Try.Failure<>(new IncompatibleStatusException("UserAssessment", new CompletionStatus[]{CompletionStatus.IN_PROGRESS}, userAssessment.getStatus(), userAssessment.getId()));
         }
 
         WritingPrompt writingPrompt = ((WritingPromptUserAssessment) userAssessment).getWritingPrompt();
 
-        if(writingPrompt != null){
+        if (writingPrompt != null) {
             return new Try.Success<>(writingPrompt);
         }
 
         Try<Assessment> maybeAssessment = assessmentRepository.getAssessment(assessmentId);
-        if(maybeAssessment.isFailure()){
+        if (maybeAssessment.isFailure()) {
             return new Try.Failure<>(maybeAssessment.failed().get());
         }
 
-        return new Try.Success<>(((WritingAssessment)maybeAssessment.get()).getWritingPrompt());
+        return new Try.Success<>(((WritingAssessment) maybeAssessment.get()).getWritingPrompt());
     }
 
     @Override
-    public Try<List<UserAssessment>> getUserAssessmentsForManualGrading(){
-        List<ScoringType> scoringTypes = new ArrayList<ScoringType>(){{
+    public Try<List<UserAssessment>> getUserAssessmentsForManualGrading() {
+        List<ScoringType> scoringTypes = new ArrayList<ScoringType>() {{
             add(ScoringType.MANUAL);
         }};
 
         Try<List<Assessment>> maybeAssessments = assessmentRepository.getAssessments(scoringTypes, true);
-        if(maybeAssessments.isFailure()){
+        if (maybeAssessments.isFailure()) {
             return new Try.Failure<>(maybeAssessments.failed().get());
         }
 
-        List<CompletionStatus> statuses = new ArrayList<CompletionStatus>(){{
+        List<CompletionStatus> statuses = new ArrayList<CompletionStatus>() {{
             add(CompletionStatus.COMPLETED);
         }};
 
@@ -555,7 +554,7 @@ public class UserAssessmentServiceImpl implements UserAssessmentService {
     public Try<CompletionSummary> getCompletionSummary(String userId) {
 
         Try<List<UserAssessment>> maybeUserAssessments = userAssessmentRepository.getUserAssessments(Arrays.asList(CompletionStatus.COMPLETED, CompletionStatus.GRADED, CompletionStatus.GRADING_FAILURE), null, userId, null, null);
-        if(maybeUserAssessments.isFailure()){
+        if (maybeUserAssessments.isFailure()) {
             return new Try.Failure<>(maybeUserAssessments.failed().get());
         }
 
@@ -567,5 +566,23 @@ public class UserAssessmentServiceImpl implements UserAssessmentService {
         completionSummary.setHasCompletedAllCategories(completedAssessmentCategories.containsAll(Arrays.asList(AssessmentCategory.values())));
 
         return new Try.Success<>(completionSummary);
+    }
+
+    @Override
+    public Try<List<UserAssessment>> getUserAssessmentsByAssessmentId(String assessmentId){
+        Try<List<UserAssessment>> maybeUserAssessments = userAssessmentRepository.getUserAssessmentsByAssessmentId(assessmentId);
+        return maybeUserAssessments;
+    }
+
+    @Override
+    public Try<Void> bulkUserAssessmentSave(List<UserAssessment> userAssessments){
+
+        for(UserAssessment userAssessment : userAssessments){
+            Try<Void> maybeSaved = userAssessmentRepository.saveUserAssessment(userAssessment);
+            if(maybeSaved.isFailure()){
+                return maybeSaved;
+            }
+        }
+        return new Try.Success<>(null);
     }
 }

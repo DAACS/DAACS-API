@@ -1,4 +1,4 @@
-package com.daacs.service
+package com.daacs.unit.service
 
 import com.daacs.model.SessionedUser
 import com.daacs.framework.auth.service.SessionService

@@ -9,6 +9,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 @JsonIgnoreProperties(["metaClass"])
 public class AssessmentCategorySummary {
 
+    String assessmentCategoryGroupId;
+
     AssessmentCategory assessmentCategory;
 
     AssessmentSummary enabledAssessmentSummary;

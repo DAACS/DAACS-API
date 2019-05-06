@@ -63,7 +63,7 @@ class AssessmentContentControllerSpec extends RestControllerSpec {
 
         when:
         ResponseEntity<String> response = restTemplate.exchange(
-                serviceURI("?assessmentCategory=MATHEMATICS"),
+                serviceURI("?assessmentCategoryGroupId=MATHEMATICS"),
                 HttpMethod.GET,
                 httpEntity,
                 String.class)

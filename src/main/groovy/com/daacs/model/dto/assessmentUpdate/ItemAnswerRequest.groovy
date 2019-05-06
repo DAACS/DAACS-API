@@ -10,7 +10,7 @@ import javax.validation.constraints.NotNull
 class ItemAnswerRequest implements ListItemDTOMappable {
 
     @NotNull
-    String id
+    String id = (id == null) ? UUID.randomUUID().toString() : id
 
     @NotNull
     String content;

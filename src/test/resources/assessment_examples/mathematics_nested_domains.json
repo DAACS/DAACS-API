@@ -6,6 +6,14 @@
   "itemGroups": [
     {
       "difficulty": "MEDIUM",
+      "possibleItemAnswers": [
+        {
+          "content": "Three"
+        },
+        {
+          "content": "Two"
+        }
+      ],
       "items": [
         {
           "itemContent": {
@@ -47,6 +55,14 @@
     },
     {
       "difficulty": "MEDIUM",
+      "possibleItemAnswers": [
+        {
+          "content": "This is the first figure <img src=\"https://upload.wikimedia.org/wikipedia/commons/d/db/R-basic_cars_plot_example.svg\" width=\"300\" alt=\"first figure\">"
+        },
+        {
+          "content": "This is the second figure <img src=\"http://www.oswego.edu/~srp/stats/images/npp_1b.gif\" width=\"300\" alt=\"second figure\">"
+        }
+      ],
       "items": [
         {
           "itemContent": {
@@ -88,6 +104,14 @@
     },
     {
       "difficulty": "MEDIUM",
+      "possibleItemAnswers": [
+        {
+          "content": "Five"
+        },
+        {
+          "content": "Four"
+        }
+      ],
       "items": [
         {
           "itemContent": {
@@ -129,6 +153,14 @@
     },
     {
       "difficulty": "HARD",
+      "possibleItemAnswers": [
+        {
+          "content": "Five"
+        },
+        {
+          "content": "Four"
+        }
+      ],
       "items": [
         {
           "itemContent": {
@@ -170,6 +202,14 @@
     },
     {
       "difficulty": "HARD",
+      "possibleItemAnswers": [
+        {
+          "content": "Five"
+        },
+        {
+          "content": "Four"
+        }
+      ],
       "items": [
         {
           "itemContent": {
@@ -211,6 +251,14 @@
     },
     {
       "difficulty": "EASY",
+      "possibleItemAnswers": [
+        {
+          "content": "Five"
+        },
+        {
+          "content": "Four"
+        }
+      ],
       "items": [
         {
           "itemContent": {
@@ -252,6 +300,14 @@
     },
     {
       "difficulty": "EASY",
+      "possibleItemAnswers": [
+        {
+          "content": "Five"
+        },
+        {
+          "content": "Four"
+        }
+      ],
       "items": [
         {
           "itemContent": {
@@ -293,6 +349,14 @@
     },
     {
       "difficulty": "EASY",
+      "possibleItemAnswers": [
+        {
+          "content": "Five"
+        },
+        {
+          "content": "Four"
+        }
+      ],
       "items": [
         {
           "itemContent": {

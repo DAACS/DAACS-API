@@ -11,7 +11,7 @@ import javax.validation.constraints.NotNull
 class ItemRequest implements ListItemDTOMappable {
 
     @NotNull
-    String id
+    String id = (id == null) ? UUID.randomUUID().toString() : id
 
     @Valid
     @NotNull
@@ -19,6 +19,9 @@ class ItemRequest implements ListItemDTOMappable {
 
     @NotNull
     String question
+
+    @NotNull
+    String domainId
 
     @Valid
     @NotNull

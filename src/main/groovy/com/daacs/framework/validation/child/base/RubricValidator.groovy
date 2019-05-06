@@ -23,13 +23,13 @@ public class RubricValidator extends AbstractValidator {
             String domainValidationKey = getValidationKey(assessment.getDomains(), domain.id);
             if(domainValidationKey == null){
                 addPropertyViolation(context,
-                        validationKey,
+                        validationKey ,
                         "domain does not exist on assessment");
 
                 return false;
+            }else{
+                validationKey = domainValidationKey;
             }
-
-            validationKey = domainValidationKey;
 
             if(domain.getScoreIsSubDomainAverage()){
                 return true;
@@ -48,15 +48,15 @@ public class RubricValidator extends AbstractValidator {
 
         if(rubric.getCompletionScoreMap() != null && rubric.getCompletionScoreMap().size() > 0){
             addPropertyViolation(context,
-                    validationKey,
-                    "contains entries in completionScoreMap");
+                    validationKey + ".completionScoreMap",
+                    "completionScoreMap is not empty");
 
             return false;
         }
 
         if(rubric.getSupplementTable().size() == 0){
             addPropertyViolation(context,
-                    validationKey,
+                    validationKey + ".supplementTable",
                     "does not contain entries in supplementTable");
 
             return false;
@@ -75,13 +75,11 @@ public class RubricValidator extends AbstractValidator {
             String domainValidationKey = getValidationKey(assessment.getDomains(), domain.id);
             if(domainValidationKey == null){
                 addPropertyViolation(context,
-                        validationKey,
+                        validationKey ,
                         "domain does not exist on assessment");
 
                 return false;
             }
-
-            validationKey = domainValidationKey;
 
             if(domain.getScoreIsSubDomainAverage()){
                 return true;
@@ -142,7 +140,7 @@ public class RubricValidator extends AbstractValidator {
                 break;
 
             default:
-                addPropertyViolation(context, "scoringType", MessageFormat.format("Incompatible scoringType: {0}", assessment.getScoringType()))
+                addPropertyViolation(context, "scoringType.incompatible", MessageFormat.format("Incompatible scoringType: {0}", assessment.getScoringType()))
                 return false;
         }
 
@@ -157,6 +155,14 @@ public class RubricValidator extends AbstractValidator {
         for(int i = 0; i < ranges.size(); i++){
             if(ranges.size() == 1 && ranges.get(0).upperEndpoint() != finish){
                 break;
+            }
+
+            if (ranges.get(i) == null) {
+                addPropertyViolation(context,
+                        validationKey + ".completionScoreMap",
+                        "has an empty or invalid " + rubric.getCompletionScoreMap().keySet().getAt(i) + " range");
+
+                return false;
             }
 
             if(ranges.get(i).lowerEndpoint() == start){

@@ -16,7 +16,7 @@ class ScoringTypeValidator extends AbstractValidator implements ChildValidator<A
 
     private Map<AssessmentType, List<ScoringType>> validScoringTypes = [
             (AssessmentType.CAT): [ScoringType.AVERAGE],
-            (AssessmentType.LIKERT): [ScoringType.SUM],
+            (AssessmentType.LIKERT): [ScoringType.SUM, ScoringType.AVERAGE],
             (AssessmentType.MULTIPLE_CHOICE): [ScoringType.SUM, ScoringType.AVERAGE],
             (AssessmentType.WRITING_PROMPT): [ScoringType.LIGHTSIDE, ScoringType.MANUAL]
     ];

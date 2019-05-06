@@ -68,7 +68,7 @@ class ScoringTypeValidatorSpec extends ValidatorSpec {
         CAT             | MANUAL      | false
         CAT             | SUM         | false
         CAT             | LIGHTSIDE   | false
-        LIKERT          | AVERAGE     | false
+        LIKERT          | AVERAGE     | true
         LIKERT          | MANUAL      | false
         LIKERT          | SUM         | true
         LIKERT          | LIGHTSIDE   | false

@@ -33,7 +33,7 @@ public class UserAssessmentRepositoryImpl implements UserAssessmentRepository {
     private MongoTemplate mongoTemplate;
 
     @Override
-    public Try<UserAssessment> getUserAssessment(String userId, String assessmentId, Instant takenDate){
+    public Try<UserAssessment> getUserAssessment(String userId, String assessmentId, Instant takenDate) {
         Query query = new Query();
         query.addCriteria(where("userId").is(userId));
         query.addCriteria(where("assessmentId").is(assessmentId));
@@ -42,11 +42,11 @@ public class UserAssessmentRepositoryImpl implements UserAssessmentRepository {
         Try<UserAssessment> maybeUserAssessment = hystrixCommandFactory.getMongoFindOneCommand(
                 "UserAssessmentRepositoryImpl-getUserAssessment", mongoTemplate, query, UserAssessment.class).execute();
 
-        if(maybeUserAssessment.isFailure()){
+        if (maybeUserAssessment.isFailure()) {
             return maybeUserAssessment;
         }
 
-        if(!maybeUserAssessment.toOptional().isPresent()){
+        if (!maybeUserAssessment.toOptional().isPresent()) {
             return new Try.Failure<>(new RepoNotFoundException("UserAssessment"));
         }
 
@@ -54,15 +54,15 @@ public class UserAssessmentRepositoryImpl implements UserAssessmentRepository {
     }
 
     @Override
-    public Try<UserAssessment> getUserAssessmentById(String userId, String userAssessmentId){
+    public Try<UserAssessment> getUserAssessmentById(String userId, String userAssessmentId) {
 
         Try<UserAssessment> maybeUserAssessment = hystrixCommandFactory.getMongoFindByIdCommand(
                 "AssessmentRepositoryImpl-getUserAssessmentById", mongoTemplate, userAssessmentId, UserAssessment.class).execute();
-        if(maybeUserAssessment.isFailure()){
+        if (maybeUserAssessment.isFailure()) {
             return maybeUserAssessment;
         }
 
-        if(!maybeUserAssessment.toOptional().isPresent() || !maybeUserAssessment.get().getUserId().equals(userId)){
+        if (!maybeUserAssessment.toOptional().isPresent() || !maybeUserAssessment.get().getUserId().equals(userId)) {
             return new Try.Failure<>(new RepoNotFoundException("UserAssessment"));
         }
 
@@ -70,7 +70,7 @@ public class UserAssessmentRepositoryImpl implements UserAssessmentRepository {
     }
 
     @Override
-    public Try<UserAssessment> getLatestUserAssessment(String userId, String assessmentId){
+    public Try<UserAssessment> getLatestUserAssessment(String userId, String assessmentId) {
         Query query = new Query();
         query.addCriteria(where("userId").is(userId));
         query.addCriteria(where("assessmentId").is(assessmentId));
@@ -80,11 +80,11 @@ public class UserAssessmentRepositoryImpl implements UserAssessmentRepository {
         Try<UserAssessment> maybeUserAssessment = hystrixCommandFactory.getMongoFindOneCommand(
                 "UserAssessmentRepositoryImpl-getLatestUserAssessment", mongoTemplate, query, UserAssessment.class).execute();
 
-        if(maybeUserAssessment.isFailure()){
+        if (maybeUserAssessment.isFailure()) {
             return maybeUserAssessment;
         }
 
-        if(!maybeUserAssessment.toOptional().isPresent()){
+        if (!maybeUserAssessment.toOptional().isPresent()) {
             return new Try.Failure<>(new RepoNotFoundException("UserAssessment"));
         }
 
@@ -92,21 +92,21 @@ public class UserAssessmentRepositoryImpl implements UserAssessmentRepository {
     }
 
     @Override
-    public Try<UserAssessment> getLatestUserAssessment(String userId, AssessmentCategory assessmentCategory){
+    public Try<UserAssessment> getLatestUserAssessmentByGroup(String userId, String groupId) {
         Query query = new Query();
         query.addCriteria(where("userId").is(userId));
-        query.addCriteria(where("assessmentCategory").is(assessmentCategory.toString()));
+        query.addCriteria(where("assessmentCategoryGroupId").is(groupId));
         query.with(new Sort(new Sort.Order(Sort.Direction.DESC, "takenDate")));
         query.limit(1);
 
         Try<UserAssessment> maybeUserAssessment = hystrixCommandFactory.getMongoFindOneCommand(
                 "UserAssessmentRepositoryImpl-getLatestUserAssessment", mongoTemplate, query, UserAssessment.class).execute();
 
-        if(maybeUserAssessment.isFailure()){
+        if (maybeUserAssessment.isFailure()) {
             return maybeUserAssessment;
         }
 
-        if(!maybeUserAssessment.toOptional().isPresent()){
+        if (!maybeUserAssessment.toOptional().isPresent()) {
             return new Try.Failure<>(new RepoNotFoundException("UserAssessment"));
         }
 
@@ -114,7 +114,7 @@ public class UserAssessmentRepositoryImpl implements UserAssessmentRepository {
     }
 
     @Override
-    public Try<List<UserAssessment>> getUserAssessments(String userId, String assessmentId, Instant takenDate){
+    public Try<List<UserAssessment>> getUserAssessments(String userId, String assessmentId, Instant takenDate) {
         Query query = new Query();
         query.addCriteria(where("userId").is(userId));
         query.addCriteria(where("assessmentId").is(assessmentId));
@@ -126,25 +126,25 @@ public class UserAssessmentRepositoryImpl implements UserAssessmentRepository {
     }
 
     @Override
-    public Try<List<UserAssessment>> getUserAssessments(List<CompletionStatus> statuses, List<ScoringType> scoringTypes, String userId, Integer limit, Integer offset){
+    public Try<List<UserAssessment>> getUserAssessments(List<CompletionStatus> statuses, List<ScoringType> scoringTypes, String userId, Integer limit, Integer offset) {
         Query query = new Query();
 
-        if(userId != null){
+        if (userId != null) {
             query.addCriteria(where("userId").is(userId));
         }
 
         query.addCriteria(where("status").in(statuses));
 
-        if(scoringTypes != null){
+        if (scoringTypes != null) {
             query.addCriteria(where("scoringType").in(scoringTypes));
         }
 
         query.with(new Sort(new Sort.Order(Sort.Direction.DESC, "takenDate")));
-        if(limit != null){
+        if (limit != null) {
             query.limit(limit);
         }
 
-        if(offset != null){
+        if (offset != null) {
             query.skip(offset);
         }
 
@@ -153,7 +153,7 @@ public class UserAssessmentRepositoryImpl implements UserAssessmentRepository {
     }
 
     @Override
-    public Try<List<UserAssessment>> getCompletedUserAssessments(Instant startDate, Instant endDate){
+    public Try<List<UserAssessment>> getCompletedUserAssessments(Instant startDate, Instant endDate) {
         Query query = new Query();
 
         query.addCriteria(where("completionDate").gte(Date.from(startDate)).lt(Date.from(endDate)));
@@ -164,7 +164,7 @@ public class UserAssessmentRepositoryImpl implements UserAssessmentRepository {
     }
 
     @Override
-    public Try<List<UserAssessment>> getUserAssessments(List<CompletionStatus> statuses, List<String> assessmentIds){
+    public Try<List<UserAssessment>> getUserAssessments(List<CompletionStatus> statuses, List<String> assessmentIds) {
         Query query = new Query();
         query.addCriteria(where("assessmentId").in(assessmentIds));
         query.addCriteria(where("status").in(statuses));
@@ -176,7 +176,7 @@ public class UserAssessmentRepositoryImpl implements UserAssessmentRepository {
     }
 
     @Override
-    public Try<List<UserAssessment>> getUserAssessments(String userId, String assessmentId){
+    public Try<List<UserAssessment>> getUserAssessments(String userId, String assessmentId) {
         Query query = new Query();
         query.addCriteria(where("userId").is(userId));
         query.addCriteria(where("assessmentId").is(assessmentId));
@@ -188,7 +188,7 @@ public class UserAssessmentRepositoryImpl implements UserAssessmentRepository {
     }
 
     @Override
-    public Try<List<UserAssessment>> getUserAssessments(String userId){
+    public Try<List<UserAssessment>> getUserAssessments(String userId) {
         Query query = new Query();
         query.addCriteria(where("userId").is(userId));
 
@@ -199,23 +199,23 @@ public class UserAssessmentRepositoryImpl implements UserAssessmentRepository {
     }
 
     @Override
-    public Try<List<UserAssessment>> getUserAssessments(String userId, AssessmentCategory assessmentCategory, Instant takenDate){
+    public Try<List<UserAssessment>> getUserAssessmentsByGroupId(String userId, String groupId, Instant takenDate) {
         Query query = new Query();
         query.addCriteria(where("userId").is(userId));
-        query.addCriteria(where("assessmentCategory").is(assessmentCategory.toString()));
+        query.addCriteria(where("assessmentCategoryGroupId").is(groupId));
 
-        if(takenDate != null){
+        if (takenDate != null) {
             query.addCriteria(where("takenDate").is(Date.from(takenDate)));
         }
 
         query.with(new Sort(new Sort.Order(Sort.Direction.DESC, "takenDate")));
 
         return hystrixCommandFactory.getMongoFindCommand(
-                "UserAssessmentRepositoryImpl-getUserAssessments", mongoTemplate, query, UserAssessment.class).execute();
+                "UserAssessmentRepositoryImpl-getUserAssessmentsByGroupId", mongoTemplate, query, UserAssessment.class).execute();
     }
 
     @Override
-    public Try<List<UserAssessment>> getLatestUserAssessments(String userId, List<String> assessmentIds){
+    public Try<Map<String, UserAssessment>> getLatestUserAssessments(String userId, List<String> assessmentIds) {
         Query query = new Query();
         query.addCriteria(where("userId").is(userId));
         query.addCriteria(where("assessmentId").in(assessmentIds));
@@ -225,41 +225,44 @@ public class UserAssessmentRepositoryImpl implements UserAssessmentRepository {
         Try<List<UserAssessment>> maybeUserAssessments = hystrixCommandFactory.getMongoFindCommand(
                 "UserAssessmentRepositoryImpl-getLatestUserAssessments", mongoTemplate, query, UserAssessment.class).execute();
 
-        if(maybeUserAssessments.isFailure()){
-            return maybeUserAssessments;
+        if (maybeUserAssessments.isFailure()) {
+            return new Try.Failure<>(maybeUserAssessments.failed().get());
         }
 
         Map<String, UserAssessment> userAssessments = new HashMap<>();
-        for(UserAssessment userAssessment : maybeUserAssessments.get()){
-            if(userAssessments.containsKey(userAssessment.getAssessmentId())) continue;
+        for (UserAssessment userAssessment : maybeUserAssessments.get()) {
+            if (userAssessments.containsKey(userAssessment.getAssessmentId())) continue;
             userAssessments.put(userAssessment.getAssessmentId(), userAssessment);
         }
 
-        return new Try.Success<>(new ArrayList<>(userAssessments.values()));
+        return new Try.Success<>(userAssessments);
     }
 
     @Override
-    public Try<Map<AssessmentCategory, List<UserAssessment>>> getUserAssessmentsByCategory(String userId){
+    public Try<Map<String, List<UserAssessment>>> getUserAssessmentsByCategory(String userId, List<String> groupIds) {
+
         Query query = new Query();
         query.addCriteria(where("userId").is(userId));
+        if(groupIds != null && !groupIds.isEmpty()){
+            query.addCriteria(where("assessmentCategoryGroupId").in(groupIds));
+        }
         query.with(new Sort(new Sort.Order(Sort.Direction.DESC, "takenDate")));
 
         Try<List<UserAssessment>> maybeUserAssessments = hystrixCommandFactory.getMongoFindCommand(
                 "UserAssessmentRepositoryImpl-getUserAssessmentsByCategory", mongoTemplate, query, UserAssessment.class).execute();
 
-        if(maybeUserAssessments.isFailure()){
+        if (maybeUserAssessments.isFailure()) {
             return new Try.Failure<>(maybeUserAssessments.failed().get());
         }
 
-        Map<AssessmentCategory, List<UserAssessment>> userAssessments = new HashMap<>();
-        for(UserAssessment userAssessment : maybeUserAssessments.get()){
-            AssessmentCategory category = userAssessment.getAssessmentCategory();
+        Map<String, List<UserAssessment>> userAssessments = new HashMap<>();
+        for (UserAssessment userAssessment : maybeUserAssessments.get()) {
+            String assessmentId = userAssessment.getAssessmentId();
 
-            if(!userAssessments.containsKey(category)){
-                userAssessments.put(category, new ArrayList<>());
+            if (!userAssessments.containsKey(assessmentId)) {
+                userAssessments.put(assessmentId, new ArrayList<>());
             }
-
-            userAssessments.get(category).add(userAssessment);
+            userAssessments.get(assessmentId).add(userAssessment);
         }
 
         return new Try.Success<>(userAssessments);
@@ -275,13 +278,13 @@ public class UserAssessmentRepositoryImpl implements UserAssessmentRepository {
     public Try<Void> insertUserAssessment(UserAssessment userAssessment) {
         Try<UserAssessment> maybeUserAssessment = getUserAssessment(userAssessment.getUserId(), userAssessment.getAssessmentId(), userAssessment.getTakenDate());
 
-        if(maybeUserAssessment.isFailure()){
-            if(!(maybeUserAssessment.failed().get() instanceof RepoNotFoundException)){
+        if (maybeUserAssessment.isFailure()) {
+            if (!(maybeUserAssessment.failed().get() instanceof RepoNotFoundException)) {
                 return new Try.Failure<>(maybeUserAssessment.failed().get());
             }
         }
 
-        if(maybeUserAssessment.toOptional().isPresent()){
+        if (maybeUserAssessment.toOptional().isPresent()) {
             return new Try.Failure<>(new AlreadyExistsException("UserAssessment", "username", userAssessment.getUsername()));
         }
 
@@ -290,7 +293,7 @@ public class UserAssessmentRepositoryImpl implements UserAssessmentRepository {
     }
 
     @Override
-    public Try<UserAssessment> getLatestUserAssessment(String userId){
+    public Try<UserAssessment> getLatestUserAssessment(String userId) {
 
         Query query = new Query();
         query.addCriteria(where("userId").is(userId));
@@ -299,11 +302,11 @@ public class UserAssessmentRepositoryImpl implements UserAssessmentRepository {
         Try<UserAssessment> maybeUserAssessment = hystrixCommandFactory.getMongoFindOneCommand(
                 "UserAssessmentRepositoryImpl-getLatestUserAssessment", mongoTemplate, query, UserAssessment.class).execute();
 
-        if(maybeUserAssessment.isFailure()){
+        if (maybeUserAssessment.isFailure()) {
             return maybeUserAssessment;
         }
 
-        if(!maybeUserAssessment.toOptional().isPresent()){
+        if (!maybeUserAssessment.toOptional().isPresent()) {
             return new Try.Failure<>(new RepoNotFoundException("UserAssessment"));
         }
 
@@ -311,12 +314,12 @@ public class UserAssessmentRepositoryImpl implements UserAssessmentRepository {
     }
 
     @Override
-    public Try<List<UserAssessment>> getUserAssessments(AssessmentCategory[] assessmentCategory, CompletionStatus completionStatus, Instant startDate, Instant endDate){
+    public Try<List<UserAssessment>> getUserAssessments(AssessmentCategory[] assessmentCategory, CompletionStatus completionStatus, Instant startDate, Instant endDate) {
 
         Query query = new Query();
 
         query.addCriteria(where("status").is(completionStatus));
-        if((assessmentCategory != null) && (assessmentCategory.length > 0)) {
+        if ((assessmentCategory != null) && (assessmentCategory.length > 0)) {
             query.addCriteria(where("assessmentCategory").in(assessmentCategory));
         }
         query.addCriteria(where("takenDate").gte(Date.from(startDate)).lt(Date.from(endDate)));
@@ -325,6 +328,15 @@ public class UserAssessmentRepositoryImpl implements UserAssessmentRepository {
         return hystrixCommandFactory.getMongoFindCommand(
                 "UserAssessmentRepositoryImpl-getGradedUserAssessments", mongoTemplate, query, UserAssessment.class).execute();
 
+    }
+
+    @Override
+    public Try<List<UserAssessment>> getUserAssessmentsByAssessmentId(String assessmentId){
+        Query query = new Query();
+        query.addCriteria(where("assessmentId").is(assessmentId));
+
+        return hystrixCommandFactory.getMongoFindCommand(
+                "UserAssessmentRepositoryImpl-getUserAssessmentsByAssessmentId", mongoTemplate, query, UserAssessment.class).execute();
     }
 
 }

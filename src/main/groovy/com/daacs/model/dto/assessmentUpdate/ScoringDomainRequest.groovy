@@ -13,9 +13,12 @@ class ScoringDomainRequest extends DomainRequest {
     RubricRequest rubric
 
     @Valid
-    List<ScoringDomainRequest> subDomains;
+    List<DomainRequest> subDomains;
+
+    @NotNull
+    Boolean scoreIsSubDomainAverage = false;
 
     ScoringDomainRequest() {
-        domainType = DomainType.ANALYSIS;
+        domainType = DomainType.SCORING;
     }
 }

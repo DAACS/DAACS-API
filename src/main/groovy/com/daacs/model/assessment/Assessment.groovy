@@ -4,6 +4,7 @@ import com.daacs.framework.serializer.Views
 import com.daacs.framework.validation.annotations.ValidBaseAssessment
 import com.daacs.framework.validation.annotations.group.CreateGroup
 import com.daacs.framework.validation.annotations.group.SecondaryCreateGroup
+import com.daacs.model.ErrorContainer
 import com.daacs.model.prereqs.Prerequisite
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonSubTypes
@@ -21,6 +22,7 @@ import javax.validation.GroupSequence
 import javax.validation.Valid
 import javax.validation.constraints.NotNull
 import java.time.Instant
+
 /**
  * Created by chostetter on 7/5/16.
  */
@@ -52,7 +54,9 @@ abstract class Assessment {
     AssessmentType assessmentType;
 
     @NotNull
-    AssessmentCategory assessmentCategory;
+    AssessmentCategory assessmentCategory
+
+    AssessmentCategoryGroup assessmentCategoryGroup
 
     @NotEmpty
     String label;
@@ -82,4 +86,12 @@ abstract class Assessment {
 
     @NotNull
     ScoringType scoringType;
+
+    Boolean isValid
+
+
+    Long schemaVersion
+
+    List<ErrorContainer> errors = []
+
 }

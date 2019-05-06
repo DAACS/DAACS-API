@@ -1,5 +1,6 @@
-package com.daacs.component
+package com.daacs.unit.component
 
+import com.daacs.component.HystrixCommandFactory
 import com.daacs.framework.hystrix.GavantHystrixCommand
 import com.daacs.model.User
 import com.daacs.repository.hystrix.*

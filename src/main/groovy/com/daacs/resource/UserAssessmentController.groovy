@@ -87,7 +87,7 @@ public class UserAssessmentController extends AuthenticatedController {
     public UserAssessment getUserAssessment(
             @PathVariable("id") String id){
 
-        Try<UserAssessment> maybeUserAssessment = userAssessmentService.getUserAssesment(getLoggedInUser().getId(), id);
+        Try<UserAssessment> maybeUserAssessment = userAssessmentService.getUserAssessment(getLoggedInUser().getId(), id);
         if(maybeUserAssessment.isFailure()){
             throw maybeUserAssessment.failed().get();
         }
@@ -113,7 +113,7 @@ public class UserAssessmentController extends AuthenticatedController {
 
         checkPermissions([ROLE_ADMIN]);
 
-        Try<UserAssessment> maybeUserAssessment = userAssessmentService.getUserAssesment(userId, id);
+        Try<UserAssessment> maybeUserAssessment = userAssessmentService.getUserAssessment(userId, id);
         if(maybeUserAssessment.isFailure()){
             throw maybeUserAssessment.failed().get();
         }

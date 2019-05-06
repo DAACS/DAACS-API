@@ -1,5 +1,6 @@
-package com.daacs.framework.auth.saml.repository
+package com.daacs.unit.auth.saml.repository
 
+import com.daacs.framework.auth.saml.repository.SamlAuthenticationRepository
 import com.daacs.framework.exception.NotFoundException
 import org.springframework.security.core.Authentication
 import spock.lang.Specification

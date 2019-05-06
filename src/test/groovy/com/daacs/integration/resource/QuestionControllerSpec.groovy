@@ -24,7 +24,7 @@ class QuestionControllerSpec extends RestControllerSpec {
         return ""
     }
 
-    def setup(){
+    def setup() {
         objectMapper = new ObjectMapperConfig().objectMapper()
 
         login();
@@ -57,12 +57,12 @@ class QuestionControllerSpec extends RestControllerSpec {
 
         then:
         response.statusCode == HttpStatus.OK
-        List<ItemGroup> itemGroups = ((List<ItemGroup>)response.getBody().getData());
+        List<ItemGroup> itemGroups = ((List<ItemGroup>) response.getBody().getData());
         itemGroups.size() == 1
     }
 
 
-    def "update item group"(){
+    def "update item group"() {
         setup:
         headers.add("Authorization", "Bearer " + oauthToken)
 
@@ -71,11 +71,15 @@ class QuestionControllerSpec extends RestControllerSpec {
                         new SaveItemGroupRequest(
                                 assessmentId: "32c91abf-fc9b-4b41-ac4e-3f36b3e323d9",
                                 id: "itemgroup-1",
+                                possibleItemAnswers: [
+                                        new ItemAnswer(content: "one"),
+                                        new ItemAnswer(content: "two")
+                                ],
                                 items: [
                                         new Item(
                                                 id: "item-1",
                                                 domainId: "domain-1",
-                                                possibleItemAnswers: [new ItemAnswer(id: "answer-1", content: "") ],
+                                                possibleItemAnswers: [new ItemAnswer(id: "answer-1", content: "", score: 0)],
                                                 chosenItemAnswerId: "answer-1",
                                                 question: "hey?",
                                                 startDate: Instant.now(),
@@ -83,7 +87,7 @@ class QuestionControllerSpec extends RestControllerSpec {
                                         new Item(
                                                 id: "item-2",
                                                 domainId: "domain-1",
-                                                possibleItemAnswers: [ new ItemAnswer(id: "answer-2", content: "") ],
+                                                possibleItemAnswers: [new ItemAnswer(id: "answer-2", content: "", score: 0)],
                                                 chosenItemAnswerId: "answer-2",
                                                 question: "hey?",
                                                 startDate: Instant.now(),
@@ -108,6 +112,52 @@ class QuestionControllerSpec extends RestControllerSpec {
         itemGroup.items.size() == 2
     }
 
+    def "update item group missing possibleItemAnswers.score passes"() {
+        setup:
+        headers.add("Authorization", "Bearer " + oauthToken)
+
+        DataWrapper<SaveItemGroupRequest> saveItemGroupRequest =
+                new DataWrapper(data:
+                        new SaveItemGroupRequest(
+                                assessmentId: "32c91abf-fc9b-4b41-ac4e-3f36b3e323d9",
+                                id: "itemgroup-1",
+                                possibleItemAnswers: [
+                                        new ItemAnswer(content: "one"),
+                                        new ItemAnswer(content: "two")
+                                ],
+                                items: [
+                                        new Item(
+                                                id: "item-1",
+                                                domainId: "domain-1",
+                                                possibleItemAnswers: [new ItemAnswer(id: "answer-1", content: "", score: 0)],
+                                                chosenItemAnswerId: "answer-1",
+                                                question: "hey?",
+                                                startDate: Instant.now(),
+                                                completeDate: Instant.now()),
+                                        new Item(
+                                                id: "item-2",
+                                                domainId: "domain-1",
+                                                possibleItemAnswers: [new ItemAnswer(id: "answer-2", content: "")],
+                                                chosenItemAnswerId: "answer-2",
+                                                question: "hey?",
+                                                startDate: Instant.now(),
+                                                completeDate: Instant.now())
+                                ]
+                        ));
+
+        HttpEntity<String> request = new HttpEntity<String>(objectMapper.writeValueAsString(saveItemGroupRequest), headers);
+
+        when:
+        ResponseEntity<String> response = restTemplate.exchange(
+                serviceURI("/user-assessment-question-groups/itemgroup-1"),
+                HttpMethod.PUT,
+                request,
+                String.class);
+
+        then:
+        response.statusCode == HttpStatus.OK
+    }
+
     def "get writing sample"() {
         setup:
         headers.add("Authorization", "Bearer " + oauthToken)
@@ -122,11 +172,11 @@ class QuestionControllerSpec extends RestControllerSpec {
 
         then:
         response.statusCode == HttpStatus.OK
-        List<WritingPrompt> writingPrompts = ((List<WritingPrompt>)response.getBody().getData());
+        List<WritingPrompt> writingPrompts = ((List<WritingPrompt>) response.getBody().getData());
         writingPrompts.size() == 1
     }
 
-    def "save writing sample"(){
+    def "save writing sample"() {
         setup:
         headers.add("Authorization", "Bearer " + oauthToken)
 

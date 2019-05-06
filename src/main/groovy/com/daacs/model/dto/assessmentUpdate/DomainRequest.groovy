@@ -21,11 +21,17 @@ import javax.validation.constraints.NotNull
 ])
 abstract class DomainRequest implements ListItemDTOMappable {
     @NotNull
-    String id;
+    String id = (id == null) ? UUID.randomUUID().toString() : id
+
+    @NotNull
+    String label;
 
     @NotNull
     String content;
 
     @NotNull
     DomainType domainType;
+
+    String lightsideModelFilename
+
 }
