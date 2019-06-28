@@ -1,7 +1,7 @@
 package com.daacs.unit.auth.saml.handler
 
+import com.daacs.framework.auth.repository.AuthenticationRepository
 import com.daacs.framework.auth.saml.handler.SamlSuccessTokenHandler
-import com.daacs.framework.auth.saml.repository.AuthenticationRepository
 import org.springframework.security.core.Authentication
 import org.springframework.security.web.RedirectStrategy
 import spock.lang.Specification

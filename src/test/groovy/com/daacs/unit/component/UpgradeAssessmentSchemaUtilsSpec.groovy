@@ -319,4 +319,75 @@ class UpgradeAssessmentSchemaUtilsSpec extends Specification {
         maybeOutputAssessment.isFailure()
         maybeOutputAssessment.failed().get() == failureException
     }
+
+    def "fixCollegeSkills success"() {
+        when:
+        Try<Assessment> maybeAssessment = upgradeAssessmentSchemaUtils.fixCollegeSkills(new CATAssessment(assessmentCategory: AssessmentCategory.COLLEGE_SKILLS, schemaVersion: 4L, assessmentCategoryGroup: new AssessmentCategoryGroup(id: 'college-skills')))
+
+        then:
+        1 * assessmentCategoryGroupService.createCategoryGroupIfPossible(_) >> new Try.Success<AssessmentCategoryGroup>(new AssessmentCategoryGroup())
+        1 * assessmentCategoryGroupService.deleteCategoryGroupIfExists("college-skills") >> new Try.Success<Void>(null)
+        1 * userAssessmentService.getUserAssessmentsByAssessmentId(_) >> new Try.Success<List<UserAssessment>>([])
+        1 * userAssessmentService.bulkUserAssessmentSave(_) >> new Try.Success<Void>(null)
+        noExceptionThrown()
+
+        then:
+        maybeAssessment.isSuccess()
+    }
+
+    def "fixCollegeSkills, createCategoryGroupIfPossible fails"() {
+        when:
+        Try<Assessment> maybeAssessment = upgradeAssessmentSchemaUtils.fixCollegeSkills(new CATAssessment(assessmentCategory: AssessmentCategory.COLLEGE_SKILLS, schemaVersion: 4L, assessmentCategoryGroup: new AssessmentCategoryGroup(id: 'college-skills')))
+
+        then:
+        1 * assessmentCategoryGroupService.createCategoryGroupIfPossible(_) >> new Try.Failure<AssessmentCategoryGroup>(failureException)
+        0 * assessmentCategoryGroupService.deleteCategoryGroupIfExists("college-skills") >> new Try.Success<Void>(null)
+        0 * userAssessmentService.getUserAssessmentsByAssessmentId(_) >> new Try.Success<List<UserAssessment>>([])
+        0 * userAssessmentService.bulkUserAssessmentSave(_) >> new Try.Success<Void>(null)
+
+        then:
+        maybeAssessment.isFailure()
+    }
+
+    def "fixCollegeSkills, deleteCategoryGroupIfExists fails"() {
+        when:
+        Try<Assessment> maybeAssessment = upgradeAssessmentSchemaUtils.fixCollegeSkills(new CATAssessment(assessmentCategory: AssessmentCategory.COLLEGE_SKILLS, schemaVersion: 4L, assessmentCategoryGroup: new AssessmentCategoryGroup(id: 'college-skills')))
+
+        then:
+        1 * assessmentCategoryGroupService.createCategoryGroupIfPossible(_) >> new Try.Success<AssessmentCategoryGroup>(new AssessmentCategoryGroup())
+        1 * assessmentCategoryGroupService.deleteCategoryGroupIfExists("college-skills") >> new Try.Failure<Void>(failureException)
+        0 * userAssessmentService.getUserAssessmentsByAssessmentId(_) >> new Try.Success<List<UserAssessment>>([])
+        0 * userAssessmentService.bulkUserAssessmentSave(_) >> new Try.Success<Void>(null)
+
+        then:
+        maybeAssessment.isFailure()
+    }
+
+    def "fixCollegeSkills, getUserAssessmentsByAssessmentId fails"() {
+        when:
+        Try<Assessment> maybeAssessment = upgradeAssessmentSchemaUtils.fixCollegeSkills(new CATAssessment(assessmentCategory: AssessmentCategory.COLLEGE_SKILLS, schemaVersion: 4L, assessmentCategoryGroup: new AssessmentCategoryGroup(id: 'college-skills')))
+
+        then:
+        1 * assessmentCategoryGroupService.createCategoryGroupIfPossible(_) >> new Try.Success<AssessmentCategoryGroup>(new AssessmentCategoryGroup())
+        1 * assessmentCategoryGroupService.deleteCategoryGroupIfExists("college-skills") >> new Try.Success<Void>(null)
+        1 * userAssessmentService.getUserAssessmentsByAssessmentId(_) >> new Try.Failure<List<UserAssessment>>(failureException)
+        0 * userAssessmentService.bulkUserAssessmentSave(_) >> new Try.Success<Void>(null)
+
+        then:
+        maybeAssessment.isFailure()
+    }
+
+    def "fixCollegeSkills, bulkUserAssessmentSave fails"() {
+        when:
+        Try<Assessment> maybeAssessment = upgradeAssessmentSchemaUtils.fixCollegeSkills(new CATAssessment(assessmentCategory: AssessmentCategory.COLLEGE_SKILLS, schemaVersion: 4L, assessmentCategoryGroup: new AssessmentCategoryGroup(id: 'college-skills')))
+
+        then:
+        1 * assessmentCategoryGroupService.createCategoryGroupIfPossible(_) >> new Try.Success<AssessmentCategoryGroup>(new AssessmentCategoryGroup())
+        1 * assessmentCategoryGroupService.deleteCategoryGroupIfExists("college-skills") >> new Try.Success<Void>(null)
+        1 * userAssessmentService.getUserAssessmentsByAssessmentId(_) >> new Try.Success<List<UserAssessment>>([])
+        1 * userAssessmentService.bulkUserAssessmentSave(_) >> new Try.Failure<Void>(failureException)
+
+        then:
+        maybeAssessment.isFailure()
+    }
 }

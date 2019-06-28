@@ -1,7 +1,7 @@
 package com.daacs.framework.auth.oauth2;
 
 import com.daacs.framework.exception.NotFoundException;
-import com.daacs.framework.auth.saml.repository.AuthenticationRepository;
+import com.daacs.framework.auth.repository.AuthenticationRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.common.exceptions.InvalidGrantException;
 import org.springframework.security.oauth2.provider.*;

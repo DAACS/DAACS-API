@@ -88,6 +88,11 @@ public class DaacsOrikaMapper extends ConfigurableGroovyOrikaMapper {
                 .byDefault()
                 .toClassMap());
 
+        mapperFactory.registerClassMap(mapperFactory.classMap(AssessmentCategoryGroup.class, AssessmentCategoryGroup.class)
+                .mapNulls(false)
+                .byDefault()
+                .toClassMap());
+
         mapperFactory.registerMapper(new ListObjectMapper(mapperFactory));
 
         mapperFactory.getConverterFactory().registerConverter(new StringToInstantConverter());

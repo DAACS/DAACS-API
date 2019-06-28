@@ -17,6 +17,8 @@ public interface AssessmentCategoryGroupService {
 
     Try<Void> deleteCategoryGroup(String id);
 
+    Try<Void> deleteCategoryGroupIfExists(String id);
+
     Try<AssessmentCategoryGroup> createCategoryGroupIfPossible(AssessmentCategoryGroup categoryGroup);
 
     Try<List<String>> getGlobalGroupIds();

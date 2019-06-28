@@ -8,7 +8,7 @@ package com.daacs.component.utils
 class DefaultCatgoryGroup {
 
     public final static String MATHEMATICS_ID = "mathematics"
-    public final static String COLLEGE_SKILLS_ID = "college-skills"
+    public final static String COLLEGE_SKILLS_ID = "college_skills"
     public final static String WRITING_ID = "writing"
     public final static String READING_ID = "reading"
 

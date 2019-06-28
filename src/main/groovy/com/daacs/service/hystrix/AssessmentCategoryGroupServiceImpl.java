@@ -111,6 +111,13 @@ public class AssessmentCategoryGroupServiceImpl implements AssessmentCategoryGro
         return assessmentCategoryGroupRepository.deleteCategoryGroup(id);
     }
 
+    @Override
+    public Try<Void> deleteCategoryGroupIfExists(String id) {
+
+        return assessmentCategoryGroupRepository.deleteCategoryGroup(id);
+    }
+
+
     private Try<AssessmentCategoryGroup> getCategoryGroupById(String id) {
         return assessmentCategoryGroupRepository.getCategoryGroupById(id);
     }

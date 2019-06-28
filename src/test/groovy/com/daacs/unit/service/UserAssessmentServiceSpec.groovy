@@ -15,6 +15,7 @@ import com.daacs.model.prereqs.PrereqType
 import com.daacs.repository.AssessmentRepository
 import com.daacs.repository.UserAssessmentRepository
 import com.daacs.service.CanvasService
+import com.daacs.service.LtiService
 import com.daacs.service.MessageService
 import com.daacs.service.ScoringService
 import com.daacs.service.UserAssessmentService
@@ -39,6 +40,7 @@ class UserAssessmentServiceSpec extends Specification {
     ScoringService scoringService
     MessageService messageService
     CanvasService canvasService
+    LtiService ltiService
     PrereqEvaluatorFactory prereqEvaluatorFactory
 
     UserAssessmentService userAssessmentService
@@ -109,6 +111,7 @@ class UserAssessmentServiceSpec extends Specification {
         prereqEvaluatorFactory.getAssessmentPrereqEvaluator(_) >> assessmentPrereqEvaluator
         assessmentPrereqEvaluator.getFailedPrereqs(_) >> []
         canvasService = Mock(CanvasService)
+        ltiService = Mock(LtiService)
         canvasService.isEnabled() >> true
 
         userAssessmentService = new UserAssessmentServiceImpl(
@@ -118,7 +121,9 @@ class UserAssessmentServiceSpec extends Specification {
                 userAssessmentRepository: userAssessmentRepository,
                 prereqEvaluatorFactory: prereqEvaluatorFactory,
                 messageService: messageService,
-                canvasService: canvasService)
+                canvasService: canvasService,
+                ltiService: ltiService
+        )
 
         dummyUserAssessments = [
                 new CATUserAssessment(
@@ -542,7 +547,6 @@ class UserAssessmentServiceSpec extends Specification {
         1 * userAssessmentRepository.getUserAssessment(_, _, _) >> new Try.Failure<UserAssessment>(new Exception())
 
 
-
         then:
         maybeWritingSample.isFailure()
     }
@@ -789,6 +793,7 @@ class UserAssessmentServiceSpec extends Specification {
         1 * userAssessmentRepository.getUserAssessments(assessmentCategories, completionStatus, startDate, endDate) >> new Try.Success<List<UserAssessment>>([userAssessment])
 
         then:
+        ltiService.isEnabled() >> false
         1 * userAssessmentRepository.getUserAssessmentById(_, "abc") >> new Try.Success<UserAssessment>(userAssessment)
         1 * scoringService.canAutoGradeFromUpdate(userAssessment) >> true
         1 * scoringService.autoGradeUserAssessment(userAssessment) >> new Try.Success<UserAssessment>(userAssessment)
@@ -837,7 +842,7 @@ class UserAssessmentServiceSpec extends Specification {
         maybeUserAssessment.isFailure()
     }
 
-    def "updateUserAssessment: autograde success"() {
+    def "updateUserAssessment: autograde success with canvas submission"() {
         setup:
         UpdateUserAssessmentRequest updateUserAssessmentRequest = new UpdateUserAssessmentRequest(id: dummyUserAssessmentId, status: CompletionStatus.COMPLETED)
 
@@ -858,6 +863,68 @@ class UserAssessmentServiceSpec extends Specification {
         1 * userAssessmentRepository.saveUserAssessment(dummyUserAssessments.get(0)) >> new Try.Success<Void>(null)
         1 * messageService.queueCanvasSubmissionUpdate(dummyUser.getId()) >> new Try.Success<Void>(null)
         maybeUserAssessment.isSuccess()
+    }
+
+    def "updateUserAssessment: autograde success with lti submission"() {
+        setup:
+        UpdateUserAssessmentRequest updateUserAssessmentRequest = new UpdateUserAssessmentRequest(id: dummyUserAssessmentId, status: CompletionStatus.COMPLETED)
+
+        when:
+        Try<UserAssessment> maybeUserAssessment = userAssessmentService.updateUserAssessment(dummyUser.getId(), dummyUser.getRoles(), updateUserAssessmentRequest)
+
+        then:
+        1 * userAssessmentRepository.getUserAssessmentById(dummyUser.getId(), updateUserAssessmentRequest.getId()) >> new Try.Success<UserAssessment>(dummyUserAssessments.get(0))
+
+        then:
+        1 * scoringService.canAutoGradeFromUpdate(dummyUserAssessments.get(0)) >> true
+
+        then:
+        1 * scoringService.autoGradeUserAssessment(dummyUserAssessments.get(0)) >> new Try.Success<UserAssessment>(dummyUserAssessments.get(0))
+        0 * scoringService.manualGradeUserAssessment(*_)
+
+        then:
+        1 * ltiService.enabled >> true
+        1 * userAssessmentRepository.getUserAssessments(Arrays.asList(CompletionStatus.COMPLETED, CompletionStatus.GRADED, CompletionStatus.GRADING_FAILURE), null, dummyUser.getId(), null, null) >> new Try.Success<List<UserAssessment>>([
+                new CATUserAssessment(assessmentCategory: AssessmentCategory.MATHEMATICS),
+                new WritingPromptUserAssessment(assessmentCategory: AssessmentCategory.WRITING),
+                new MultipleChoiceUserAssessment(assessmentCategory: AssessmentCategory.COLLEGE_SKILLS),
+                new MultipleChoiceUserAssessment(assessmentCategory: AssessmentCategory.READING)
+        ])
+        1 * userAssessmentRepository.saveUserAssessment(dummyUserAssessments.get(0)) >> new Try.Success<Void>(null)
+        1 * ltiService.updateGrades(_) >> new Try.Success<Void>(null)
+        0 * messageService.queueCanvasSubmissionUpdate(dummyUser.getId()) >> new Try.Success<Void>(null)
+        maybeUserAssessment.isSuccess()
+    }
+
+    def "updateUserAssessment: autograde failure with lti submission"() {
+        setup:
+        UpdateUserAssessmentRequest updateUserAssessmentRequest = new UpdateUserAssessmentRequest(id: dummyUserAssessmentId, status: CompletionStatus.COMPLETED)
+
+        when:
+        Try<UserAssessment> maybeUserAssessment = userAssessmentService.updateUserAssessment(dummyUser.getId(), dummyUser.getRoles(), updateUserAssessmentRequest)
+
+        then:
+        1 * userAssessmentRepository.getUserAssessmentById(dummyUser.getId(), updateUserAssessmentRequest.getId()) >> new Try.Success<UserAssessment>(dummyUserAssessments.get(0))
+
+        then:
+        1 * scoringService.canAutoGradeFromUpdate(dummyUserAssessments.get(0)) >> true
+
+        then:
+        1 * scoringService.autoGradeUserAssessment(dummyUserAssessments.get(0)) >> new Try.Success<UserAssessment>(dummyUserAssessments.get(0))
+        0 * scoringService.manualGradeUserAssessment(*_)
+
+        then:
+        1 * ltiService.enabled >> true
+        1 * userAssessmentRepository.getUserAssessments(Arrays.asList(CompletionStatus.COMPLETED, CompletionStatus.GRADED, CompletionStatus.GRADING_FAILURE), null, dummyUser.getId(), null, null) >> new Try.Success<List<UserAssessment>>([
+                new CATUserAssessment(assessmentCategory: AssessmentCategory.MATHEMATICS),
+                new WritingPromptUserAssessment(assessmentCategory: AssessmentCategory.WRITING),
+                new MultipleChoiceUserAssessment(assessmentCategory: AssessmentCategory.COLLEGE_SKILLS),
+                new MultipleChoiceUserAssessment(assessmentCategory: AssessmentCategory.READING)
+        ])
+        1 * userAssessmentRepository.saveUserAssessment(dummyUserAssessments.get(0)) >> new Try.Success<Void>(null)
+        1 * ltiService.updateGrades(_) >> new Try.Failure<Void>(null)
+        0 * messageService.queueCanvasSubmissionUpdate(dummyUser.getId()) >> new Try.Success<Void>(null)
+        maybeUserAssessment.isFailure()
     }
 
 
@@ -974,6 +1041,7 @@ class UserAssessmentServiceSpec extends Specification {
                 updateUserAssessmentRequest.getOverallScore()) >> new Try.Success<UserAssessment>(dummyUserAssessments.get(0))
 
         then:
+        ltiService.isEnabled() >> false
         1 * userAssessmentRepository.saveUserAssessment(dummyUserAssessments.get(0)) >> new Try.Success<Void>(null)
         1 * messageService.queueCanvasSubmissionUpdate(dummyUser.getId()) >> new Try.Success<Void>(null)
         maybeUserAssessment.isSuccess()

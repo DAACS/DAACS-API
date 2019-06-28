@@ -81,7 +81,17 @@ public class UpgradeAssessmentSchemaUtilsImpl implements UpgradeAssessmentSchema
                     return maybeAssessment;
                 }
                 assessment = maybeAssessment.get();
-                assessment.setSchemaVersion(4L);
+                assessment.setSchemaVersion(5L); //not a typo
+            }
+
+            //20190416 - fix dasherized case on college skills group college-skills -> college_skills
+            if (assessment.getSchemaVersion() == 4L) {
+                Try<Assessment> maybeAssessment = fixCollegeSkills(assessment);
+                if (maybeAssessment.isFailure()) {
+                    return maybeAssessment;
+                }
+                assessment = maybeAssessment.get();
+                assessment.setSchemaVersion(5L);
             }
 
             //additional upgrades here
@@ -246,4 +256,38 @@ public class UpgradeAssessmentSchemaUtilsImpl implements UpgradeAssessmentSchema
         return new Try.Success<>(assessment);
     }
 
+    private Try<Assessment> fixCollegeSkills(Assessment assessment) {
+
+        String oldCollegeSkillsId = "college-skills"; //don't change
+
+        //rename group
+        AssessmentCategoryGroup assessmentCategoryGroup = new AssessmentCategoryGroup();
+        assessmentCategoryGroup.setId(DefaultCatgoryGroup.COLLEGE_SKILLS_ID);
+        assessmentCategoryGroup.setLabel(DefaultCatgoryGroup.COLLEGE_SKILLS_LABEL);
+        assessmentCategoryGroup.setAssessmentCategory(AssessmentCategory.COLLEGE_SKILLS);
+
+            //add group to group table if it doesn't exist
+        Try<AssessmentCategoryGroup> maybeGroup = assessmentCategoryGroupService.createCategoryGroupIfPossible(assessmentCategoryGroup);
+        if (maybeGroup.isFailure()) {
+            return new Try.Failure<>(maybeGroup.failed().get());
+        }
+
+            //delete old group if it exists
+        Try<Void> maybeDeleted = assessmentCategoryGroupService.deleteCategoryGroupIfExists(oldCollegeSkillsId);
+        if (maybeDeleted.isFailure()) {
+            return new Try.Failure<>(maybeDeleted.failed().get());
+        }
+
+        //backfill userAssessments
+        Try<Void> maybeSaved = backfillUserAssessmentGroupIds(assessment.getId());
+        if (maybeSaved.isFailure()) {
+            return new Try.Failure<>(maybeSaved.failed().get());
+        }
+
+        if(assessment.getAssessmentCategoryGroup().getId().equals(oldCollegeSkillsId)){
+            assessment.getAssessmentCategoryGroup().setId(DefaultCatgoryGroup.COLLEGE_SKILLS_ID);
+        }
+
+        return new Try.Success<>(assessment);
+    }
 }

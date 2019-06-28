@@ -1,6 +1,7 @@
+
 package com.daacs.unit.auth.saml.repository
 
-import com.daacs.framework.auth.saml.repository.SamlAuthenticationRepository
+import com.daacs.framework.auth.repository.UniversalAuthenticationRepository
 import com.daacs.framework.exception.NotFoundException
 import org.springframework.security.core.Authentication
 import spock.lang.Specification
@@ -11,13 +12,13 @@ class SamlAuthenticationRepositorySpec extends Specification{
 
     Authentication authentication
 
-    SamlAuthenticationRepository samlAuthenticationRepository
+    UniversalAuthenticationRepository samlAuthenticationRepository
 
     int TOKEN_TTL = 200
 
     def setup(){
         authentication = Mock(Authentication)
-        samlAuthenticationRepository = new SamlAuthenticationRepository(TOKEN_TTL: TOKEN_TTL)
+        samlAuthenticationRepository = new UniversalAuthenticationRepository(TOKEN_TTL: TOKEN_TTL)
         samlAuthenticationRepository.init()
     }
 

@@ -56,6 +56,9 @@ public class UserAssessmentServiceImpl implements UserAssessmentService {
     @Autowired
     private CanvasService canvasService;
 
+    @Autowired
+    private LtiService ltiService;
+
     protected static String adminRole = "ROLE_ADMIN";
 
     private List<CompletionStatus> validTakenStatuses = new ArrayList<CompletionStatus>() {{
@@ -442,8 +445,8 @@ public class UserAssessmentServiceImpl implements UserAssessmentService {
                     return new Try.Failure<>(new InsufficientPermissionsException("User"));
                 }
 
-                if(updateUserAssessmentRequest.getUserId() == null
-                        || updateUserAssessmentRequest.getDomainScores() == null){
+                if (updateUserAssessmentRequest.getUserId() == null
+                        || updateUserAssessmentRequest.getDomainScores() == null) {
                     return new Try.Failure<>(new BadInputException("UserAssessment", "UserId and domainScores must be provided"));
                 }
 
@@ -477,7 +480,21 @@ public class UserAssessmentServiceImpl implements UserAssessmentService {
             }
         }
 
-        if (canvasService.isEnabled()) {
+        if (ltiService.isEnabled()) {
+
+            Try<CompletionSummary> maybeCompletionSummary = getCompletionSummary(userId);
+            if (maybeCompletionSummary.isFailure()) {
+                return new Try.Failure<>(maybeCompletionSummary.failed().get());
+            }
+
+            if (maybeCompletionSummary.get().getHasCompletedAllCategories()) {
+                Try<Void> maybeLtiUpdateGrades = ltiService.updateGrades(userId);
+
+                if (maybeLtiUpdateGrades.isFailure()) {
+                    return new Try.Failure<>(maybeLtiUpdateGrades.failed().get());
+                }
+            }
+        } else if (canvasService.isEnabled()) {
             Try<Void> maybeQueueCanvasSubmissionUpdate = messageService.queueCanvasSubmissionUpdate(updatedUserAssessment.getUserId());
             if (maybeQueueCanvasSubmissionUpdate.isFailure()) {
                 return new Try.Failure<>(maybeQueueCanvasSubmissionUpdate.failed().get());
@@ -569,17 +586,17 @@ public class UserAssessmentServiceImpl implements UserAssessmentService {
     }
 
     @Override
-    public Try<List<UserAssessment>> getUserAssessmentsByAssessmentId(String assessmentId){
+    public Try<List<UserAssessment>> getUserAssessmentsByAssessmentId(String assessmentId) {
         Try<List<UserAssessment>> maybeUserAssessments = userAssessmentRepository.getUserAssessmentsByAssessmentId(assessmentId);
         return maybeUserAssessments;
     }
 
     @Override
-    public Try<Void> bulkUserAssessmentSave(List<UserAssessment> userAssessments){
+    public Try<Void> bulkUserAssessmentSave(List<UserAssessment> userAssessments) {
 
-        for(UserAssessment userAssessment : userAssessments){
+        for (UserAssessment userAssessment : userAssessments) {
             Try<Void> maybeSaved = userAssessmentRepository.saveUserAssessment(userAssessment);
-            if(maybeSaved.isFailure()){
+            if (maybeSaved.isFailure()) {
                 return maybeSaved;
             }
         }

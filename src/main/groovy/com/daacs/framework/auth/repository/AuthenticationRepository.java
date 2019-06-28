@@ -1,4 +1,4 @@
-package com.daacs.framework.auth.saml.repository;
+package com.daacs.framework.auth.repository;
 
 import com.daacs.framework.exception.NotFoundException;
 import org.springframework.security.core.Authentication;

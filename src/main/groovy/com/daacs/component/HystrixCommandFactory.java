@@ -121,4 +121,8 @@ public class HystrixCommandFactory {
     public CanvasUpdateSubmissionHystrixCommand getCanvasUpdateSubmissionHystrixCommand(String hystrixCommandKey, Integer courseId, Integer assessmentId, String sisId, List<NameValuePair> params){
         return new CanvasUpdateSubmissionHystrixCommand(hystrixGroupKey, hystrixCommandKey, canvasBaseURL, canvasOAuthToken, courseId, assessmentId, sisId, params);
     }
+
+    public LtiReplaceResultCommand getLTIReplaceResultCommand(String hystrixCommandKey, String lis_outcome_service_url, String oauth_consumer_key, String secretKey, String lis_result_sourcedid, String score){
+        return new LtiReplaceResultCommand(hystrixGroupKey, hystrixCommandKey, lis_outcome_service_url, oauth_consumer_key, secretKey, lis_result_sourcedid, score);
+    }
 }

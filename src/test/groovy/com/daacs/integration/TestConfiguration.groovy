@@ -16,6 +16,7 @@ import com.daacs.repository.MessageRepository
 import com.daacs.repository.UserAssessmentRepository
 import com.daacs.repository.UserRepository
 import com.daacs.service.LightSideService
+import com.daacs.service.LtiService
 import com.daacs.service.S3Service
 import com.google.common.collect.Range
 import com.lambdista.util.Try
@@ -27,6 +28,7 @@ import spock.lang.Specification
 
 import javax.annotation.PostConstruct
 import javax.mail.internet.MimeMessage
+import javax.servlet.http.HttpServletRequest
 import java.time.Instant
 import java.util.function.Function
 import java.util.stream.Collectors
@@ -858,4 +860,14 @@ public class TestConfiguration extends Specification {
 
         return groupRepository
     }
+
+        @Bean
+        @Primary
+        @Scope("singleton")
+        public LtiService ltiLaunchService() {
+            LtiService ltiLaunchService = Mock(LtiService)
+            ltiLaunchService.verifyLaunch(_ as HttpServletRequest) >> new Try.Success<String>("token")
+            return ltiLaunchService
+        }
+
 }

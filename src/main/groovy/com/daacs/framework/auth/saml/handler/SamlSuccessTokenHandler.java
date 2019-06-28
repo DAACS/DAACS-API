@@ -1,6 +1,6 @@
 package com.daacs.framework.auth.saml.handler;
 
-import com.daacs.framework.auth.saml.repository.AuthenticationRepository;
+import com.daacs.framework.auth.repository.AuthenticationRepository;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;

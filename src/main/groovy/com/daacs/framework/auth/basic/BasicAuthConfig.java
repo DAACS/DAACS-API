@@ -44,6 +44,8 @@ public class BasicAuthConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable();
 
+
+
         http.addFilterBefore(new SimpleCORSFilter(), ChannelProcessingFilter.class);
 
         http

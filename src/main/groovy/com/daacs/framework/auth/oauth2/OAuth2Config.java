@@ -1,6 +1,6 @@
 package com.daacs.framework.auth.oauth2;
 
-import com.daacs.framework.auth.saml.repository.AuthenticationRepository;
+import com.daacs.framework.auth.repository.AuthenticationRepository;
 import com.daacs.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -66,7 +66,7 @@ public class OAuth2Config {
                     .requestFactory(oAuth2RequestFactory())
                     .tokenServices(tokenServices())
                     .setClientDetailsService(clientDetailsService())
-                    ;
+            ;
         }
 
         @Bean
@@ -104,6 +104,13 @@ public class OAuth2Config {
                     tokenService,
                     clientDetailsService,
                     oAuth2RequestFactory));
+
+            granters.add(new LtiTokenGranter(
+                    samlAuthenticationRepository,
+                    tokenService,
+                    clientDetailsService,
+                    oAuth2RequestFactory,
+                    userDetailsService));
 
             return new CompositeTokenGranter(granters);
         }

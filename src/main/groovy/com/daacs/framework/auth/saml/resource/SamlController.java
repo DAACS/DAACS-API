@@ -36,6 +36,7 @@ public class SamlController {
         Map<String, List<String>> response = new HashMap<>();
         response.put("urls", loginUrls);
 
+        System.out.println("\n\n here: "+response);
         return response;
     }
 

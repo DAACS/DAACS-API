@@ -55,13 +55,13 @@ import java.util.*;
  * Created by chostetter on 6/27/16.
  * The spring boot security saml example found at https://github.com/vdenotaris/spring-boot-security-saml-sample was
  * used as a starting point for this configuration.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -69,6 +69,7 @@ import java.util.*;
  * limitations under the License.
  */
 
+@Order(101)
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(securedEnabled = true)
@@ -145,7 +146,7 @@ public class SamlConfig extends WebSecurityConfigurerAdapter {
 
     @Configuration
     @EnableResourceServer
-    @Order(2)
+    @Order(4)
     protected static class ResourceServerConfiguration extends ResourceServerConfigurerAdapter {
 
         @Autowired
@@ -169,26 +170,26 @@ public class SamlConfig extends WebSecurityConfigurerAdapter {
 
             http.sessionManagement()
                     .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
+                    .and()
                     .authorizeRequests()
-                        .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .antMatchers("/oauth/**").permitAll()
-                        .antMatchers("/saml/**").permitAll()
-                        .antMatchers("/swagger*/**").permitAll()
-                        .antMatchers("/webjars/springfox-swagger-ui/**").permitAll()
-                        .antMatchers("/v2/api-docs").permitAll()
-                        .antMatchers("/download/token").authenticated()
-                        .antMatchers("/download/**").permitAll()
-                        .antMatchers("/forgot-password").permitAll()
-                        .antMatchers("/error-events").permitAll()
-                        .antMatchers(HttpMethod.POST, "/users").permitAll()
-                        .anyRequest().authenticated();
+                    .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                    .antMatchers("/oauth/**").permitAll()
+                    .antMatchers("/saml/**").permitAll()
+                    .antMatchers("/swagger*/**").permitAll()
+                    .antMatchers("/webjars/springfox-swagger-ui/**").permitAll()
+                    .antMatchers("/v2/api-docs").permitAll()
+                    .antMatchers("/download/token").authenticated()
+                    .antMatchers("/download/**").permitAll()
+                    .antMatchers("/forgot-password").permitAll()
+                    .antMatchers("/error-events").permitAll()
+                    .antMatchers(HttpMethod.POST, "/users").permitAll()
+                    .anyRequest().authenticated();
         }
 
     }
 
     @Bean
-    public UserFieldConfig userFieldConfig(){
+    public UserFieldConfig userFieldConfig() {
         return new UserFieldConfig(
                 userFieldConfigRoleAttribute,
                 userFieldConfigUniqueIdAttribute,
@@ -231,10 +232,9 @@ public class SamlConfig extends WebSecurityConfigurerAdapter {
     public KeyManager keyManager() {
 
         Resource keystoreFile;
-        if(keystorePath.startsWith("classpath")){
+        if (keystorePath.startsWith("classpath")) {
             keystoreFile = (new DefaultResourceLoader()).getResource(keystorePath);
-        }
-        else{
+        } else {
             keystoreFile = new FileSystemResource(keystorePath);
         }
 
@@ -251,15 +251,13 @@ public class SamlConfig extends WebSecurityConfigurerAdapter {
     public ExtendedMetadataDelegate extendedMetadataProvider() throws MetadataProviderException {
 
         File metadataFile;
-        if(idpMetadataPath.startsWith("classpath")){
+        if (idpMetadataPath.startsWith("classpath")) {
             try {
                 metadataFile = (new DefaultResourceLoader()).getResource(idpMetadataPath).getFile();
-            }
-            catch(IOException io){
+            } catch (IOException io) {
                 throw new RuntimeException("Unable to start application, " + io.getMessage());
             }
-        }
-        else{
+        } else {
             metadataFile = new File(idpMetadataPath);
         }
 
@@ -361,7 +359,6 @@ public class SamlConfig extends WebSecurityConfigurerAdapter {
     // ===============================================================================================================//
 
 
-
     // Filters =======================================================================================================//
     // Filter processing incoming logout messages
     // First argument determines URL user will be redirected to after successful
@@ -376,8 +373,8 @@ public class SamlConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public SAMLLogoutFilter samlLogoutFilter() {
         return new SamlOauth2LogoutFilter(oauth2TokenStore, successLogoutHandler(),
-                new LogoutHandler[] { logoutHandler() },
-                new LogoutHandler[] { logoutHandler() });
+                new LogoutHandler[]{logoutHandler()},
+                new LogoutHandler[]{logoutHandler()});
     }
 
     @Bean
@@ -409,8 +406,8 @@ public class SamlConfig extends WebSecurityConfigurerAdapter {
         metadataGenerator.setExtendedMetadata(extendedMetadata());
         metadataGenerator.setIncludeDiscoveryExtension(false);
         metadataGenerator.setKeyManager(keyManager());
-        
-        if(entityBaseURL != null) {
+
+        if (entityBaseURL != null) {
             metadataGenerator.setEntityBaseURL(entityBaseURL);
         }
 

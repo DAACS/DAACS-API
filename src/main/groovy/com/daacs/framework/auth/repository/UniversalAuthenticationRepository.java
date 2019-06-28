@@ -1,4 +1,4 @@
-package com.daacs.framework.auth.saml.repository;
+package com.daacs.framework.auth.repository;
 
 import com.daacs.framework.exception.NotFoundException;
 import org.apache.commons.collections4.map.PassiveExpiringMap;
@@ -13,10 +13,12 @@ import java.util.UUID;
 
 /**
  * Created by chostetter on 6/28/16.
+ *
+ * used by saml and lti login
  */
 @Repository
 @Scope("singleton")
-public class SamlAuthenticationRepository implements AuthenticationRepository {
+public class UniversalAuthenticationRepository implements AuthenticationRepository {
 
     private int TOKEN_TTL = 30000;
     private Map<String, Authentication> authStore;
