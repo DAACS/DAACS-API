@@ -82,6 +82,25 @@ saml.userFieldConfig.advisorRole=advisor
 ```
 Where the values are the field names returned in the SAML handshake.
 
+### LTI Login
+The Tool Consumer will need to set the Launch/cartridge URL to: ```<url of DAACS instance>/lti```
+and pass in each users username as a custom parameter named ```'username'```
+
+The secret key and other properties can be configured in the ```daacs.properties``` file. 
+```
+lti.enabled=true
+lti.oauth.version=1.0
+lti.oauth.signature_method=HMAC-SHA1
+lti.oath.timeout_interval=3
+lti.oauth.sharedSecret=secret-abc
+lti.frontendAuthSuccessUrl=http://localhost:3000/
+```
+
+#### Exchanging LTI Oauth token for OAuth2 token
+Similar to SAML login once the LTI handshake has happened, the DAACS frontend will automatically exchange the LTI token with an OAuth2 token to ensure the session has been registered by sending POST request to the ```/oauth/token``` endpoint using a grant_type of "lti" and adding including the token value in the "token" field.
+```
+/oauth/token?token=<LTI TOKEN HERE>&client_id=web&grant_type=lti&scope=read%20write
+```
 
 ### Direct Login (OAuth2)
 
@@ -109,6 +128,24 @@ The client can get an OAuth2 token to ensure the session has been registered by 
 ```
 /oauth/token?username=student123&password=temp123&client_id=web&grant_type=password&scope=read%20write
 ```
+### Canvas Integration
+Instance can be configured so that upon completion of all assessments we will send a course completion message to Canvas.
+
+DAACS requires the following properties to do so 
+
+```
+canvas.enabled=true
+canvas.baseURL=
+canvas.oAuthToken=
+canvas.courseId=
+canvas.assignmentId=
+```
+
+And each student will need to be created with a ```canvasSisId```
+If authentication is done through SAML the users ```canvasSisId``` field can be specified with the following propertie 
+```
+saml.userFieldConfig.canvasSisIdAttribute=
+``` 
 
 ### E-mail
 
