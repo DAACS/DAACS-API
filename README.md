@@ -79,6 +79,7 @@ saml.userFieldConfig.lastNameAttribute=lastName
 saml.userFieldConfig.adminRole=admin
 saml.userFieldConfig.studentRole=student
 saml.userFieldConfig.advisorRole=advisor
+saml.userFieldConfig.instructorRole=instructor
 ```
 Where the values are the field names returned in the SAML handshake.
 

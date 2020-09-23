@@ -47,7 +47,7 @@ class SamlOauth2LogoutHandlerSpec extends Specification{
         oAuth2Authentication = Mock(OAuth2Authentication)
 
         authentication = Mock(Authentication)
-        authentication.getPrincipal() >> new SessionedUser(new User(username, [], new UserFieldConfig(null, null, null, null, null, null, null, false, null, null)))
+        authentication.getPrincipal() >> new SessionedUser(new User(username, [], new UserFieldConfig(null, null, null, null, null, null, null, null, false, null, null)))
 
         oAuth2Authentication.getUserAuthentication() >> authentication
 

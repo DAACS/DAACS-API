@@ -159,6 +159,10 @@ public class User {
                     if(roleValue.equals(userFieldConfig.getAdvisorRole())){
                         roles.add("ROLE_ADVISOR");
                     }
+
+                    if(roleValue.equals(userFieldConfig.getInstructorRole())){
+                        roles.add("ROLE_INSTRUCTOR");
+                    }
                 }
             }
         }

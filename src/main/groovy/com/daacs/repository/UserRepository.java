@@ -12,10 +12,13 @@ import java.util.List;
 public interface UserRepository {
 
     Try<User> getUser(String id);
+    Try<User> getUserIfExists(String username);
     Try<User> getUserByUsername(String username);
     Try<User> getUserBySecondaryId(String secondaryId);
     Try<Void> saveUser(User user);
     Try<Void> insertUser(User user);
-    Try<List<UserSearchResult>> searchUsers(List<String> keywords, int limit);
+    Try<List<UserSearchResult>> searchUsers(List<String> keywords, String roleString, int limit);
     Try<List<User>> getUsers(List<String> roles);
+    Try<User> getUserByRoleAndId(String id, List<String> roles);
+    Try<List<User>> getUsersById(List<String> ids);
 }

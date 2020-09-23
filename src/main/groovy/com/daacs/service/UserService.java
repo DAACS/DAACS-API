@@ -14,14 +14,17 @@ import java.util.List;
 
 public interface UserService extends UserDetailsService, SAMLUserDetailsService {
     Try<User> getUser(String id);
+    Try<User> getUserIfExists(String username);
     Try<User> saveUser(User user);
     Try<User> insertUser(User user);
     Try<Void> recordEvent(String userId, UserEvent userEvent);
     Try<User> updateUser(UpdateUserRequest updateUserRequest);
     Try<User> createUser(CreateUserRequest createUserRequest);
-    Try<List<UserSearchResult>> searchUsers(List<String> keywords, int limit);
+    Try<List<UserSearchResult>> searchUsers(List<String> keywords,String roleString, int limit);
     Try<User> getUserByUsername(String username);
     Try<User> getUserBySecondaryId(String secondaryId);
     Try<Void> resetPassword(String userId, String password, String code);
     Try<List<User>> getUsers(List<String> roles);
+    Try<User> getInstructorById(String id);
+    Try<List<User>> getUsersById(List<String> ids);
 }

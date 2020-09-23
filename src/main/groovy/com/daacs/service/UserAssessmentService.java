@@ -37,4 +37,5 @@ public interface UserAssessmentService {
     Try<CompletionSummary> getCompletionSummary(String userId);
     Try<List<UserAssessment>> getUserAssessmentsByAssessmentId(String assessmentId);
     Try<Void> bulkUserAssessmentSave(List<UserAssessment> userAssessments);
+    Try<UserAssessment> getLatestUserAssessmentIfExists(String userId, String assessmentId);
 }

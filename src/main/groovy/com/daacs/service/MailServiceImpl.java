@@ -5,6 +5,7 @@ import com.daacs.framework.exception.RepoNotFoundException;
 import com.daacs.framework.hystrix.FailureType;
 import com.daacs.framework.hystrix.FailureTypeException;
 import com.daacs.model.ErrorContainer;
+import com.daacs.model.InstructorClass;
 import com.daacs.model.User;
 import com.daacs.model.assessment.Assessment;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -75,6 +76,21 @@ public class MailServiceImpl implements MailService {
 
     @Value("${mail.canvas-failure.subject}")
     private String canvasFailureSubject;
+
+    @Value("${mail.class-invite.fromAddress}")
+    private String classInviteFromAddress;
+
+    @Value("${mail.class-invite.subject}")
+    private String classInviteSubject;
+
+    @Value("${mail.class-invite.joinLink}")
+    private String classInviteJoinLink;
+
+    @Value("${mail.daacs-invite.joinLink}")
+    private String daacsInviteJoinLink;
+
+    @Value("${mail.daacs-invite.subject}")
+    private String daacsInviteSubject;
 
     @Override
     public Try<Void> sendForgotPasswordEmail(String username){
@@ -236,5 +252,84 @@ public class MailServiceImpl implements MailService {
         }
 
         return hystrixCommandFactory.getSendMailHystrixCommand("MailServiceImpl-sendCanvasFailureEmail", javaMailSender, mail).execute();
+    }
+
+    @Override
+    public Try<Void> sendClassInviteEmail(User student, User instructor, InstructorClass instructorClass) {
+
+        StringBuilder body = new StringBuilder();
+        body.append("Hello " + student.getFirstName() + " " + student.getLastName() + ",");
+        body.append("\n");
+        body.append("\n");
+        body.append(instructor.getFirstName() + " " + instructor.getLastName() + " has invited you to join their class. Click the link below to join " + instructorClass.getName() + " or copy and paste it into your browser. ");
+        body.append("\n");
+        body.append("\n");
+        body.append(MessageFormat.format(classInviteJoinLink, instructorClass.getId(), student.getId()));
+        body.append("\n");
+        body.append("\n");
+        body.append("Please disregard this message if it was sent to you in error.");
+        body.append("\n");
+        body.append("The DAACS Team");
+
+        MimeMessage mail = javaMailSender.createMimeMessage();
+
+        try {
+            MimeMessageHelper helper = new MimeMessageHelper(mail);
+
+            helper.setTo(student.getUsername());
+            helper.setReplyTo(classInviteFromAddress);
+            helper.setFrom(classInviteFromAddress);
+            helper.setSubject(classInviteSubject);
+            helper.setText(body.toString());
+        }
+        catch (MessagingException ex) {
+            return new Try.Failure<>(new FailureTypeException(
+                    "email.messageFailure",
+                    ex.getMessage(),
+                    FailureType.NOT_RETRYABLE,
+                    ex
+            ));
+        }
+
+        return hystrixCommandFactory.getSendMailHystrixCommand("MailServiceImpl-sendClassInviteEmail", javaMailSender, mail).execute();
+    }
+
+    @Override
+    public Try<Void> sendDaacsInviteEmail(String username, String classId, User instructor) {
+        StringBuilder body = new StringBuilder();
+        body.append("Hello,");
+        body.append("\n");
+        body.append("\n");
+        body.append(instructor.getFirstName() + " " + instructor.getLastName() + " has invited you to join DAACS. Follow the link below and then click the 'create account' button on the top right of the daacs site to create your account.");
+        body.append("\n");
+        body.append("\n");
+        body.append(MessageFormat.format(daacsInviteJoinLink, classId, username));
+        body.append("\n");
+        body.append("\n");
+        body.append("Please disregard this message if it was sent to you in error.");
+        body.append("\n");
+        body.append("The DAACS Team");
+
+        MimeMessage mail = javaMailSender.createMimeMessage();
+
+        try {
+            MimeMessageHelper helper = new MimeMessageHelper(mail);
+
+            helper.setTo(username);
+            helper.setReplyTo(classInviteFromAddress);
+            helper.setFrom(classInviteFromAddress);
+            helper.setSubject(daacsInviteSubject);
+            helper.setText(body.toString());
+        }
+        catch (MessagingException ex) {
+            return new Try.Failure<>(new FailureTypeException(
+                    "email.messageFailure",
+                    ex.getMessage(),
+                    FailureType.NOT_RETRYABLE,
+                    ex
+            ));
+        }
+
+        return hystrixCommandFactory.getSendMailHystrixCommand("MailServiceImpl-sendDaacsInviteEmail", javaMailSender, mail).execute();
     }
 }

@@ -32,4 +32,5 @@ public interface UserAssessmentRepository {
     Try<List<UserAssessment>> getCompletedUserAssessments(Instant startDate, Instant endDate);
     Try<List<UserAssessment>> getUserAssessments(AssessmentCategory[] assessmentCategory, CompletionStatus completionStatus, Instant startDate, Instant endDate);
     Try<List<UserAssessment>> getUserAssessmentsByAssessmentId(String assessmentId);
+    Try<UserAssessment> getLatestUserAssessmentIfExists(String userId, String assessmentId);
 }

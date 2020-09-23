@@ -1,16 +1,15 @@
 package com.daacs.service;
 
+import com.daacs.framework.exception.InvalidObjectException;
 import com.daacs.framework.exception.RepoNotFoundException;
 import com.daacs.framework.hystrix.FailureTypeException;
 import com.daacs.framework.serializer.DaacsOrikaMapper;
-import com.daacs.model.SessionedUser;
-import com.daacs.model.User;
-import com.daacs.model.UserFieldConfig;
-import com.daacs.model.UserSearchResult;
+import com.daacs.model.*;
 import com.daacs.model.dto.CreateUserRequest;
 import com.daacs.model.dto.UpdateUserRequest;
 import com.daacs.model.event.UserEvent;
 import com.daacs.repository.EventContainerRepository;
+import com.daacs.repository.PendingStudentRepository;
 import com.daacs.repository.UserRepository;
 import com.lambdista.util.Try;
 import org.opensaml.saml2.core.Attribute;
@@ -20,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.saml.SAMLCredential;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -29,6 +29,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private PendingStudentService pendingStudentService;
 
     @Autowired
     private EventContainerRepository eventContainerRepository;
@@ -42,6 +45,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public Try<User> getUser(String id) {
         return userRepository.getUser(id);
+    }
+
+    @Override
+    public Try<User> getUserIfExists(String username) {
+        return userRepository.getUserIfExists(username);
     }
 
     @Override
@@ -69,6 +77,14 @@ public class UserServiceImpl implements UserService {
         Try<Void> maybeResults = userRepository.insertUser(user);
         if(maybeResults.isFailure()){
             return new Try.Failure<>(maybeResults.failed().get());
+        }
+
+        //check if student has a pending class invitation
+        if(user.getRoles().contains("ROLE_STUDENT")) {
+            Try<Void> maybeStudent = pendingStudentService.inviteStudentToClass(user);
+            if (maybeStudent.isFailure()) {
+                return new Try.Failure<>(maybeStudent.failed().get());
+            }
         }
 
         return new Try.Success<>(user);
@@ -150,8 +166,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Try<List<UserSearchResult>> searchUsers(List<String> keywords, int limit){
-        return userRepository.searchUsers(keywords, limit);
+    public Try<List<UserSearchResult>> searchUsers(List<String> keywords,String roleString, int limit){
+        return userRepository.searchUsers(keywords, roleString, limit);
     }
 
     @Override
@@ -183,5 +199,26 @@ public class UserServiceImpl implements UserService {
         }
 
         return new Try.Success<>(null);
+    }
+
+    @Override
+    public Try<User> getInstructorById(String id){
+        List<String> roles = new ArrayList<>();
+        roles.add("ROLE_INSTRUCTOR");
+        roles.add("ROLE_ADMIN");
+        Try<User> maybeUser = userRepository.getUserByRoleAndId(id, roles);
+        if(maybeUser.isFailure()){
+            return new Try.Failure<>(maybeUser.failed().get());
+        }
+        if (maybeUser.isSuccess() && maybeUser.get() == null) {
+            return new Try.Failure<>(new RepoNotFoundException("User"));
+        }
+
+        return new Try.Success<>(maybeUser.get());
+    }
+
+    @Override
+    public Try<List<User>> getUsersById(List<String> ids) {
+        return userRepository.getUsersById(ids);
     }
 }

@@ -1,5 +1,6 @@
 package com.daacs.framework.serializer;
 
+import com.daacs.model.InstructorClass;
 import com.daacs.model.User;
 import com.daacs.model.assessment.*;
 import com.daacs.model.assessment.user.*;
@@ -89,6 +90,11 @@ public class DaacsOrikaMapper extends ConfigurableGroovyOrikaMapper {
                 .toClassMap());
 
         mapperFactory.registerClassMap(mapperFactory.classMap(AssessmentCategoryGroup.class, AssessmentCategoryGroup.class)
+                .mapNulls(false)
+                .byDefault()
+                .toClassMap());
+
+        mapperFactory.registerClassMap(mapperFactory.classMap(InstructorClass.class, InstructorClass.class)
                 .mapNulls(false)
                 .byDefault()
                 .toClassMap());

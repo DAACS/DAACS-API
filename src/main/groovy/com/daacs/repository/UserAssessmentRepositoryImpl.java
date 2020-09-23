@@ -339,4 +339,27 @@ public class UserAssessmentRepositoryImpl implements UserAssessmentRepository {
                 "UserAssessmentRepositoryImpl-getUserAssessmentsByAssessmentId", mongoTemplate, query, UserAssessment.class).execute();
     }
 
+    @Override
+    public Try<UserAssessment> getLatestUserAssessmentIfExists(String userId, String assessmentId) {
+        Query query = new Query();
+        query.addCriteria(where("assessmentId").is(assessmentId));
+        query.addCriteria(where("userId").is(userId));
+
+        query.with(new Sort(new Sort.Order(Sort.Direction.DESC, "takenDate")));
+        query.limit(1);
+
+        Try<UserAssessment> maybeUserAssessment = hystrixCommandFactory.getMongoFindOneCommand(
+                "UserAssessmentRepositoryImpl-getLatestUserAssessmentIfExists", mongoTemplate, query, UserAssessment.class).execute();
+
+        if (maybeUserAssessment.isFailure()) {
+            return maybeUserAssessment;
+        }
+
+        if (!maybeUserAssessment.toOptional().isPresent()) {
+            return new Try.Success<>(null);
+        }
+
+        return maybeUserAssessment;
+    }
+
 }

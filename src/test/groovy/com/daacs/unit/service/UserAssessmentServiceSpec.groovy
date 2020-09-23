@@ -1381,4 +1381,27 @@ class UserAssessmentServiceSpec extends Specification {
         then:
         maybeResults.isFailure()
     }
+
+    def "getUserAssessmentByUserAndAssessmentId: returns success"() {
+        when:
+        Try<UserAssessment> maybeUserAssessment = userAssessmentService.getLatestUserAssessmentIfExists("1", "A")
+
+        then:
+        1 * userAssessmentRepository.getLatestUserAssessmentIfExists("1", "A") >> new Try.Success<UserAssessment>(dummyUserAssessments.get(0))
+
+        then:
+        maybeUserAssessment.isSuccess()
+        maybeUserAssessment.get() == dummyUserAssessments.get(0)
+    }
+
+    def "getUserAssessmentByUserAndAssessmentId: fails"() {
+        when:
+        Try<UserAssessment> maybeUserAssessment = userAssessmentService.getLatestUserAssessmentIfExists("1", "A")
+
+        then:
+        1 * userAssessmentRepository.getLatestUserAssessmentIfExists("1", "A") >> new Try.Failure<UserAssessment>(new Exception())
+
+        then:
+        maybeUserAssessment.isFailure()
+    }
 }

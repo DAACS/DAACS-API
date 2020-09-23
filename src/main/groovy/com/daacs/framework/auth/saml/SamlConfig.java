@@ -117,6 +117,9 @@ public class SamlConfig extends WebSecurityConfigurerAdapter {
     @Value("${saml.userFieldConfig.advisorRole}")
     private String userFieldConfigAdvisorRole;
 
+    @Value("${saml.userFieldConfig.instructorRole}")
+    private String userFieldConfigInstructorRole;
+
     @Value("${saml.useUniqueIdAttributeToLogin:@null}")
     private Boolean useUniqueIdAttributeToLogin;
 
@@ -181,6 +184,7 @@ public class SamlConfig extends WebSecurityConfigurerAdapter {
                     .antMatchers("/download/token").authenticated()
                     .antMatchers("/download/**").permitAll()
                     .antMatchers("/forgot-password").permitAll()
+                    .antMatchers("/class-scores/download").permitAll()
                     .antMatchers("/error-events").permitAll()
                     .antMatchers(HttpMethod.POST, "/users").permitAll()
                     .anyRequest().authenticated();
@@ -197,6 +201,7 @@ public class SamlConfig extends WebSecurityConfigurerAdapter {
                 userFieldConfigLastNameAttribute,
                 userFieldConfigAdminRole,
                 userFieldConfigAdvisorRole,
+                userFieldConfigInstructorRole,
                 userFieldConfigStudentRole,
                 useUniqueIdAttributeToLogin,
                 userFieldConfigSecondaryIdAttribute,

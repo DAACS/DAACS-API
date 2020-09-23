@@ -48,6 +48,7 @@ public class LtiAuthConfig extends WebSecurityConfigurerAdapter {
                     .antMatchers("/download/token").authenticated()
                     .antMatchers("/download/**").permitAll()
                     .antMatchers("/forgot-password").permitAll()
+                    .antMatchers("/class-scores/download").permitAll()
                     .antMatchers("/error-events").permitAll()
                     .antMatchers("/lti").permitAll()
                     .antMatchers(HttpMethod.POST, "/users").permitAll()

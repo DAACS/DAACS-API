@@ -24,8 +24,17 @@ class CreateUserRequestValidatorSpec extends ValidatorSpec {
         validator = new CreateUserRequestValidator()
     }
 
-    def "isValid"(){
+    def "isValid ROLE_STUDENT"(){
         when:
+        boolean isValid = validator.isValid(createUserRequest, context)
+
+        then:
+        isValid
+    }
+
+    def "isValid ROLE_INSTRUCTOR"(){
+        when:
+        createUserRequest.setRole("ROLE_INSTRUCTOR")
         boolean isValid = validator.isValid(createUserRequest, context)
 
         then:

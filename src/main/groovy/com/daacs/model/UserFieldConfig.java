@@ -13,6 +13,7 @@ public class UserFieldConfig {
 
     private String adminRole;
     private String advisorRole;
+    private String instructorRole;
     private String studentRole;
 
     private Boolean useUniqueIdAttributeToLogin;
@@ -24,17 +25,19 @@ public class UserFieldConfig {
         this.lastNameAttribute = "lastName";
         this.adminRole = "admin";
         this.advisorRole = "advisor";
+        this.instructorRole = "instructor";
         this.studentRole = "student";
         this.useUniqueIdAttributeToLogin = false;
     }
 
-    public UserFieldConfig(String roleAttribute, String uniqueIdAttribute, String firstNameAttribute, String lastNameAttribute, String adminRole, String advisorRole, String studentRole, Boolean useUniqueIdAttributeToLogin, String secondaryIdAttribute, String canvasSisIdAttribute) {
+    public UserFieldConfig(String roleAttribute, String uniqueIdAttribute, String firstNameAttribute, String lastNameAttribute, String adminRole, String advisorRole, String instructorRole, String studentRole, Boolean useUniqueIdAttributeToLogin, String secondaryIdAttribute, String canvasSisIdAttribute) {
         this.roleAttribute = roleAttribute;
         this.uniqueIdAttribute = uniqueIdAttribute;
         this.firstNameAttribute = firstNameAttribute;
         this.lastNameAttribute = lastNameAttribute;
         this.adminRole = adminRole;
         this.advisorRole = advisorRole;
+        this.instructorRole = instructorRole;
         this.studentRole = studentRole;
         this.useUniqueIdAttributeToLogin = useUniqueIdAttributeToLogin;
         this.secondaryIdAttribute = secondaryIdAttribute;
@@ -63,6 +66,10 @@ public class UserFieldConfig {
 
     public String getAdvisorRole() {
         return advisorRole;
+    }
+
+    public String getInstructorRole() {
+        return instructorRole;
     }
 
     public String getStudentRole() {

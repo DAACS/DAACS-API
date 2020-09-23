@@ -14,6 +14,7 @@ import com.daacs.model.dto.UpdateUserRequest
 import com.daacs.model.event.UserEvent
 import com.daacs.repository.EventContainerRepository
 import com.daacs.repository.UserRepository
+import com.daacs.service.PendingStudentService
 import com.daacs.service.UserService
 import com.daacs.service.UserServiceImpl
 import com.lambdista.util.Try
@@ -33,6 +34,7 @@ import spock.lang.Unroll
 class UserServiceSpec extends Specification {
 
     UserService userService;
+    PendingStudentService pendingStudentService
     UserRepository userRepository;
     EventContainerRepository eventContainerRepository;
     DaacsOrikaMapper orikaMapper = new DaacsOrikaMapper()
@@ -47,8 +49,9 @@ class UserServiceSpec extends Specification {
         userFieldConfig = new UserFieldConfig()
         dummyUser.setId(UUID.randomUUID().toString())
         userRepository = Mock(UserRepository);
+        pendingStudentService = Mock(PendingStudentService);
         eventContainerRepository = Mock(EventContainerRepository)
-        userService = new UserServiceImpl(userRepository: userRepository, userFieldConfig: userFieldConfig, eventContainerRepository: eventContainerRepository, orikaMapper: orikaMapper);
+        userService = new UserServiceImpl(userRepository: userRepository, userFieldConfig: userFieldConfig, eventContainerRepository: eventContainerRepository, orikaMapper: orikaMapper, pendingStudentService:pendingStudentService);
     }
 
     def "getUser: returns user"(){
@@ -142,8 +145,31 @@ class UserServiceSpec extends Specification {
 
         then:
         1 * userRepository.insertUser(dummyUser) >> new Try.Success<Void>(null)
+        1 * pendingStudentService.inviteStudentToClass(dummyUser) >> new Try.Success<Void>(null)
         maybeUser.isSuccess()
         maybeUser.get() == dummyUser
+    }
+
+    def "insertUser: inviteStudentToClass doesn't run for non-students"(){
+        when:
+        dummyUser.roles = ["ROLE_ADMIN"]
+        Try<User> maybeUser = userService.insertUser(dummyUser)
+
+        then:
+        1 * userRepository.insertUser(dummyUser) >> new Try.Success<Void>(null)
+        0 * pendingStudentService.inviteStudentToClass(dummyUser) >> new Try.Success<Void>(null)
+        maybeUser.isSuccess()
+        maybeUser.get() == dummyUser
+    }
+
+    def "insertUser: inviteStudentToClass fails"(){
+        when:
+        Try<User> maybeUser = userService.insertUser(dummyUser)
+
+        then:
+        1 * userRepository.insertUser(dummyUser) >> new Try.Success<Void>(null)
+        1 * pendingStudentService.inviteStudentToClass(dummyUser) >> new Try.Failure<Void>(null)
+        maybeUser.isFailure()
     }
 
     def "insertUser: pass through to repo, if failure, i fail"(){
@@ -152,6 +178,7 @@ class UserServiceSpec extends Specification {
 
         then:
         1 * userRepository.insertUser(_) >> new Try.Failure<Void>(new Exception())
+        0 * pendingStudentService.inviteStudentToClass(dummyUser) >> new Try.Success<Void>(null)
         maybeUser.isFailure()
     }
 
@@ -161,6 +188,7 @@ class UserServiceSpec extends Specification {
 
         then:
         1 * userRepository.insertUser(_) >> new Try.Success<Void>(null)
+        1 * pendingStudentService.inviteStudentToClass(_) >> new Try.Success<Void>(null)
         maybeUser.isSuccess()
         maybeUser.get().firstName == "first"
         maybeUser.get().lastName == "last"
@@ -183,7 +211,7 @@ class UserServiceSpec extends Specification {
         setup:
         String userName = "user123"
         SAMLCredential credential = buildSamlCredentials(userName, attributes)
-        userService = new UserServiceImpl(userRepository: userRepository, userFieldConfig: userFieldConfig, orikaMapper: orikaMapper);
+        userService = new UserServiceImpl(userRepository: userRepository, userFieldConfig: userFieldConfig, orikaMapper: orikaMapper, pendingStudentService:pendingStudentService);
 
         when:
         SessionedUser sessionedUser = userService.loadUserBySAML(credential);
@@ -198,9 +226,11 @@ class UserServiceSpec extends Specification {
             assert user.roles.contains("ROLE_STUDENT")
             assert user.roles.contains("ROLE_ADMIN")
             assert user.roles.contains("ROLE_ADVISOR")
+            assert user.roles.contains("ROLE_INSTRUCTOR")
 
             return new Try.Success<Void>(null)
         }
+        1 * pendingStudentService.inviteStudentToClass(_) >> new Try.Success<Void>(null)
 
         then:
         sessionedUser.getUsername() == userName
@@ -210,20 +240,21 @@ class UserServiceSpec extends Specification {
         sessionedUser.getAuthorities().find{ it.authority == "ROLE_STUDENT" } != null
         sessionedUser.getAuthorities().find{ it.authority == "ROLE_ADMIN" } != null
         sessionedUser.getAuthorities().find{ it.authority == "ROLE_ADVISOR" } != null
+        sessionedUser.getAuthorities().find{ it.authority == "ROLE_INSTRUCTOR" } != null
 
         where:
         userFieldConfig                                                                                    | attributes
-        new UserFieldConfig("role", "uuid", "firstName", "lastName", "admin", "advisor", "student", false, "null", null) | [buildAttribute("role", ["student", "admin", "advisor"]), buildAttribute("uuid", ["userid123"]), buildAttribute("firstName", ["curt"]), buildAttribute("lastName", ["h"]) ]
-        new UserFieldConfig("groups", "userid", "first", "last", "poweruser", "teacher", "peon", false, null, null)      | [buildAttribute("groups", ["peon", "poweruser", "teacher"]), buildAttribute("userid", ["userid123"]), buildAttribute("first", ["curt"]), buildAttribute("last", ["h"]) ]
+        new UserFieldConfig("role", "uuid", "firstName", "lastName", "admin", "advisor", "instructor", "student", false, "null", null) | [buildAttribute("role", ["student", "admin", "advisor", "instructor"]), buildAttribute("uuid", ["userid123"]), buildAttribute("firstName", ["curt"]), buildAttribute("lastName", ["h"]) ]
+        new UserFieldConfig("groups", "userid", "first", "last", "poweruser", "teacher", "instructor", "peon", false, null, null)      | [buildAttribute("groups", ["peon", "poweruser", "teacher", "instructor"]), buildAttribute("userid", ["userid123"]), buildAttribute("first", ["curt"]), buildAttribute("last", ["h"]) ]
     }
 
     def "loadUserBySaml: useUniqueIdAttributeForLogin on new user success"(){
         setup:
         String userName = "user123"
-        UserFieldConfig userFieldConfig = new UserFieldConfig("role", "uuid", "firstName", "lastName", "admin", "advisor", "student", true, null, null);
-        List<Attribute> attributes = [buildAttribute("role", ["student", "admin", "advisor"]), buildAttribute("uuid", ["1234567890"]), buildAttribute("firstName", ["curt"]), buildAttribute("lastName", ["h"])]
+        UserFieldConfig userFieldConfig = new UserFieldConfig("role", "uuid", "firstName", "lastName", "admin", "advisor", "instructor", "student", true, null, null);
+        List<Attribute> attributes = [buildAttribute("role", ["student", "admin", "advisor", "instructor"]), buildAttribute("uuid", ["1234567890"]), buildAttribute("firstName", ["curt"]), buildAttribute("lastName", ["h"])]
         SAMLCredential credential = buildSamlCredentials(userName, attributes)
-        userService = new UserServiceImpl(userRepository: userRepository, userFieldConfig: userFieldConfig, orikaMapper: orikaMapper);
+        userService = new UserServiceImpl(userRepository: userRepository, userFieldConfig: userFieldConfig, orikaMapper: orikaMapper, pendingStudentService:pendingStudentService);
 
         when:
         SessionedUser sessionedUser = userService.loadUserBySAML(credential);
@@ -238,9 +269,11 @@ class UserServiceSpec extends Specification {
             assert user.roles.contains("ROLE_STUDENT")
             assert user.roles.contains("ROLE_ADMIN")
             assert user.roles.contains("ROLE_ADVISOR")
+            assert user.roles.contains("ROLE_INSTRUCTOR")
 
             return new Try.Success<Void>(null)
         }
+        1 * pendingStudentService.inviteStudentToClass(_) >> new Try.Success<Void>(null)
 
         then:
         sessionedUser.getUsername() == userName
@@ -250,12 +283,13 @@ class UserServiceSpec extends Specification {
         sessionedUser.getAuthorities().find{ it.authority == "ROLE_STUDENT" } != null
         sessionedUser.getAuthorities().find{ it.authority == "ROLE_ADMIN" } != null
         sessionedUser.getAuthorities().find{ it.authority == "ROLE_ADVISOR" } != null
+        sessionedUser.getAuthorities().find{ it.authority == "ROLE_INSTRUCTOR" } != null
     }
 
     def "loadUserBySaml: useUniqueIdAttributeForLogin on existing user success"(){
         setup:
         String userName = "user123"
-        UserFieldConfig userFieldConfig = new UserFieldConfig("role", "uuid", "firstName", "lastName", "admin", "advisor", "student", true, null, null);
+        UserFieldConfig userFieldConfig = new UserFieldConfig("role", "uuid", "firstName", "lastName", "admin", "advisor", "instructor", "student", true, null, null);
         List<Attribute> attributes = [buildAttribute("role", ["student", "admin", "advisor"]), buildAttribute("uuid", [dummyUser.getId()]), buildAttribute("firstName", ["curt"]), buildAttribute("lastName", ["h"])]
         SAMLCredential credential = buildSamlCredentials(userName, attributes)
         userService = new UserServiceImpl(userRepository: userRepository, userFieldConfig: userFieldConfig, orikaMapper: orikaMapper);
@@ -309,7 +343,7 @@ class UserServiceSpec extends Specification {
 
     def "loadUserBySaml: getUserByUsername fails, error thrown"(){
         setup:
-        UserFieldConfig userFieldConfig = new UserFieldConfig("role", "uuid", "firstName", "lastName", "admin", "advisor", "student", false, null, null)
+        UserFieldConfig userFieldConfig = new UserFieldConfig("role", "uuid", "firstName", "lastName", "admin", "advisor", "instructor", "student", false, null, null)
         SAMLCredential credential = buildSamlCredentials("user123", [])
         userService = new UserServiceImpl(userRepository: userRepository, userFieldConfig: userFieldConfig, orikaMapper: orikaMapper);
 
@@ -327,7 +361,7 @@ class UserServiceSpec extends Specification {
 
     def "loadUserBySaml: insertUser fails, error thrown"(){
         setup:
-        UserFieldConfig userFieldConfig = new UserFieldConfig("role", "uuid", "firstName", "lastName", "admin", "advisor", "student", false, null, null)
+        UserFieldConfig userFieldConfig = new UserFieldConfig("role", "uuid", "firstName", "lastName", "admin", "advisor", "instructor", "student", false, null, null)
         SAMLCredential credential = buildSamlCredentials("user123", [])
         userService = new UserServiceImpl(userRepository: userRepository, userFieldConfig: userFieldConfig, orikaMapper: orikaMapper);
 
@@ -344,7 +378,7 @@ class UserServiceSpec extends Specification {
 
     def "loadUserBySaml: saveUser fails, error thrown"(){
         setup:
-        UserFieldConfig userFieldConfig = new UserFieldConfig("role", "uuid", "firstName", "lastName", "admin", "advisor", "student", false, null, null)
+        UserFieldConfig userFieldConfig = new UserFieldConfig("role", "uuid", "firstName", "lastName", "admin", "advisor", "instructor", "student", false, null, null)
         SAMLCredential credential = buildSamlCredentials("user123", [])
         userService = new UserServiceImpl(userRepository: userRepository, userFieldConfig: userFieldConfig, orikaMapper: orikaMapper);
 
@@ -361,7 +395,7 @@ class UserServiceSpec extends Specification {
 
     def "loadUserBySaml: no role attribute set"(){
         setup:
-        userFieldConfig = new UserFieldConfig(null, "uuid", "firstName", "lastName", "admin", "advisor", "student", false, null, null);
+        userFieldConfig = new UserFieldConfig(null, "uuid", "firstName", "lastName", "admin", "advisor", "instructor", "student", false, null, null);
         userService = new UserServiceImpl(userRepository: userRepository, userFieldConfig: userFieldConfig, orikaMapper: orikaMapper);
 
         String userName = "user123"
@@ -392,8 +426,8 @@ class UserServiceSpec extends Specification {
 
     def "loadUserBySaml: no uuid attribute set, defaults to username"(){
         setup:
-        userFieldConfig = new UserFieldConfig("role", null, "firstName", "lastName", "admin", "advisor", "student", false, null, null);
-        userService = new UserServiceImpl(userRepository: userRepository, userFieldConfig: userFieldConfig, orikaMapper: orikaMapper);
+        userFieldConfig = new UserFieldConfig("role", null, "firstName", "lastName", "admin", "advisor", "instructor", "student", false, null, null);
+        userService = new UserServiceImpl(userRepository: userRepository, userFieldConfig: userFieldConfig, orikaMapper: orikaMapper, pendingStudentService:pendingStudentService);
 
         String userName = "user123"
         SAMLCredential credential = buildSamlCredentials(userName, [
@@ -417,6 +451,7 @@ class UserServiceSpec extends Specification {
 
             return new Try.Success<Void>(null)
         }
+        1 * pendingStudentService.inviteStudentToClass(_) >> new Try.Success<Void>(null)
 
         then:
         sessionedUser.getId() == userName
@@ -453,10 +488,10 @@ class UserServiceSpec extends Specification {
 
     def "searchUser: success"(){
         when:
-        Try<List<UserSearchResult>> maybeUserSearchResults = userService.searchUsers(["curt", "hostetter"], 10)
+        Try<List<UserSearchResult>> maybeUserSearchResults = userService.searchUsers(["curt", "hostetter"], null, 10)
 
         then:
-        1 * userRepository.searchUsers(["curt", "hostetter"], 10) >> new Try.Success<List<UserSearchResult>>([]);
+        1 * userRepository.searchUsers(["curt", "hostetter"], null, 10) >> new Try.Success<List<UserSearchResult>>([]);
 
         then:
         maybeUserSearchResults.isSuccess()
@@ -464,7 +499,7 @@ class UserServiceSpec extends Specification {
 
     def "searchUser: searchUsers failed, i fail"(){
         when:
-        Try<List<UserSearchResult>> maybeUserSearchResults = userService.searchUsers(["curt", "hostetter"], 10)
+        Try<List<UserSearchResult>> maybeUserSearchResults = userService.searchUsers(["curt", "hostetter"], null, 10)
 
         then:
         1 * userRepository.searchUsers(*_) >> new Try.Failure<List<UserSearchResult>>(new Exception());
@@ -652,5 +687,48 @@ class UserServiceSpec extends Specification {
 
         then:
         maybeResults.isFailure()
+    }
+
+    def "getInstructorById: returns user"(){
+        setup:
+        String userId = UUID.randomUUID().toString()
+
+        when:
+        Try<User> maybeUser = userService.getInstructorById(userId)
+
+        then:
+        1 * userRepository.getUserByRoleAndId(userId, _) >> new Try.Success<User>(dummyUser)
+        maybeUser.isSuccess()
+        maybeUser.get().id == dummyUser.id
+    }
+
+    def "getInstructorById: has failure exception" (){
+        setup:
+        String userId = UUID.randomUUID().toString()
+
+        when:
+        Try<User> maybeUser = userService.getInstructorById(userId)
+
+        then:
+        1 * userRepository.getUserByRoleAndId(_, _) >> new Try.Failure<User>(failureTypeException)
+
+        then:
+        maybeUser.isFailure()
+        maybeUser.failed().get().getCause() instanceof NotFoundException
+    }
+
+    def "getInstructorById: has failure exception when user not found"(){
+        setup:
+        String userId = UUID.randomUUID().toString()
+
+        when:
+        Try<User> maybeUser = userService.getInstructorById(userId)
+
+        then:
+        1 * userRepository.getUserByRoleAndId(_, _) >> new Try.Success<User>(null)
+
+        then:
+        maybeUser.isFailure()
+        maybeUser.failed().get() instanceof RepoNotFoundException
     }
 }

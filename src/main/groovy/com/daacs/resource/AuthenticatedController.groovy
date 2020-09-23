@@ -15,6 +15,7 @@ public abstract class AuthenticatedController {
     protected final String ROLE_ADMIN = "ROLE_ADMIN";
     protected final String ROLE_ADVISOR = "ROLE_ADVISOR";
     protected final String ROLE_STUDENT = "ROLE_STUDENT";
+    protected final String ROLE_INSTRUCTOR = "ROLE_INSTRUCTOR";
     protected final String ROLE_SYSTEM = "ROLE_SYSTEM";
 
     protected String determineUserId(String passedInUserId){

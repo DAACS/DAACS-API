@@ -4,6 +4,7 @@ import com.daacs.component.GraderFactory;
 import com.daacs.component.grader.Grader;
 import com.daacs.framework.exception.IncompatibleTypeException;
 import com.daacs.framework.exception.InvalidObjectException;
+import com.daacs.model.User;
 import com.daacs.model.assessment.*;
 import com.daacs.model.assessment.user.*;
 import com.daacs.repository.AssessmentRepository;
@@ -28,6 +29,9 @@ public class ScoringServiceImpl implements ScoringService {
 
     @Autowired
     private AssessmentRepository assessmentRepository;
+
+    @Autowired
+    private InstructorClassService instructorClassService;
 
     @Autowired
     private GraderFactory graderFactory;
@@ -62,6 +66,11 @@ public class ScoringServiceImpl implements ScoringService {
 
         if (maybeGradedUserAssessment.isFailure()){
             return new Try.Failure<>(maybeGradedUserAssessment.failed().get());
+        }
+
+        Try<Void> maybeInstructorClassUpdated = instructorClassService.classAssessmentTaken(userAssessment.getId(), userAssessment.getAssessmentId());
+        if (maybeInstructorClassUpdated.isFailure()){
+            return new Try.Failure<>(maybeInstructorClassUpdated.failed().get());
         }
 
         return maybeGradedUserAssessment;
@@ -143,6 +152,11 @@ public class ScoringServiceImpl implements ScoringService {
 
         userAssessment.setProgressPercentage(1.0);
         userAssessment.setCompletionDate(Instant.now());
+
+        Try<Void> maybeInstructorClassUpdated = instructorClassService.classAssessmentTaken(userAssessment.getId(), userAssessment.getAssessmentId());
+        if (maybeInstructorClassUpdated.isFailure()){
+            return new Try.Failure<>(maybeInstructorClassUpdated.failed().get());
+        }
 
         return new Try.Success<>(userAssessment);
     }

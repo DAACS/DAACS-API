@@ -23,8 +23,8 @@ class CreateUserRequestValidator extends AbstractValidator implements Constraint
             return false;
         }
 
-        if (!createUserRequest.role.equals("ROLE_STUDENT")) {
-            addPropertyViolation(context, "role", "must be ROLE_STUDENT");
+        if (! (createUserRequest.role.equals("ROLE_STUDENT") || createUserRequest.role.equals("ROLE_INSTRUCTOR"))) {
+            addPropertyViolation(context, "role", "must be ROLE_STUDENT or ROLE_INSTRUCTOR");
             return false;
         }
 

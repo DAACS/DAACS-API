@@ -65,7 +65,7 @@ public class AssessmentController extends AuthenticatedController {
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json")
     public List<Assessment> getAssessments() {
 
-        checkPermissions([ROLE_ADMIN]);
+        checkPermissions([ROLE_ADMIN, ROLE_INSTRUCTOR]);
 
         Try<List<Assessment>> maybeAssessments = assessmentService.getAssessments(null, null);
         if (maybeAssessments.isFailure()) {
@@ -154,7 +154,7 @@ public class AssessmentController extends AuthenticatedController {
     public Assessment getAssessment(
             @PathVariable("id") String id) {
 
-        checkPermissions([ROLE_ADMIN]);
+        checkPermissions([ROLE_ADMIN, ROLE_INSTRUCTOR]);
 
         Try<Assessment> maybeAssessment = assessmentService.getAssessment(id);
         if (maybeAssessment.isFailure()) {

@@ -128,10 +128,36 @@ public class UserController extends AuthenticatedController{
     public List<UserSearchResult> searchUsers(
             @RequestParam(value = "keywords") String keywordString){
 
-        checkPermissions([ROLE_ADMIN, ROLE_ADVISOR]);
+        checkPermissions([ROLE_ADMIN, ROLE_ADVISOR, ROLE_INSTRUCTOR]);
 
         keywordString = URLDecoder.decode(keywordString, "UTF-8");
-        Try<List<UserSearchResult>> maybeSearchResults = userService.searchUsers(Arrays.asList(keywordString.split(" ")), 10);
+        Try<List<UserSearchResult>> maybeSearchResults = userService.searchUsers(Arrays.asList(keywordString.split(" "),), null, 10);
+        if(maybeSearchResults.isFailure()){
+            throw maybeSearchResults.failed().get();
+        }
+
+        return maybeSearchResults.get();
+    }
+
+    @ApiOperation(
+            value = "search for users by role",
+            response = UserSearchResult,
+            responseContainer = "List"
+    )
+    @ApiResponses(value = [
+            @ApiResponse(code = 400, response = ErrorResponse.class, message = "Invalid request"),
+            @ApiResponse(code = 500, response = ErrorResponse.class, message = "Unknown error"),
+            @ApiResponse(code = 503, response = ErrorResponse.class, message = "Retryable error")
+    ])
+    @RequestMapping(value = "", method = RequestMethod.GET, params = ["role", "keywords"], produces = "application/json")
+    public List<UserSearchResult> searchUsersByRole(
+            @RequestParam(value = "role") String roleString,
+            @RequestParam(value = "keywords") String keywordString){
+
+        checkPermissions([ROLE_ADMIN, ROLE_ADVISOR, ROLE_INSTRUCTOR]);
+
+        keywordString = URLDecoder.decode(keywordString, "UTF-8");
+        Try<List<UserSearchResult>> maybeSearchResults = userService.searchUsers(Arrays.asList(keywordString.split(" ")), roleString, 10);
         if(maybeSearchResults.isFailure()){
             throw maybeSearchResults.failed().get();
         }

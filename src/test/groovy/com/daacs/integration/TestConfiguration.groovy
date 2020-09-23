@@ -2,6 +2,8 @@ package com.daacs
 
 
 import com.daacs.component.utils.DefaultCatgoryGroup
+import com.daacs.model.InstructorClass
+import com.daacs.model.PendingStudent
 import com.daacs.model.User
 import com.daacs.model.UserSearchResult
 import com.daacs.model.assessment.*
@@ -12,7 +14,9 @@ import com.daacs.model.prereqs.PrereqType
 import com.daacs.repository.AssessmentCategoryGroupRepository
 import com.daacs.repository.AssessmentRepository
 import com.daacs.repository.EventContainerRepository
+import com.daacs.repository.InstructorClassRepository
 import com.daacs.repository.MessageRepository
+import com.daacs.repository.PendingStudentRepository
 import com.daacs.repository.UserAssessmentRepository
 import com.daacs.repository.UserRepository
 import com.daacs.service.LightSideService
@@ -52,6 +56,7 @@ public class TestConfiguration extends Specification {
     List<Map> dummyAssessmentStats
     AssessmentCategoryGroup dummyGroup
     Map<String, UserAssessment> dummyUserAssessmentMap
+    InstructorClass dummyClass
 
     @PostConstruct
     void init() {
@@ -75,6 +80,12 @@ public class TestConfiguration extends Specification {
                 username: "testsystemuser123",
                 password: encoder.encodePassword("testpassword123", null),
                 roles: ["ROLE_SYSTEM"])
+
+        dummyClass = new InstructorClass(id: "123",
+                name: "classname",
+                instructorId: "123",
+                assessmentIds: ["1"],
+                canEditAssessments: true)
 
         dummyAssessments = [
                 new CATAssessment(
@@ -567,6 +578,7 @@ public class TestConfiguration extends Specification {
         UserRepository userRepository = Mock(UserRepository)
 
         userRepository.getUser("9999") >> new Try.Success<User>(dummyUser)
+        userRepository.getUser(_) >> new Try.Success<User>(dummyUser)
         userRepository.getUserByUsername("testuser123") >> new Try.Success<User>(dummyUser)
         userRepository.getUserByUsername("testuser123@test.com") >> new Try.Success<User>(dummyUser)
         userRepository.getUserByUsername("testadvisor123") >> new Try.Success<User>(dummyAdvisor)
@@ -585,7 +597,7 @@ public class TestConfiguration extends Specification {
             return new Try.Success<User>(user)
         }
 
-        userRepository.searchUsers(["dummy", "user"], _) >> new Try.Success<List<UserSearchResult>>([new UserSearchResult(firstName: "dummy", lastName: "user", username: "dummyuser")]);
+        userRepository.searchUsers(["dummy", "user"], null, _) >> new Try.Success<List<UserSearchResult>>([new UserSearchResult(firstName: "dummy", lastName: "user", username: "dummyuser")]);
 
 
         return userRepository;
@@ -861,13 +873,42 @@ public class TestConfiguration extends Specification {
         return groupRepository
     }
 
-        @Bean
-        @Primary
-        @Scope("singleton")
-        public LtiService ltiLaunchService() {
-            LtiService ltiLaunchService = Mock(LtiService)
-            ltiLaunchService.verifyLaunch(_ as HttpServletRequest) >> new Try.Success<String>("token")
-            return ltiLaunchService
-        }
+    @Bean
+    @Primary
+    @Scope("singleton")
+    public LtiService ltiLaunchService() {
+        LtiService ltiLaunchService = Mock(LtiService)
+        ltiLaunchService.verifyLaunch(_ as HttpServletRequest) >> new Try.Success<String>("token")
+        return ltiLaunchService
+    }
+
+    @Bean
+    @Primary
+    @Scope("singleton")
+    public InstructorClassRepository instructorClassRepository() {
+        InstructorClassRepository instructorClassRepository = Mock(InstructorClassRepository)
+
+        instructorClassRepository.getClasses() >> new Try.Success<List<InstructorClass>>([dummyClass])
+        instructorClassRepository.getClassByStudentAndAssessmentId(_ as String, _ as String) >> new Try.Success<List<InstructorClass>>([dummyClass])
+        instructorClassRepository.getClassByStudentAndAssessmentId(null, null) >> new Try.Success<List<InstructorClass>>([dummyClass])
+        instructorClassRepository.getClass(_ as String) >> new Try.Success<InstructorClass>(dummyClass)
+        instructorClassRepository.saveClass(_ as InstructorClass) >> new Try.Success<InstructorClass>(dummyClass)
+        instructorClassRepository.insertClass(_ as InstructorClass) >> new Try.Success<Void>(null)
+
+        return instructorClassRepository
+    }
+
+    @Bean
+    @Primary
+    @Scope("singleton")
+    public PendingStudentRepository pendingStudentRepository() {
+        PendingStudentRepository pendingStudentRepository = Mock(PendingStudentRepository)
+
+        pendingStudentRepository.getPendStudent(_ as String) >> new Try.Success<PendingStudent>(null)
+        pendingStudentRepository.insertPendStudent(_)  >> new Try.Success<Void>(null)
+        pendingStudentRepository.deletePendStudent(_ as String) >> new Try.Success<Void>(null)
+
+        return pendingStudentRepository
+    }
 
 }

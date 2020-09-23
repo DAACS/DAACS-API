@@ -164,7 +164,7 @@ class UserRepositorySpec extends Specification {
 
     def "searchUsers: success"(){
         when:
-        Try<List<UserSearchResult>> maybeSearchResults = userRepository.searchUsers(["curt", "hostetter"], 10);
+        Try<List<UserSearchResult>> maybeSearchResults = userRepository.searchUsers(["curt", "hostetter"], null,10);
 
         then:
         1 * hystrixCommandFactory.getMongoAggregateCommand(*_) >> { arguments ->
@@ -207,7 +207,7 @@ class UserRepositorySpec extends Specification {
 
     def "searchUsers: mongoAggregateCommand fails, i fail"(){
         when:
-        Try<List<UserSearchResult>> maybeSearchResults = userRepository.searchUsers(["curt", "hostetter"], 10);
+        Try<List<UserSearchResult>> maybeSearchResults = userRepository.searchUsers(["curt", "hostetter"], null, 10);
 
         then:
         1 * hystrixCommandFactory.getMongoAggregateCommand(*_) >> mongoAggregateCommand
@@ -250,5 +250,24 @@ class UserRepositorySpec extends Specification {
 
         then:
         maybeResults.isFailure()
+    }
+
+    def "getUserByRoleAndId: success"(){
+        when:
+        Try<User> maybeUser = userRepository.getUserByRoleAndId(dummyUser.getUsername(), ["ROLE"])
+
+        then:
+        1 * mongoFindOneCommand.execute() >> new Try.Success<User>(dummyUser)
+        maybeUser.isSuccess()
+        maybeUser.get().getUsername() == dummyUser.getUsername()
+    }
+
+    def "getUserByRoleAndId:  failure"(){
+        when:
+        Try<User> maybeUser = userRepository.getUserByRoleAndId(dummyUser.getUsername(), ["ROLE"])
+
+        then:
+        1 * mongoFindOneCommand.execute() >> new Try.Failure<User>(ioFailureTypeException)
+        maybeUser.isFailure()
     }
 }

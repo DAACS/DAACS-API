@@ -602,4 +602,9 @@ public class UserAssessmentServiceImpl implements UserAssessmentService {
         }
         return new Try.Success<>(null);
     }
+
+    @Override
+    public Try<UserAssessment> getLatestUserAssessmentIfExists(String userId, String assessmentId) {
+        return userAssessmentRepository.getLatestUserAssessmentIfExists(userId, assessmentId);
+    }
 }
