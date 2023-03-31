@@ -43,6 +43,7 @@ public abstract class ManualGrader<U extends UserAssessment, T extends Assessmen
                 .getAsDouble();
 
         int roundedScore = Math.toIntExact(Math.round(averageDomainScore));
+        //int roundedScore = Math.toIntExact(Math.floor(averageDomainScore));
 
         Optional<CompletionScore> completionScore = Arrays.stream(CompletionScore.values())
                 .filter(it -> it.getRawVal() == roundedScore)
